@@ -2,12 +2,12 @@
   "domain": "tesy",
   "name": "Tesy",
   "codeowners": ["@krasnoukhov"],
-  "config_flow": false,
+  "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/krasnoukhov/homeassistant-tesy",
   "integration_type": "device",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/krasnoukhov/homeassistant-tesy/issues",
-  "requirements": ["TesyLocal==1.4.1"],
+  "requirements": [],
   "version": "1.0.0-beta.0"
 }
