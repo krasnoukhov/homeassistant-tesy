@@ -1,0 +1,24 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "IP address"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Device is already configured",
+      "already_in_progress": "Device configuration is in progress",
+      "cannot_connect": "Failed to connect",
+      "unknown": "Unknown error"
+    }
+  },
+  "entity": {
+    "water_heater": {
+      "heater": {
+        "name": "Heater"
+      }
+    }
+  }
+}
