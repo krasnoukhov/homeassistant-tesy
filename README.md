@@ -10,7 +10,7 @@ Tested with:
 
 ### Have the heater device in HA
 
-<img src="https://github.com/krasnoukhov/homeassistant-tesy/assets/944286/27a325d1-5713-4b4f-827b-c6272eca8415" alt="heater" width="400">
+<img src="https://github.com/krasnoukhov/homeassistant-tesy/assets/944286/a08289f7-d7cc-49a0-9747-9fbd765e58d1" alt="heater" width="400">
 
 ## Installation
 
