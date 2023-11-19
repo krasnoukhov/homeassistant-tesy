@@ -39,12 +39,12 @@ DESCRIPTION = WaterHeaterEntityEntityDescription(
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: ConfigEntry,
+    entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Create Tesy water heater in HASS."""
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
-    async_add_entities([TesyWaterHeater(hass, coordinator, config_entry, DESCRIPTION)])
+    coordinator = hass.data[DOMAIN][entry.entry_id]
+    async_add_entities([TesyWaterHeater(hass, coordinator, entry, DESCRIPTION)])
 
 
 class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
