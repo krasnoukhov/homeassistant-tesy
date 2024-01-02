@@ -33,7 +33,7 @@ from .const import (
 from .entity import TesyEntity
 
 # NOTE: more modes not implemented
-OPERATION_LIST = [STATE_OFF, STATE_PERFORMANCE, STATE_HIGH_DEMAND]
+OPERATION_LIST = [STATE_OFF, "Program", STATE_PERFORMANCE, STATE_ECO, STATE_HIGH_DEMAND]
 
 DESCRIPTION = WaterHeaterEntityEntityDescription(
     key="water_heater",
