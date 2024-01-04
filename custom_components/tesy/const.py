@@ -49,6 +49,13 @@ Current Operating mode, depending on the device. P1 and P2 heat up in advance so
 5		ECO Confort
 6		ECO Night
 """
+
+TESY_MODE_P1 = "P1"
+TESY_MODE_P2 = "P2"
+TESY_MODE_P3 = "P3"
+TESY_MODE_EC2 = "EC2"
+TESY_MODE_EC3 = "EC3"
+
 ATTR_MODE = "mode"
 
 #Standby flag, 0 - Off(Antifreeze), 1 -On. If device is off and plugged in will prevent the water from freezing event if off.

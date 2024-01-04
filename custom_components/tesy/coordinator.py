@@ -63,9 +63,17 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         return await self.hass.async_add_executor_job(self._set_target_temperature, val)
 
     def _set_power(self, val: str) -> None:
-        """Set target temperature using Tesy API."""
+        """Set power using Tesy API."""
         return self._client.set_power(val)
+    
+    def _set_boost(self, val: str) -> None:
+        """Set boost using Tesy API."""
+        return self._client.set_boost(val)
 
     async def async_set_power(self, val: str) -> None:
-        """Set target temperature for Tesy component."""
+        """Set power for Tesy component."""
         return await self.hass.async_add_executor_job(self._set_power, val)
+    
+    async def async_set_boost(self, val: str) -> None:
+        """Set boost for Tesy component."""
+        return await self.hass.async_add_executor_job(self._set_boost, val)

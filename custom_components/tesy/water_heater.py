@@ -29,11 +29,17 @@ from .const import (
     ATTR_TARGET_TEMP,
     ATTR_CURRENT_TARGET_TEMP,
     DOMAIN,
+    TESY_MODE_P1,
+    TESY_MODE_P2,
+    TESY_MODE_P3,
+    TESY_MODE_EC2,
+    TESY_MODE_EC3,
 )
+
 from .entity import TesyEntity
 
 # NOTE: more modes not implemented
-OPERATION_LIST = [STATE_OFF, "P1","P2","P3",STATE_ECO,"ECO_NIGHT","ECO_COMFORT", STATE_PERFORMANCE, STATE_HIGH_DEMAND]
+OPERATION_LIST = [STATE_OFF,STATE_PERFORMANCE,TESY_MODE_P1,TESY_MODE_P2,TESY_MODE_P3,STATE_ECO,TESY_MODE_EC2,TESY_MODE_EC3, STATE_HIGH_DEMAND]
 
 DESCRIPTION = WaterHeaterEntityEntityDescription(
     key="water_heater",
@@ -84,10 +90,18 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
 
         if mode == "0":
             state = STATE_PERFORMANCE
-        if mode == "1" or mode == "2" or mode == "3":
-            state = "Program"
-        if mode == "4" or mode == "5" or mode == "6":
+        if mode == "1":
+            state=TESY_MODE_P1
+        if mode == "2":
+            state=TESY_MODE_P2
+        if mode == "3":
+            state=TESY_MODE_P3
+        if mode == "4":
             state = STATE_ECO
+        if mode == "5":
+            state = TESY_MODE_EC2
+        if mode == "6":
+            state = TESY_MODE_EC3
 
         #if Boost Flag is set
         if self.coordinator.data[ATTR_BOOST] == "1":
@@ -107,11 +121,31 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         """Set new target operation mode."""
 
 
-        if operation_mode == STATE_OFF:
-            await self.turn_off()
-        else:
-            await self.turn_on()
+        if  operation_mode == STATE_OFF and self.coordinator.data[ATTR_POWER]=="1":
+            await self.coordinator.async_set_power("0")
+        elif operation_mode != STATE_OFF and self.coordinator.data[ATTR_POWER]=="0":
+            await self.coordinator.async_set_power("1")
 
+            if operation_mode == STATE_PERFORMANCE:
+                await self.async_set_operation_mode(0)
+            if  operation_mode == TESY_MODE_P1:
+                await self.async_set_operation_mode(1)
+            if  operation_mode == TESY_MODE_P2:
+                await self.async_set_operation_mode(2)
+            if  operation_mode == TESY_MODE_P3:
+                await self.async_set_operation_mode(3)
+            if  operation_mode == STATE_ECO:
+                await self.async_set_operation_mode(4)
+            if  operation_mode == TESY_MODE_EC2:
+                await self.async_set_operation_mode(5)
+            if  operation_mode == TESY_MODE_EC3:
+                await self.async_set_operation_mode(6)
+
+            #if Boost Flag is set
+            if  operation_mode == STATE_HIGH_DEMAND and self.coordinator.data[ATTR_BOOST]=="0":
+                await self.coordinator.async_set_boost("1")
+            elif  operation_mode != STATE_HIGH_DEMAND and self.coordinator.data[ATTR_BOOST]=="1":
+                await self.coordinator.async_set_boost("0")
 
     async def turn_on(self, **_kwargs: Any) -> None:
         """Turn on water heater."""

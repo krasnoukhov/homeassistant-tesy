@@ -10,8 +10,10 @@ import requests
 from .const import (
     ATTR_POWER,
     ATTR_TARGET_TEMP,
+    ATTR_BOOST,
     HTTP_TIMEOUT,
     IP_ADDRESS,
+
 )
 
 
@@ -37,6 +39,11 @@ class Tesy:
     def set_power(self, val: str) -> bool:
         """Set power for Tesy component."""
         self._get_request(name=ATTR_POWER, set=val).json()
+        return True
+    
+    def set_boost(self, val: str) -> bool:
+        """Set boost for Tesy component."""
+        self._get_request(name=ATTR_BOOST, set=val).json()
         return True
 
     def _get_request(self, **kwargs) -> requests.Response:
