@@ -8,9 +8,12 @@ from homeassistant.helpers.entity import EntityDescription
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
+    TESY_DEVICE_TYPES,
+    ATTR_DEVICE_ID,
     ATTR_MAC,
     ATTR_SOFTWARE,
     DOMAIN,
+
 )
 from .coordinator import TesyCoordinator
 
@@ -44,6 +47,10 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
     @property
     def device_info(self) -> DeviceInfo:
         """Return device information about this Tesy device."""
+        device_model="Generic"
+        if self.coordinator.data[ATTR_DEVICE_ID] in TESY_DEVICE_TYPES:
+            device_model=TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]]["name"]
+
         return DeviceInfo(
             identifiers={
                 (
@@ -52,5 +59,6 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
                 )
             },
             manufacturer="Tesy",
+            model=device_model,
             sw_version=self.coordinator.data[ATTR_SOFTWARE],
         )
