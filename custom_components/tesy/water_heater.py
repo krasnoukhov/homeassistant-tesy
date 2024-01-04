@@ -147,6 +147,8 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             elif  operation_mode != STATE_HIGH_DEMAND and self.coordinator.data[ATTR_BOOST]=="1":
                 await self.coordinator.async_set_boost("0")
 
+            await self.coordinator.async_request_refresh()
+
     async def turn_on(self, **_kwargs: Any) -> None:
         """Turn on water heater."""
         await self.coordinator.async_set_power("1")
