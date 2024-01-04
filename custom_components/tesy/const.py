@@ -71,6 +71,7 @@ ATTR_LONG_COUNTER = "pwc_t"
 #RSSI
 ATTR_RSSI = "wdBm"
 
+ATTR_MAX_SHOWERS = "tmpMX"
 
 """
 some devices have additional parameters:
@@ -85,27 +86,29 @@ some devices have additional parameters:
 TESY_DEVICE_TYPES = {
     "2000":{
         "name" : "ModEco",
-        "min_setpoint":10,
+        "min_setpoint":15,
         "max_setpoint":75,
     },
     "2002":{
         "name" : "BeliSlimo",
         "min_setpoint":0,
         "max_setpoint":4,
+        "use_showers": True
     },
     "2003":{
         "name" : "BiLight Smart",
-        "min_setpoint":10,
+        "min_setpoint":15,
         "max_setpoint":75,
     },
     "2004":{
         "name" : "ModEco 2",
-        "min_setpoint":10,
+        "min_setpoint":15,
         "max_setpoint":75,
     },
     "2005":{
         "name" : "BelliSlimo Lite",
         "min_setpoint":0,
         "max_setpoint":4,
+        "use_showers": True
     }
 }

@@ -1,5 +1,6 @@
 """Tesy water heater component."""
 from typing import Any
+from custom_components.tesy.coordinator import TesyCoordinator
 
 from homeassistant.components.water_heater import (
     STATE_ECO,
@@ -24,6 +25,7 @@ from .const import (
     TESY_DEVICE_TYPES,
     ATTR_CURRENT_TEMP,
     ATTR_DEVICE_ID,
+    ATTR_MAX_SHOWERS,
     ATTR_IS_HEATING,
     ATTR_MODE,
     ATTR_POWER,
@@ -71,12 +73,25 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         | WaterHeaterEntityFeature.ON_OFF
     )
 
-    #Default values
-    _attr_min_temp = 16
-    _attr_max_temp = 75
 
     #TODO: Set min/max setpoint based on the device
 
+    def __init__(self, hass: HomeAssistant, coordinator: TesyCoordinator, entry: ConfigEntry, description: Any) -> None:
+        super().__init__(hass, coordinator, entry, description)
+
+            #Default values
+        self._attr_min_temp = 16
+        self._attr_max_temp = 75
+
+        if self.coordinator.data[ATTR_DEVICE_ID] in TESY_DEVICE_TYPES:
+            self._attr_min_temp=TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]]["min_setpoint"]
+            self._attr_max_temp=TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]]["max_setpoint"]
+
+            #if heater only supports showers, get its maximum depending on model, position
+            if "use_showers" in  TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]]:
+                 tmp_max=self.coordinator.data[TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]][ATTR_MAX_SHOWERS]]
+                 self._attr_max_temp=int(tmp_max) if tmp_max.isdecimal() else self._attr_max_temp
+                
 
 
     @property
