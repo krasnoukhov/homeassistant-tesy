@@ -21,7 +21,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
+    TESY_DEVICE_TYPES,
     ATTR_CURRENT_TEMP,
+    ATTR_DEVICE_ID,
     ATTR_IS_HEATING,
     ATTR_MODE,
     ATTR_POWER,
@@ -69,9 +71,13 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         | WaterHeaterEntityFeature.ON_OFF
     )
 
-    
+    #Default values
     _attr_min_temp = 16
     _attr_max_temp = 75
+
+    #TODO: Set min/max setpoint based on the device
+
+
 
     @property
     def current_temperature(self):
@@ -146,7 +152,6 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
                 await self.coordinator.async_set_boost("1")
             elif  operation_mode != STATE_HIGH_DEMAND and self.coordinator.data[ATTR_BOOST]=="1":
                 await self.coordinator.async_set_boost("0")
-
             await self.coordinator.async_request_refresh()
 
     async def turn_on(self, **_kwargs: Any) -> None:

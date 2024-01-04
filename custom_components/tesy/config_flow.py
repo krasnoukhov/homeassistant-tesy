@@ -15,6 +15,9 @@ from .const import (
     ATTR_MAC,
     DOMAIN,
     IP_ADDRESS,
+    ATTR_DEVICE_ID,
+    TESY_DEVICE_TYPES,
+
 )
 from .coordinator import TesyCoordinator
 
@@ -36,7 +39,12 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, Any]:
     coordinator = TesyCoordinator(data, hass)
     result = await coordinator.async_validate_input()
 
-    return {"title": "Tesy", "unique_id": result[ATTR_MAC]}
+    if result[ATTR_DEVICE_ID] in TESY_DEVICE_TYPES:
+        title=TESY_DEVICE_TYPES[result[ATTR_DEVICE_ID]]["name"]
+    else:
+        title="Tesy"
+        
+    return {"title": title, "unique_id": result[ATTR_MAC]}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
