@@ -132,15 +132,17 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
 
     async def async_set_temperature(self, **kwargs: Any) -> None:
         """Set new target temperature."""
+        if self.coordinator.data[ATTR_POWER]=="0":
+            await self.coordinator.async_set_power("1")
+
         await self.coordinator.async_set_target_temperature(
             kwargs.get(ATTR_TEMPERATURE)
         )
+
         await self.coordinator.async_request_refresh()
 
     async def async_set_operation_mode(self, operation_mode: str) -> None:
         """Set new target operation mode."""
-
-        
         
 
         if  operation_mode == STATE_OFF and self.coordinator.data[ATTR_POWER]=="1":
