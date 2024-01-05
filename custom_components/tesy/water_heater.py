@@ -74,8 +74,6 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
     )
 
 
-    #TODO: Set min/max setpoint based on the device
-
     def __init__(self, hass: HomeAssistant, coordinator: TesyCoordinator, entry: ConfigEntry, description: Any) -> None:
         super().__init__(hass, coordinator, entry, description)
 
@@ -88,7 +86,7 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             self._attr_max_temp=TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]]["max_setpoint"]
 
             #if heater only supports showers, get its maximum depending on model, position
-            if "use_showers" in  TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]]:
+            if "use_showers" in  TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]] and TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]]["use_showers"] == True:
                  tmp_max=self.coordinator.data[ATTR_MAX_SHOWERS]
                  self._attr_max_temp=int(tmp_max) if tmp_max.isdecimal() else self._attr_max_temp
                 
@@ -148,19 +146,19 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             await self.coordinator.async_set_power("1")
 
             if operation_mode == STATE_PERFORMANCE:
-                await self.async_set_operation_mode(0)
+                await self.async_set_operation_mode("0")
             if  operation_mode == TESY_MODE_P1:
-                await self.async_set_operation_mode(1)
+                await self.async_set_operation_mode("1")
             if  operation_mode == TESY_MODE_P2:
-                await self.async_set_operation_mode(2)
+                await self.async_set_operation_mode("2")
             if  operation_mode == TESY_MODE_P3:
-                await self.async_set_operation_mode(3)
+                await self.async_set_operation_mode("3")
             if  operation_mode == STATE_ECO:
-                await self.async_set_operation_mode(4)
+                await self.async_set_operation_mode("4")
             if  operation_mode == TESY_MODE_EC2:
-                await self.async_set_operation_mode(5)
+                await self.async_set_operation_mode("5")
             if  operation_mode == TESY_MODE_EC3:
-                await self.async_set_operation_mode(6)
+                await self.async_set_operation_mode("6")
 
             #if Boost Flag is set
             if  operation_mode == STATE_HIGH_DEMAND and self.coordinator.data[ATTR_BOOST]=="0":
