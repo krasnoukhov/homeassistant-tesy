@@ -189,4 +189,4 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
     @property
     def extra_state_attributes(self) -> dict[str, str] | None:
         """Return the state attributes."""
-        return {"is_heating": self.coordinator.data[ATTR_IS_HEATING] == "1"}
+        return {"is_heating": self.coordinator.data[ATTR_IS_HEATING] == "1", "target_temperature_step":1}
