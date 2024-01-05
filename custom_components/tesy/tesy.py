@@ -11,6 +11,7 @@ from .const import (
     ATTR_POWER,
     ATTR_TARGET_TEMP,
     ATTR_BOOST,
+    ATTR_MODE,
     HTTP_TIMEOUT,
     IP_ADDRESS,
 
@@ -45,6 +46,12 @@ class Tesy:
         """Set boost for Tesy component."""
         self._get_request(name=ATTR_BOOST, set=val).json()
         return True
+    
+    def set_operation_mode(self, val: str) -> bool:
+        """Set boost for Tesy component."""
+        self._get_request(name=ATTR_MODE, set=val).json()
+        return True
+
 
     def _get_request(self, **kwargs) -> requests.Response:
         """Make GET request to the Tesy API."""
@@ -65,3 +72,5 @@ class Tesy:
             raise ConnectionError from connection_error
         except requests.exceptions.HTTPError as http_error:
             raise ConnectionError from http_error
+
+

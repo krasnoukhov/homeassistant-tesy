@@ -69,6 +69,11 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     def _set_boost(self, val: str) -> None:
         """Set boost using Tesy API."""
         return self._client.set_boost(val)
+    
+    def _set_operation_mode(self, val: str) -> None:
+        """Set mode using Tesy API."""
+        return self._client.set_operation_mode(val)
+    
 
     async def async_set_power(self, val: str) -> None:
         """Set power for Tesy component."""
@@ -77,3 +82,7 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def async_set_boost(self, val: str) -> None:
         """Set boost for Tesy component."""
         return await self.hass.async_add_executor_job(self._set_boost, val)
+    
+    async def async_set_operation_mode(self, val: str) -> None:
+        """Set mode for Tesy component."""
+        return await self.hass.async_add_executor_job(self._set_operation_mode, val)

@@ -146,19 +146,19 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             await self.coordinator.async_set_power("1")
 
             if operation_mode == STATE_PERFORMANCE:
-                await self.async_set_operation_mode("0")
+                await self.coordinator.async_set_operation_mode("0")
             if  operation_mode == TESY_MODE_P1:
-                await self.async_set_operation_mode("1")
+                await self.coordinator.async_set_operation_mode("1")
             if  operation_mode == TESY_MODE_P2:
-                await self.async_set_operation_mode("2")
+                await self.coordinator.async_set_operation_mode("2")
             if  operation_mode == TESY_MODE_P3:
-                await self.async_set_operation_mode("3")
+                await self.coordinator.async_set_operation_mode("3")
             if  operation_mode == STATE_ECO:
-                await self.async_set_operation_mode("4")
+                await self.coordinator.async_set_operation_mode("4")
             if  operation_mode == TESY_MODE_EC2:
-                await self.async_set_operation_mode("5")
+                await self.coordinator.async_set_operation_mode("5")
             if  operation_mode == TESY_MODE_EC3:
-                await self.async_set_operation_mode("6")
+                await self.coordinator.async_set_operation_mode("6")
 
             #if Boost Flag is set
             if  operation_mode == STATE_HIGH_DEMAND and self.coordinator.data[ATTR_BOOST]=="0":
