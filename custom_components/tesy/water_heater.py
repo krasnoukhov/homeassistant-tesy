@@ -89,7 +89,7 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
 
             #if heater only supports showers, get its maximum depending on model, position
             if "use_showers" in  TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]]:
-                 tmp_max=self.coordinator.data[TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]][ATTR_MAX_SHOWERS]]
+                 tmp_max=self.coordinator.data[ATTR_MAX_SHOWERS]
                  self._attr_max_temp=int(tmp_max) if tmp_max.isdecimal() else self._attr_max_temp
                 
 
