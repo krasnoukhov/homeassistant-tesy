@@ -32,8 +32,6 @@ DESCRIPTION = {
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:water-thermometer",
     ),
-    #"native_value": lambda entity: entity.coordinator.data[ATTR_LONG_COUNTER],
-    "native_value": 0,
     "suggested_precision": None,
     "options": None,
 }
@@ -53,7 +51,6 @@ async def async_setup_entry(
         coordinator, 
         entry, 
         DESCRIPTION["desc"],
-        DESCRIPTION["native_value"],
         DESCRIPTION["suggested_precision"],
         DESCRIPTION["options"])]
     )
@@ -70,7 +67,6 @@ class TesySensor(TesyEntity, SensorEntity):
         coordinator: TesyCoordinator,
         entry: ConfigEntry,
         description: SensorEntityDescription,
-        native_value_func,
         suggested_precision: int | None,
         options: list | None,
     ) -> None:
@@ -104,4 +100,6 @@ class TesySensor(TesyEntity, SensorEntity):
     @property
     def native_value(self):
         """Return the state of the sensor."""
-        return self._native_value_func(self)
+        return 0
+        #return self._native_value_func(self)
+    
