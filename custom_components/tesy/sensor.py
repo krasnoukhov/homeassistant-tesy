@@ -75,7 +75,7 @@ class TesySensor(TesyEntity, SensorEntity):
 
         self.description: description
         self._attr_name = description.name
-        self._native_value_func = native_value_func
+        #self._native_value_func = native_value_func
  
         if description.device_class is not None:
             self._attr_device_class = description.device_class
