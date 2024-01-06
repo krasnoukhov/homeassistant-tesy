@@ -47,18 +47,15 @@ async def async_setup_entry(
 
     coordinator = hass.data[DOMAIN][entry.entry_id]
     #async_add_entities([TesySensor(hass, coordinator, entry, DESCRIPTION)])
-    _LOGGER.debug("")
-    entities: list[TesySensor] =TesySensor(
-        coordinator,
-        entry,
+    async_add_entities([TesySensor(
+        hass, 
+        coordinator, 
+        entry, 
         DESCRIPTION["desc"],
         DESCRIPTION["native_value"],
         DESCRIPTION["suggested_precision"],
-        DESCRIPTION["options"],
+        DESCRIPTION["options"])]
     )
-
-    async_add_entities(entities)
-    async_add_entities([TesyWaterHeater(hass, coordinator, entry, DESCRIPTION)])
 
 class TesySensor(TesyEntity, SensorEntity):
     """Represents a sensor for an Tesy water heater controller."""
