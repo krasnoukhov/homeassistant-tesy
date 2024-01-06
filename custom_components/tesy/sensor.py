@@ -32,7 +32,8 @@ DESCRIPTION = {
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:water-thermometer",
     ),
-    "native_value": lambda entity: entity.coordinator.data[ATTR_LONG_COUNTER],
+    #"native_value": lambda entity: entity.coordinator.data[ATTR_LONG_COUNTER],
+    "native_value": 0,
     "suggested_precision": None,
     "options": None,
 }
@@ -79,8 +80,6 @@ class TesySensor(TesyEntity, SensorEntity):
         self.description: description
         self._attr_name = description.name
         self._native_value_func = native_value_func
-        #self._attr_unique_id = self._base_unique_id + "_" + description.key
-        #_LOGGER.debug("Created sensor with unique ID %s", self._attr_unique_id)
  
         if description.device_class is not None:
             self._attr_device_class = description.device_class
