@@ -46,7 +46,7 @@ async def async_setup_entry(
             native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
             icon="mdi:lightning-bolt",
         ),
-        0.001,
+        0.01,
         None,
     )])
 
@@ -115,6 +115,6 @@ class TesySensor(TesyEntity, SensorEntity):
             tmp_kwh1=(int(power_dict[0])*watt1)/3600.0
             tmp_kwh2=(int(power_dict[1])*watt2)/3600.0
             return tmp_kwh1+tmp_kwh2
-            
+        
 
     

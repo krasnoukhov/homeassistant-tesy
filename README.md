@@ -29,3 +29,5 @@ Tested with:
 
 #TODO Ask for power on single tank heaters, now hardcoded to 2400w for ceramic heaters
 #TODO Add convector heaters with id of 1005,1006 
+
+
