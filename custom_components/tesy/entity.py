@@ -14,9 +14,13 @@ from .const import (
     ATTR_BOOST,
     ATTR_SOFTWARE,
     DOMAIN,
+    ATTR_API,
 )
 from .coordinator import TesyCoordinator
 
+import logging
+_LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(logging.DEBUG)
 
 class TesyEntity(CoordinatorEntity[TesyCoordinator]):
     """Defines a base Tesy entity."""
@@ -87,11 +91,12 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
            
         await self.coordinator.async_request_refresh()
 
-    def _partially_update_data_from_api(self,response,key):
+    async def _partially_update_data_from_api(self,response,key):
         old_data=self.data
-        if key in response:
+        if ATTR_API in response and response[ATTR_API]=="OK" and  key in response:
             old_data[key]=response[key]
             self.async_set_updated_data(old_data)
+            _LOGGER.debug("Partial update: setting %s to %s",key, response[key])
     
 
 

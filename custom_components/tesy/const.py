@@ -9,7 +9,6 @@ IP_ADDRESS = CONF_IP_ADDRESS
 HEATER_POWER = "heater_power"
 
 
-#Api to make calls to 
 ATTR_API = "api"
 
 #Current software version

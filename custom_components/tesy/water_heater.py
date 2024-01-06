@@ -135,14 +135,13 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         
         if self.coordinator.data[ATTR_POWER]=="1":
             if self.coordinator.data[ATTR_MODE] != STATE_PERFORMANCE:
-                await self.coordinator.async_set_operation_mode("0")
-        
+                test = await self.coordinator.async_set_operation_mode("0")
+                self._entry._partially_update_data_from_api(test,ATTR_MODE)
 
         test = await self.coordinator.async_set_target_temperature(
             kwargs.get(ATTR_TEMPERATURE)
         )
-        _LOGGER.debug("Setpower response: %s",test)
-        return test
+        self._entry._partially_update_data_from_api(test,ATTR_TARGET_TEMP)
         #await self.coordinator.async_request_refresh()
 
     async def async_set_operation_mode(self, operation_mode: str) -> None:
@@ -152,29 +151,41 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         if  ATTR_POWER not in self.coordinator.data:
             return
         
-
+        
         if  operation_mode == STATE_OFF and self.coordinator.data[ATTR_POWER]=="1":
-            await self.coordinator.async_set_power("0")
+            test = await self.coordinator.async_set_power("0")
+            self._entry._partially_update_data_from_api(test,ATTR_POWER)
         else:
             if self.coordinator.data[ATTR_POWER]=="0":
-                await self.coordinator.async_set_power("1")
+                test = await self.coordinator.async_set_power("1")
+                self._entry._partially_update_data_from_api(test,ATTR_POWER)
 
             if operation_mode == STATE_PERFORMANCE:
-                await self.coordinator.async_set_operation_mode("0")
+                new_mode="0"
+                #await self.coordinator.async_set_operation_mode("0")
             if  operation_mode == TESY_MODE_P1:
-                await self.coordinator.async_set_operation_mode("1")
+                new_mode="1"
+                #await self.coordinator.async_set_operation_mode("1")
             if  operation_mode == TESY_MODE_P2:
-                await self.coordinator.async_set_operation_mode("2")
+                new_mode="2"
+                #await self.coordinator.async_set_operation_mode("2")
             if  operation_mode == TESY_MODE_P3:
-                await self.coordinator.async_set_operation_mode("3")
+                new_mode="3"
+                #await self.coordinator.async_set_operation_mode("3")
             if  operation_mode == STATE_ECO:
-                await self.coordinator.async_set_operation_mode("4")
+                new_mode="4"
+                #await self.coordinator.async_set_operation_mode("4")
             if  operation_mode == TESY_MODE_EC2:
-                await self.coordinator.async_set_operation_mode("5")
+                new_mode="4"
+                #await self.coordinator.async_set_operation_mode("5")
             if  operation_mode == TESY_MODE_EC3:
-                await self.coordinator.async_set_operation_mode("6")
+                new_mode="6"
+                #await self.coordinator.async_set_operation_mode("6")
 
-        await self.coordinator.async_request_refresh()
+            test = await self.coordinator.async_set_operation_mode(new_mode)
+            self._entry._partially_update_data_from_api(test,ATTR_MODE)
+
+        #await self.coordinator.async_request_refresh()
 
     async def turn_on(self, **_kwargs: Any) -> None:
         """Turn on water heater."""
