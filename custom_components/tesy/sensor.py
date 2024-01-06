@@ -22,21 +22,6 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
-
-DESCRIPTION = {
-    "desc": SensorEntityDescription(
-        key="energy_consumed",
-        name="Energy Consumed",
-        device_class=SensorDeviceClass.ENERGY,
-        state_class=SensorStateClass.MEASUREMENT,
-        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        icon="mdi:water-thermometer",
-    ),
-    "suggested_precision": None,
-    "options": None,
-}
-
-
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -50,10 +35,17 @@ async def async_setup_entry(
         hass, 
         coordinator, 
         entry, 
-        DESCRIPTION["desc"],
-        DESCRIPTION["suggested_precision"],
-        DESCRIPTION["options"])]
-    )
+        SensorEntityDescription(
+            key="energy_consumed",
+            name="Energy Consumed",
+            device_class=SensorDeviceClass.ENERGY,
+            state_class=SensorStateClass.MEASUREMENT,
+            native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+            icon="mdi:water-thermometer",
+        ),
+        0.001,
+        None,
+    )])
 
 class TesySensor(TesyEntity, SensorEntity):
     """Represents a sensor for an Tesy water heater controller."""
