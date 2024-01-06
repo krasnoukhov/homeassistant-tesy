@@ -31,7 +31,6 @@ from .const import (
     ATTR_IS_HEATING,
     ATTR_MODE,
     ATTR_POWER,
-    ATTR_BOOST,
     ATTR_TARGET_TEMP,
     ATTR_CURRENT_TARGET_TEMP,
     DOMAIN,
@@ -45,7 +44,7 @@ from .const import (
 from .entity import TesyEntity
 
 # NOTE: more modes not implemented
-OPERATION_LIST = [STATE_OFF,STATE_PERFORMANCE,TESY_MODE_P1,TESY_MODE_P2,TESY_MODE_P3,STATE_ECO,TESY_MODE_EC2,TESY_MODE_EC3, STATE_HIGH_DEMAND]
+OPERATION_LIST = [STATE_OFF,STATE_ON,TESY_MODE_P1,TESY_MODE_P2,TESY_MODE_P3,STATE_ECO,TESY_MODE_EC2,TESY_MODE_EC3]
 
 DESCRIPTION = WaterHeaterEntityEntityDescription(
     key="water_heater",
@@ -102,37 +101,40 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
     @property
     def current_operation(self):
         """Return current operation."""
-        state = STATE_OFF
-        mode = self.coordinator.data[ATTR_MODE]
 
+        if ATTR_POWER not in self.coordinator.data or ATTR_MODE not in self.coordinator.data:
+            return STATE_OFF
+        
         #if powered off
         if self.coordinator.data[ATTR_POWER] != "1":
-            return state
+            return STATE_OFF
+
+        mode = self.coordinator.data[ATTR_MODE]
 
         if mode == "0":
-            state = STATE_PERFORMANCE
+            return STATE_ON
         if mode == "1":
-            state=TESY_MODE_P1
+            return TESY_MODE_P1
         if mode == "2":
-            state=TESY_MODE_P2
+            return TESY_MODE_P2
         if mode == "3":
-            state=TESY_MODE_P3
+            return TESY_MODE_P3
         if mode == "4":
-            state = STATE_ECO
+            return STATE_ECO
         if mode == "5":
-            state = TESY_MODE_EC2
+            return TESY_MODE_EC2
         if mode == "6":
-            state = TESY_MODE_EC3
+            return TESY_MODE_EC3
 
-        #if Boost Flag is set
-        if self.coordinator.data[ATTR_BOOST] == "1":
-            state = STATE_HIGH_DEMAND
-
-
-        return state
+        #Handle unknown state
+        return STATE_OFF
 
     async def async_set_temperature(self, **kwargs: Any) -> None:
         """Set new target temperature."""
+         #Just in case if power is missing from json, prevent crashes
+        if  ATTR_POWER not in self.coordinator.data:
+            return
+        
         if self.coordinator.data[ATTR_POWER]=="0":
             await self.coordinator.async_set_power("1")
 
@@ -148,6 +150,10 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
 
     async def async_set_operation_mode(self, operation_mode: str) -> None:
         """Set new target operation mode."""
+
+        #Just in case if power is missing from json, prevent crashes
+        if  ATTR_POWER not in self.coordinator.data:
+            return
         
 
         if  operation_mode == STATE_OFF and self.coordinator.data[ATTR_POWER]=="1":
@@ -156,7 +162,7 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             if self.coordinator.data[ATTR_POWER]=="0":
                 await self.coordinator.async_set_power("1")
 
-            if operation_mode == STATE_PERFORMANCE:
+            if operation_mode == STATE_ON:
                 await self.coordinator.async_set_operation_mode("0")
             if  operation_mode == TESY_MODE_P1:
                 await self.coordinator.async_set_operation_mode("1")
@@ -171,12 +177,6 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             if  operation_mode == TESY_MODE_EC3:
                 await self.coordinator.async_set_operation_mode("6")
 
-            #if Boost Flag is set
-            if  operation_mode == STATE_HIGH_DEMAND and self.coordinator.data[ATTR_BOOST]=="0":
-                await self.coordinator.async_set_boost("1")
-            elif  operation_mode != STATE_HIGH_DEMAND and self.coordinator.data[ATTR_BOOST]=="1":
-                await self.coordinator.async_set_boost("0")
-                
         await self.coordinator.async_request_refresh()
 
     async def turn_on(self, **_kwargs: Any) -> None:
@@ -201,4 +201,4 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
     @property
     def extra_state_attributes(self) -> dict[str, str] | None:
         """Return the state attributes."""
-        return {"is_heating": self.coordinator.data[ATTR_IS_HEATING] == "1", "target_temp_step":1}
+        return {"is_heating": ATTR_IS_HEATING in self.coordinator.data and self.coordinator.data[ATTR_IS_HEATING] == "1", "target_temp_step":1}
