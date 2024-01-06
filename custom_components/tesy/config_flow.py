@@ -27,7 +27,7 @@ _LOGGER = logging.getLogger(__name__)
 USER_SCHEMA = vol.Schema(
     {
         vol.Required(IP_ADDRESS): cv.string,
-        vol.Required(HEATER_POWER): cv.number,
+        #vol.Required(HEATER_POWER): cv.number,
     }
 )
 

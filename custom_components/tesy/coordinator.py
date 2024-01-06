@@ -85,3 +85,7 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             return self._client.get_data()
         except ConnectionError as http_error:
             raise UpdateFailed from http_error
+
+
+    def get_config_power(self) -> int:
+        return self._client._heater_power

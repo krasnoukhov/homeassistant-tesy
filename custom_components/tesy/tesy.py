@@ -28,7 +28,10 @@ class Tesy:
     def __init__(self, data: dict[str, Any]) -> None:
         """Init Tesy."""
         self._ip_address = data[IP_ADDRESS]
-        self._heater_power = data[HEATER_POWER]
+        
+        self._heater_power = 2400
+        if HEATER_POWER in data:
+             self._heater_power = data[HEATER_POWER]
 
     def get_data(self) -> dict[str, Any]:
         """Get data for Tesy component."""

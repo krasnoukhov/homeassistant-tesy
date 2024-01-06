@@ -15,6 +15,7 @@ from .entity import TesyEntity
 from .const import DOMAIN
 from .coordinator import TesyCoordinator
 
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
