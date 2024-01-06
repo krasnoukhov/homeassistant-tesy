@@ -135,13 +135,13 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         
         if self.coordinator.data[ATTR_POWER]=="1":
             if self.coordinator.data[ATTR_MODE] != STATE_PERFORMANCE:
-                test = await self.coordinator.async_set_operation_mode("0")
-                self._entry._partially_update_data_from_api(test,ATTR_MODE)
+                response = await self.coordinator.async_set_operation_mode("0")
+                self.partially_update_data_from_api(response,ATTR_MODE)
 
-        test = await self.coordinator.async_set_target_temperature(
+        response = await self.coordinator.async_set_target_temperature(
             kwargs.get(ATTR_TEMPERATURE)
         )
-        self._entry._partially_update_data_from_api(test,ATTR_TARGET_TEMP)
+        self.partially_update_data_from_api(response,ATTR_TARGET_TEMP)
         #await self.coordinator.async_request_refresh()
 
     async def async_set_operation_mode(self, operation_mode: str) -> None:
@@ -153,12 +153,12 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         
         
         if  operation_mode == STATE_OFF and self.coordinator.data[ATTR_POWER]=="1":
-            test = await self.coordinator.async_set_power("0")
-            self._entry._partially_update_data_from_api(test,ATTR_POWER)
+            response = await self.coordinator.async_set_power("0")
+            self.partially_update_data_from_api(response,ATTR_POWER)
         else:
             if self.coordinator.data[ATTR_POWER]=="0":
-                test = await self.coordinator.async_set_power("1")
-                self._entry._partially_update_data_from_api(test,ATTR_POWER)
+                response = await self.coordinator.async_set_power("1")
+                self.partially_update_data_from_api(response,ATTR_POWER)
 
             if operation_mode == STATE_PERFORMANCE:
                 new_mode="0"
@@ -182,20 +182,22 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
                 new_mode="6"
                 #await self.coordinator.async_set_operation_mode("6")
 
-            test = await self.coordinator.async_set_operation_mode(new_mode)
-            self._entry._partially_update_data_from_api(test,ATTR_MODE)
+            response = await self.coordinator.async_set_operation_mode(new_mode)
+            self.partially_update_data_from_api(response,ATTR_MODE)
 
         #await self.coordinator.async_request_refresh()
 
     async def turn_on(self, **_kwargs: Any) -> None:
         """Turn on water heater."""
-        await self.coordinator.async_set_power("1")
-        await self.coordinator.async_request_refresh()
+        response = await self.coordinator.async_set_power("1")
+        self.partially_update_data_from_api(response,ATTR_POWER)
+        #await self.coordinator.async_request_refresh()
 
     async def turn_off(self, **_kwargs: Any) -> None:
         """Turn off water heater."""
-        await self.coordinator.async_set_power("0")
-        await self.coordinator.async_request_refresh()
+        response = await self.coordinator.async_set_power("0")
+        self.partially_update_data_from_api(response,ATTR_POWER)
+        #await self.coordinator.async_request_refresh()
 
     @property
     def target_temperature(self):
