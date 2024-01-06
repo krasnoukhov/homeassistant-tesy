@@ -9,12 +9,18 @@ from homeassistant.helpers.entity import EntityDescription
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
+    TESY_DEVICE_TYPES,
+    ATTR_DEVICE_ID,
     ATTR_MAC,
+    ATTR_BOOST,
     ATTR_SOFTWARE,
     DOMAIN,
+    ATTR_API,
 )
 from .coordinator import TesyCoordinator
 
+import logging
+_LOGGER = logging.getLogger(__name__)
 
 class TesyEntity(CoordinatorEntity[TesyCoordinator]):
     """Defines a base Tesy entity."""
@@ -45,6 +51,10 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
     @property
     def device_info(self) -> DeviceInfo:
         """Return device information about this Tesy device."""
+        device_model="Generic"
+        if self.coordinator.data[ATTR_DEVICE_ID] in TESY_DEVICE_TYPES:
+            device_model=TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]]["name"]
+
         return DeviceInfo(
             identifiers={
                 (
@@ -53,5 +63,41 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
                 )
             },
             manufacturer="Tesy",
+            model=device_model,
             sw_version=self.coordinator.data[ATTR_SOFTWARE],
         )
+
+    @property
+    def is_boost_mode_on(self):
+        """Return true if boost mode is on."""
+        if ATTR_BOOST in self.coordinator.data and self.coordinator.data[ATTR_BOOST]=="1":
+            return True
+        return False
+
+    async def async_turn_boost_mode_on(self, **kwargs):
+        """Turn on boost mode."""
+        #if self.coordinator.data[ATTR_POWER]=="0":
+        #    await self.coordinator.async_set_power("1")
+
+        if self.coordinator.data[ATTR_BOOST]=="0":
+            response = await self.coordinator.async_set_boost("1")
+            await self.partially_update_data_from_api(response,ATTR_BOOST)
+        
+        #await self.coordinator.async_request_refresh()
+
+    async def async_turn_boost_mode_off(self, **kwargs):
+        """Turn off boost mode."""
+        if self.coordinator.data[ATTR_BOOST]=="1":
+            response = await self.coordinator.async_set_boost("0")
+            await self.partially_update_data_from_api(response,ATTR_BOOST)
+        #await self.coordinator.async_request_refresh()
+
+    async def partially_update_data_from_api(self,response,key):
+        old_data=self.coordinator.data
+        if ATTR_API in response and response[ATTR_API]=="OK" and  key in response:
+            old_data[key]=response[key]
+            self.coordinator.async_set_updated_data(old_data)
+            _LOGGER.debug("Partial update: setting %s to %s",key, response[key])
+    
+
+
