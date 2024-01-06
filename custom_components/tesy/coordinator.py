@@ -45,39 +45,27 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         """Get new sensor data for Tesy component."""
         return await self.hass.async_add_executor_job(self._get_data)
+    
+
     #Set target temperature in manual mode
     async def async_set_target_temperature(self, val: int) -> None:
         """Set target temperature for Tesy component."""
-        return await self.hass.async_add_executor_job(self._set_target_temperature, val)
+        return await self.hass.async_add_executor_job(self._client.set_target_temperature, val)
     #Turn power ON/OFF
     async def async_set_power(self, val: str) -> None:
         """Set power for Tesy component."""
-        return await self.hass.async_add_executor_job(self._client.set_power, val)
+        test=await self.hass.async_add_executor_job(self._client.set_power, val)
+        _LOGGER.debug("Setpower response: %s",test)
+        return test
     #Turn boost ON/OFF
     async def async_set_boost(self, val: str) -> None:
         """Set boost for Tesy component."""
-        return await self.hass.async_add_executor_job(self._set_boost, val)
+        return await self.hass.async_add_executor_job(self._client.set_boost, val)
     #Turn operation mode
     async def async_set_operation_mode(self, val: str) -> None:
         """Set mode for Tesy component."""
-        return await self.hass.async_add_executor_job(self._set_operation_mode, val)
-
-
-    #def _set_power(self, val: str) -> None:
-     #   """Set power using Tesy API."""
-     #   return (val)
+        return await self.hass.async_add_executor_job(self._client.set_operation_mode, val)
     
-    def _set_boost(self, val: str) -> None:
-        """Set boost using Tesy API."""
-        return self._client.set_boost(val)
-    
-    def _set_operation_mode(self, val: str) -> None:
-        """Set mode using Tesy API."""
-        return self._client.set_operation_mode(val)
-    
-    def _set_target_temperature(self, val: int) -> None:
-        """Set target temperature using Tesy API."""
-        return self._client.set_target_temperature(val)
     
     def _get_data(self) -> dict[str, Any]:
         """Get new sensor data using Tesy API."""
