@@ -67,7 +67,6 @@ class TesySensor(TesyEntity, SensorEntity):
 
     def __init__(
         self,
-        hass: HomeAssistant,
         coordinator: TesyCoordinator,
         entry: ConfigEntry,
         description: SensorEntityDescription,
