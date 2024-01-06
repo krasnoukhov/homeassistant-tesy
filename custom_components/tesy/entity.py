@@ -84,3 +84,5 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
            
         await self.coordinator.async_request_refresh()
     
+
+    

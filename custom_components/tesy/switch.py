@@ -23,7 +23,6 @@ async def async_setup_entry(
     """Initialize Tesy devices from config entry."""
 
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    
 
     async_add_entities([TesySwitch(
         hass, 
