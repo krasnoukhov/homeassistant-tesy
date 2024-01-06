@@ -37,9 +37,3 @@ Temperature setpoint is only used in manual(PERFORMANCE) mode. In any other mode
 ### Manual Installation (not recommended)
 * Copy the entire `custom_components/tesy/` directory to your server's `<config>/custom_components` directory
 * Restart Home Assistant
-
-
-#TODO Ask for power on single tank heaters, now hardcoded to 2400w for ceramic heaters
-#TODO Add convector heaters with id of 1005,1006 
-
-
