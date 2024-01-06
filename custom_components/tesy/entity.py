@@ -11,9 +11,9 @@ from .const import (
     TESY_DEVICE_TYPES,
     ATTR_DEVICE_ID,
     ATTR_MAC,
+    ATTR_BOOST,
     ATTR_SOFTWARE,
     DOMAIN,
-
 )
 from .coordinator import TesyCoordinator
 
@@ -62,3 +62,25 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
             model=device_model,
             sw_version=self.coordinator.data[ATTR_SOFTWARE],
         )
+
+    @property
+    def is_boost_mode_on(self):
+        """Return true if boost mode is on."""
+        if ATTR_BOOST in self.coordinator.data and self.coordinator.data[ATTR_BOOST]=="1":
+            return True
+        return False
+
+    async def async_turn_boost_mode_on(self, **kwargs):
+        """Turn on boost mode."""
+        if self.coordinator.data[ATTR_BOOST]=="0":
+            await self.coordinator.async_set_boost("1")
+           
+        await self.coordinator.async_request_refresh()
+
+    async def async_turn_boost_mode_off(self, **kwargs):
+        """Turn off boost mode."""
+        if self.coordinator.data[ATTR_BOOST]=="1":
+            await self.coordinator.async_set_boost("0")
+           
+        await self.coordinator.async_request_refresh()
+    

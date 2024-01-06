@@ -21,9 +21,6 @@ from .const import (
     ATTR_LONG_COUNTER,
 )
 from .coordinator import TesyCoordinator
-import logging
-
-_LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -33,7 +30,6 @@ async def async_setup_entry(
     """Initialize Tesy devices from config entry."""
 
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    #async_add_entities([TesySensor(hass, coordinator, entry, DESCRIPTION)])
     async_add_entities([TesySensor(
         hass, 
         coordinator, 
@@ -70,7 +66,6 @@ class TesySensor(TesyEntity, SensorEntity):
 
         self.description: description
         self._attr_name = description.name
-        #self._native_value_func = native_value_func
  
         if description.device_class is not None:
             self._attr_device_class = description.device_class

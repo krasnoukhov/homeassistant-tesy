@@ -6,62 +6,39 @@ from homeassistant.components.switch import (
     SwitchDeviceClass,
     SwitchEntityDescription,
 )
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity import TesyEntity
-from .const import DOMAIN, LOGGER
+from .const import DOMAIN
 from .coordinator import TesyCoordinator
-
-ENTITY_DESCRIPTIONS = (
-    {
-        "desc": SwitchEntityDescription(
-            key="away",
-            name="Away",
-            device_class=SwitchDeviceClass.SWITCH,
-        ),
-        "is_on": lambda entity: entity.is_away_mode_on,
-        "async_turn_on": lambda entity: entity.async_turn_away_mode_on,
-        "async_turn_off": lambda entity: entity.async_turn_away_mode_off,
-    },
-    {
-        "desc": SwitchEntityDescription(
-            key="boost",
-            name="Boost",
-            device_class=SwitchDeviceClass.SWITCH,
-        ),
-        "is_on": lambda entity: entity.is_boost_mode_on,
-        "async_turn_on": lambda entity: entity.async_turn_boost_mode_on,
-        "async_turn_off": lambda entity: entity.async_turn_boost_mode_off,
-    },
-)
-
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: ConfigEntry,
+    entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Initialize Tesy devices from config entry."""
 
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
-    entities: list[TesySwitch] = []
+    coordinator = hass.data[DOMAIN][entry.entry_id]
+    
 
-    for Tesy_id in coordinator.data["devices"]:
-        for entity_info in ENTITY_DESCRIPTIONS:
-            entities.append(
-                TesySwitch(
-                    coordinator,
-                    Tesy_id,
-                    entity_info["desc"],
-                    entity_info["is_on"],
-                    entity_info["async_turn_on"],
-                    entity_info["async_turn_off"],
-                )
-            )
-
-    async_add_entities(entities)
+    async_add_entities([TesySwitch(
+        hass, 
+        coordinator, 
+        entry, 
+        SwitchEntityDescription(
+            key="boost",
+            name="Boost",
+            icon="mdi:rocket-launch-outline",
+            device_class=SwitchDeviceClass.SWITCH,
+        ),
+        lambda entity: entity.is_boost_mode_on,
+        lambda entity: entity.async_turn_boost_mode_on,
+        lambda entity: entity.async_turn_boost_mode_off,
+    )])
 
 
 class TesySwitch(TesyEntity, SwitchEntity):
@@ -86,8 +63,6 @@ class TesySwitch(TesyEntity, SwitchEntity):
         self._is_on_func = is_on_func
         self._async_turn_on_func = async_turn_on_func
         self._async_turn_off_func = async_turn_off_func
-        self._attr_unique_id = self._base_unique_id + "_" + entity_description.key
-        LOGGER.debug("Created switch with unique ID %s", self._attr_unique_id)
 
     @property
     def is_on(self):

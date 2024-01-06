@@ -16,7 +16,7 @@ from .const import (
 PLATFORMS: list[Platform] = [
     Platform.WATER_HEATER,
     Platform.SENSOR,
-    #Platform.SWITCH,
+    Platform.SWITCH,
 
 ]
 
