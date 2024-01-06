@@ -20,7 +20,6 @@ from .coordinator import TesyCoordinator
 
 import logging
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.setLevel(logging.DEBUG)
 
 class TesyEntity(CoordinatorEntity[TesyCoordinator]):
     """Defines a base Tesy entity."""
