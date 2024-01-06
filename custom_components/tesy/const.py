@@ -71,7 +71,11 @@ ATTR_LONG_COUNTER = "pwc_t"
 #RSSI
 ATTR_RSSI = "wdBm"
 
+
 ATTR_MAX_SHOWERS = "tmpMX"
+
+
+ATTR_PARAMETERS = "parNF" 
 
 """
 some devices have additional parameters:
@@ -81,6 +85,7 @@ some devices have additional parameters:
 "tmpMX" - maximum showers could be set on the device, depends on the leters of the heater, and horisontal/vertical position
 "psn" - Position, vertical/horisontal
 "wup" - Uptime in seconds since last bootup
+"parNF" - Some additionnal parameters like volume and power of heaters on doubletank devices
 
 """
 TESY_DEVICE_TYPES = {
@@ -110,5 +115,6 @@ TESY_DEVICE_TYPES = {
         "min_setpoint":0,
         "max_setpoint":4,
         "use_showers": True
+
     }
 }

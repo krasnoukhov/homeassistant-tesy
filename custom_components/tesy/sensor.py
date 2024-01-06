@@ -15,6 +15,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .entity import TesyEntity
 from .const import (
     TESY_DEVICE_TYPES,
+    ATTR_PARAMETERS,
     ATTR_DEVICE_ID,
     DOMAIN,
     ATTR_LONG_COUNTER,
@@ -94,10 +95,26 @@ class TesySensor(TesyEntity, SensorEntity):
     @property
     def native_value(self):
         """Return the state of the sensor."""
-        energy_kwh=0
+        #Prevent crashes if energy counter is missing
+        if ATTR_LONG_COUNTER not in self.coordinator.data:
+            return 0
+        
         if ";" not in self.coordinator.data[ATTR_LONG_COUNTER]:
-            #standard devices with seconds of heater being on
+            #For fingle tank heaters, we need to have power walue configured
             energy_kwh=(int(self.coordinator.data[ATTR_LONG_COUNTER])*2400)/3600.0
+            return energy_kwh
+        else:
+            #Prevent crashes if Additional parameters are missing
+            if ATTR_PARAMETERS not in self.coordinator.data:
+                return 0
+            
+            power_dict=self.coordinator.data[ATTR_LONG_COUNTER].split(";")
+            pNF=self.coordinator.data[ATTR_PARAMETERS]
+            watt1 = int(pNF[38 + 0 * 2:40 + 0 * 2], 16) * 20
+            watt2 = int(pNF[38 + 1 * 2:40 + 1 * 2], 16) * 20
+            tmp_kwh1=(int(power_dict[0])*watt1)/3600.0
+            tmp_kwh2=(int(power_dict[1])*watt2)/3600.0
+            return tmp_kwh1+tmp_kwh2
+            
 
-        return energy_kwh
     
