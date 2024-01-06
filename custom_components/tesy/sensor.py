@@ -47,7 +47,7 @@ async def async_setup_entry(
 
     coordinator = hass.data[DOMAIN][entry.entry_id]
     #async_add_entities([TesySensor(hass, coordinator, entry, DESCRIPTION)])
-
+    _LOGGER.debug("")
     entities: list[TesySensor] =TesySensor(
         coordinator,
         entry,
@@ -58,6 +58,7 @@ async def async_setup_entry(
     )
 
     async_add_entities(entities)
+    async_add_entities([TesyWaterHeater(hass, coordinator, entry, DESCRIPTION)])
 
 class TesySensor(TesyEntity, SensorEntity):
     """Represents a sensor for an Tesy water heater controller."""
@@ -67,6 +68,7 @@ class TesySensor(TesyEntity, SensorEntity):
 
     def __init__(
         self,
+        hass: HomeAssistant,
         coordinator: TesyCoordinator,
         entry: ConfigEntry,
         description: SensorEntityDescription,
@@ -76,7 +78,7 @@ class TesySensor(TesyEntity, SensorEntity):
     ) -> None:
         """Initialize the sensor."""
 
-        super().__init__(coordinator, entry, description, options)
+        super().__init__(hass, coordinator, entry, description, options)
 
         self.description: description
         self._attr_name = description.name
