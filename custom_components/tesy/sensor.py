@@ -1,10 +1,6 @@
 """Tesy sensor component."""
 from __future__ import annotations
 
-import logging
-_LOGGER = logging.getLogger(__name__)
-
-
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorDeviceClass,
@@ -18,9 +14,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity import TesyEntity
 from .const import (
-    TESY_DEVICE_TYPES,
     ATTR_PARAMETERS,
-    ATTR_DEVICE_ID,
     DOMAIN,
     ATTR_LONG_COUNTER,
 )
@@ -102,7 +96,6 @@ class TesySensor(TesyEntity, SensorEntity):
         if ";" not in self.coordinator.data[ATTR_LONG_COUNTER]:
             #For fingle tank heaters, we need to have power walue configured
             configured_power=self.coordinator.get_config_power()
-            _LOGGER.debug("Configured power: %s",configured_power )
             energy_kwh=(int(self.coordinator.data[ATTR_LONG_COUNTER])*configured_power)/3600.0
             return energy_kwh
         else:

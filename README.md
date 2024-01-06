@@ -16,7 +16,7 @@ Also energy counter is working. It uses long term counter from the device that h
 
 This integration exposes boost mode of the heaters as a switch. It can be switched on and off, but in order to work the heater should on. 
 
-Temperature setpoint is only used in manual(PERFORMANCE) mode. In any other modes it is ignored. 
+Temperature setpoint is only used in manual(PERFORMANCE) mode. In any other modes it is ignored. If setpoint is manually changed operation mode will jump to performance in case the heater is powered on.
 
 
 ### Have the heater device in HA

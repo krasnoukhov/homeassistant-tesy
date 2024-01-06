@@ -77,7 +77,7 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
 
         if self.coordinator.data[ATTR_BOOST]=="0":
             await self.coordinator.async_set_boost("1")
-           
+        
         await self.coordinator.async_request_refresh()
 
     async def async_turn_boost_mode_off(self, **kwargs):

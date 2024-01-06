@@ -2,11 +2,9 @@
 from typing import Any
 from custom_components.tesy.coordinator import TesyCoordinator
 
-
 from homeassistant.components.water_heater import (
     STATE_ECO,
     STATE_PERFORMANCE,
-    STATE_HIGH_DEMAND,
     WaterHeaterEntity,
     WaterHeaterEntityEntityDescription,
     WaterHeaterEntityFeature,
@@ -30,7 +28,6 @@ from .const import (
     ATTR_MODE,
     ATTR_POWER,
     ATTR_TARGET_TEMP,
-    ATTR_CURRENT_TARGET_TEMP,
     DOMAIN,
     TESY_MODE_P1,
     TESY_MODE_P2,
@@ -41,9 +38,8 @@ from .const import (
 
 from .entity import TesyEntity
 
+
 OPERATION_LIST = [STATE_OFF,STATE_PERFORMANCE,TESY_MODE_P1,TESY_MODE_P2,TESY_MODE_P3,STATE_ECO,TESY_MODE_EC2,TESY_MODE_EC3]
-
-
 
 async def async_setup_entry(
     hass: HomeAssistant,

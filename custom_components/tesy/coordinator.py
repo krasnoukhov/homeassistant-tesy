@@ -15,7 +15,7 @@ from .const import (
 )
 import logging
 _LOGGER = logging.getLogger(__name__)
-
+_LOGGER.setLevel(logging.DEBUG)
 
 class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Tesy Coordinator class."""
@@ -52,7 +52,7 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     #Turn power ON/OFF
     async def async_set_power(self, val: str) -> None:
         """Set power for Tesy component."""
-        return await self.hass.async_add_executor_job(self._set_power, val)
+        return await self.hass.async_add_executor_job(self._client.set_power, val)
     #Turn boost ON/OFF
     async def async_set_boost(self, val: str) -> None:
         """Set boost for Tesy component."""
@@ -63,9 +63,9 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         return await self.hass.async_add_executor_job(self._set_operation_mode, val)
 
 
-    def _set_power(self, val: str) -> None:
-        """Set power using Tesy API."""
-        return self._client.set_power(val)
+    #def _set_power(self, val: str) -> None:
+     #   """Set power using Tesy API."""
+     #   return (val)
     
     def _set_boost(self, val: str) -> None:
         """Set boost using Tesy API."""
@@ -85,7 +85,6 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             return self._client.get_data()
         except ConnectionError as http_error:
             raise UpdateFailed from http_error
-
 
     def get_config_power(self) -> int:
         return self._client._heater_power
