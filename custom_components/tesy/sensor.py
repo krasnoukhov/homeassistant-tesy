@@ -14,6 +14,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity import TesyEntity
 from .const import (
+    TESY_DEVICE_TYPES,
+    ATTR_DEVICE_ID,
     DOMAIN,
     ATTR_LONG_COUNTER,
 )
@@ -92,6 +94,10 @@ class TesySensor(TesyEntity, SensorEntity):
     @property
     def native_value(self):
         """Return the state of the sensor."""
-        return 0
-        #return self._native_value_func(self)
+        energy_kwh=0
+        if ";" not in self.coordinator.data[ATTR_LONG_COUNTER]:
+            #standard devices with seconds of heater being on
+            energy_kwh=(int(self.coordinator.data[ATTR_LONG_COUNTER])*2400)/3600.0
+
+        return energy_kwh
     
