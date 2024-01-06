@@ -134,11 +134,9 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         if  ATTR_POWER not in self.coordinator.data:
             return
         
-        if self.coordinator.data[ATTR_POWER]=="0":
-            await self.coordinator.async_set_power("1")
-
-        if self.coordinator.data[ATTR_MODE] != STATE_PERFORMANCE:
-            await self.coordinator.async_set_operation_mode("0")
+        if self.coordinator.data[ATTR_POWER]=="1":
+            if self.coordinator.data[ATTR_MODE] != STATE_PERFORMANCE:
+                await self.coordinator.async_set_operation_mode("0")
         
 
         await self.coordinator.async_set_target_temperature(
@@ -191,11 +189,8 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
     @property
     def target_temperature(self):
         """Return the target temperature."""
-        #if currently on manual mode
-        if self.coordinator.data[ATTR_MODE]=="1":
-            return float(self.coordinator.data[ATTR_TARGET_TEMP])
-        else: #Else get the temperature is working with, not the manual mode target
-            return float(self.coordinator.data[ATTR_CURRENT_TARGET_TEMP])
+        #Return setpoint do 
+        return float(self.coordinator.data[ATTR_TARGET_TEMP])
 
     @property
     def extra_state_attributes(self) -> dict[str, str] | None:

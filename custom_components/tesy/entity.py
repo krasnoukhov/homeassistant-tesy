@@ -12,7 +12,6 @@ from .const import (
     ATTR_DEVICE_ID,
     ATTR_MAC,
     ATTR_BOOST,
-    ATTR_POWER,
     ATTR_SOFTWARE,
     DOMAIN,
 )

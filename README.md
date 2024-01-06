@@ -14,6 +14,10 @@ This intergation allows you to change modes of the water heater ass well as cont
 
 Also energy counter is working. It uses long term counter from the device that has the seconds the heater/s was/ware on. In order for this to work propperly you need to enter your heater power rating in the setup dialog. This information could be found on the device's label. For double tank devices this is read from the device and leaving it as zero is recommended.
 
+This integration exposes boost mode of the heaters as a switch. It can be switched on and off, but in order to work the heater should on. 
+
+Temperature setpoint is only used in manual(PERFORMANCE) mode. In any other modes it is ignored. 
+
 
 ### Have the heater device in HA
 
