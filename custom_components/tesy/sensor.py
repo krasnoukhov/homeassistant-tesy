@@ -74,8 +74,7 @@ class TesySensor(TesyEntity, SensorEntity):
         options: list | None,
     ) -> None:
         """Initialize the sensor."""
-
-        super().__init__(hass, coordinator, entry, description, options)
+        super().__init__(hass, coordinator, entry, description)
 
         self.description: description
         self._attr_name = description.name
