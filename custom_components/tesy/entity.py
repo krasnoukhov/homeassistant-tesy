@@ -73,8 +73,8 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
 
     async def async_turn_boost_mode_on(self, **kwargs):
         """Turn on boost mode."""
-        if self.coordinator.data[ATTR_POWER]=="0":
-            await self.coordinator.async_set_power("1")
+        #if self.coordinator.data[ATTR_POWER]=="0":
+        #    await self.coordinator.async_set_power("1")
 
         if self.coordinator.data[ATTR_BOOST]=="0":
             await self.coordinator.async_set_boost("1")
