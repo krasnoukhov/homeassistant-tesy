@@ -15,7 +15,6 @@ from .const import (
 )
 import logging
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.setLevel(logging.DEBUG)
 
 class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Tesy Coordinator class."""
@@ -54,9 +53,7 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     #Turn power ON/OFF
     async def async_set_power(self, val: str) -> None:
         """Set power for Tesy component."""
-        test=await self.hass.async_add_executor_job(self._client.set_power, val)
-        _LOGGER.debug("Setpower response: %s",test)
-        return test
+        return await self.hass.async_add_executor_job(self._client.set_power, val)
     #Turn boost ON/OFF
     async def async_set_boost(self, val: str) -> None:
         """Set boost for Tesy component."""
@@ -76,3 +73,4 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def get_config_power(self) -> int:
         return self._client._heater_power
+        

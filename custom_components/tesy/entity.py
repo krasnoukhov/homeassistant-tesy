@@ -86,6 +86,12 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
             await self.coordinator.async_set_boost("0")
            
         await self.coordinator.async_request_refresh()
+
+    def _partially_update_data_from_api(self,response,key):
+        old_data=self.data
+        if key in response:
+            old_data[key]=response[key]
+            self.async_set_updated_data(old_data)
     
 
 

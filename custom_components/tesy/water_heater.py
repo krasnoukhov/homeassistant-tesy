@@ -38,6 +38,9 @@ from .const import (
 
 from .entity import TesyEntity
 
+import logging
+_LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(logging.DEBUG)
 
 OPERATION_LIST = [STATE_OFF,STATE_PERFORMANCE,TESY_MODE_P1,TESY_MODE_P2,TESY_MODE_P3,STATE_ECO,TESY_MODE_EC2,TESY_MODE_EC3]
 
@@ -135,11 +138,12 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
                 await self.coordinator.async_set_operation_mode("0")
         
 
-        await self.coordinator.async_set_target_temperature(
+        test = await self.coordinator.async_set_target_temperature(
             kwargs.get(ATTR_TEMPERATURE)
         )
-
-        await self.coordinator.async_request_refresh()
+        _LOGGER.debug("Setpower response: %s",test)
+        return test
+        #await self.coordinator.async_request_refresh()
 
     async def async_set_operation_mode(self, operation_mode: str) -> None:
         """Set new target operation mode."""
