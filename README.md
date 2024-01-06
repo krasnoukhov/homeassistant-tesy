@@ -22,6 +22,7 @@ Temperature setpoint is only used in manual(PERFORMANCE) mode. In any other mode
 ### Have the heater device in HA
 
 <img src="https://github.com/krasnoukhov/homeassistant-tesy/assets/944286/a08289f7-d7cc-49a0-9747-9fbd765e58d1" alt="heater" width="400">
+![image](https://github.com/artin961/homeassistant-tesy/assets/11786511/d0b60f99-f17a-4327-a417-dc084d2a84db)
 
 ## Installation
 
