@@ -41,7 +41,7 @@ async def async_setup_entry(
             device_class=SensorDeviceClass.ENERGY,
             state_class=SensorStateClass.TOTAL_INCREASING,
             native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-            icon="mdi:water-thermometer",
+            icon="mdi:lightning-bolt",
         ),
         0.001,
         None,
