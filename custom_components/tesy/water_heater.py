@@ -17,7 +17,6 @@ from homeassistant.const import (
     ATTR_TEMPERATURE,
     PRECISION_WHOLE,
     STATE_OFF,
-    STATE_ON,
     UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant
@@ -44,7 +43,7 @@ from .const import (
 from .entity import TesyEntity
 
 # NOTE: more modes not implemented
-OPERATION_LIST = [STATE_OFF,STATE_ON,TESY_MODE_P1,TESY_MODE_P2,TESY_MODE_P3,STATE_ECO,TESY_MODE_EC2,TESY_MODE_EC3]
+OPERATION_LIST = [STATE_OFF,STATE_PERFORMANCE,TESY_MODE_P1,TESY_MODE_P2,TESY_MODE_P3,STATE_ECO,TESY_MODE_EC2,TESY_MODE_EC3]
 
 DESCRIPTION = WaterHeaterEntityEntityDescription(
     key="water_heater",
@@ -112,7 +111,7 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         mode = self.coordinator.data[ATTR_MODE]
 
         if mode == "0":
-            return STATE_ON
+            return STATE_PERFORMANCE
         if mode == "1":
             return TESY_MODE_P1
         if mode == "2":
@@ -162,7 +161,7 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             if self.coordinator.data[ATTR_POWER]=="0":
                 await self.coordinator.async_set_power("1")
 
-            if operation_mode == STATE_ON:
+            if operation_mode == STATE_PERFORMANCE:
                 await self.coordinator.async_set_operation_mode("0")
             if  operation_mode == TESY_MODE_P1:
                 await self.coordinator.async_set_operation_mode("1")
