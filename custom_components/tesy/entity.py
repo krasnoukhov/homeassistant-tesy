@@ -92,10 +92,10 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
         await self.coordinator.async_request_refresh()
 
     async def partially_update_data_from_api(self,response,key):
-        old_data=self.data
+        old_data=self.coordinator.data
         if ATTR_API in response and response[ATTR_API]=="OK" and  key in response:
             old_data[key]=response[key]
-            self.async_set_updated_data(old_data)
+            self.coordinator.async_set_updated_data(old_data)
             _LOGGER.debug("Partial update: setting %s to %s",key, response[key])
     
 
