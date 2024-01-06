@@ -1,5 +1,6 @@
 """Tesy water heater component."""
 from typing import Any
+import time
 from custom_components.tesy.coordinator import TesyCoordinator
 
 
@@ -135,6 +136,10 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         if self.coordinator.data[ATTR_POWER]=="0":
             await self.coordinator.async_set_power("1")
 
+        if self.coordinator.data[ATTR_MODE] != STATE_PERFORMANCE:
+            await self.coordinator.async_set_operation_mode("0")
+        
+
         await self.coordinator.async_set_target_temperature(
             kwargs.get(ATTR_TEMPERATURE)
         )
@@ -171,7 +176,8 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
                 await self.coordinator.async_set_boost("1")
             elif  operation_mode != STATE_HIGH_DEMAND and self.coordinator.data[ATTR_BOOST]=="1":
                 await self.coordinator.async_set_boost("0")
-        
+                
+        time.sleep(0.1)
         await self.coordinator.async_request_refresh()
 
     async def turn_on(self, **_kwargs: Any) -> None:

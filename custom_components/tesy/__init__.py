@@ -13,7 +13,12 @@ from .const import (
     DOMAIN,
 )
 
-PLATFORMS = [Platform.WATER_HEATER]
+PLATFORMS: list[Platform] = [
+    Platform.WATER_HEATER,
+    Platform.SENSOR,
+    #Platform.SWITCH,
+
+]
 
 _LOGGER = logging.getLogger(__name__)
 
