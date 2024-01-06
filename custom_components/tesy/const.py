@@ -6,6 +6,7 @@ HTTP_TIMEOUT = 15
 UPDATE_INTERVAL = 30
 
 IP_ADDRESS = CONF_IP_ADDRESS
+HEATER_POWER = "heater_power"
 
 
 #Api to make calls to 

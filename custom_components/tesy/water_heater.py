@@ -1,6 +1,5 @@
 """Tesy water heater component."""
 from typing import Any
-import time
 from custom_components.tesy.coordinator import TesyCoordinator
 
 
@@ -42,13 +41,8 @@ from .const import (
 
 from .entity import TesyEntity
 
-# NOTE: more modes not implemented
 OPERATION_LIST = [STATE_OFF,STATE_PERFORMANCE,TESY_MODE_P1,TESY_MODE_P2,TESY_MODE_P3,STATE_ECO,TESY_MODE_EC2,TESY_MODE_EC3]
 
-DESCRIPTION = WaterHeaterEntityEntityDescription(
-    key="water_heater",
-    translation_key="heater",
-)
 
 
 async def async_setup_entry(
@@ -58,7 +52,15 @@ async def async_setup_entry(
 ) -> None:
     """Create Tesy water heater in HASS."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([TesyWaterHeater(hass, coordinator, entry, DESCRIPTION)])
+    async_add_entities([TesyWaterHeater(
+        hass, 
+        coordinator, 
+        entry, 
+        WaterHeaterEntityEntityDescription(
+            key="water_heater",
+            translation_key="heater",
+        )
+    )])
 
 
 class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
@@ -77,8 +79,8 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
     def __init__(self, hass: HomeAssistant, coordinator: TesyCoordinator, entry: ConfigEntry, description: Any) -> None:
         super().__init__(hass, coordinator, entry, description)
 
-            #Default values
-        self._attr_min_temp = 16
+        #Default values
+        self._attr_min_temp = 15
         self._attr_max_temp = 75
 
         if self.coordinator.data[ATTR_DEVICE_ID] in TESY_DEVICE_TYPES:
@@ -89,8 +91,6 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             if "use_showers" in  TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]] and TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]]["use_showers"] == True:
                  tmp_max=self.coordinator.data[ATTR_MAX_SHOWERS]
                  self._attr_max_temp=int(tmp_max) if tmp_max.isdecimal() else self._attr_max_temp
-                
-
 
     @property
     def current_temperature(self):

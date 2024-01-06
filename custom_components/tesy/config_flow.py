@@ -15,6 +15,7 @@ from .const import (
     ATTR_MAC,
     DOMAIN,
     IP_ADDRESS,
+    HEATER_POWER,
     ATTR_DEVICE_ID,
     TESY_DEVICE_TYPES,
 
@@ -26,6 +27,7 @@ _LOGGER = logging.getLogger(__name__)
 USER_SCHEMA = vol.Schema(
     {
         vol.Required(IP_ADDRESS): cv.string,
+        vol.Required(HEATER_POWER): cv.number,
     }
 )
 
@@ -41,7 +43,7 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, Any]:
 
     title="Tesy"
 
-    if result[ATTR_DEVICE_ID] in TESY_DEVICE_TYPES:
+    if ATTR_DEVICE_ID in result and result[ATTR_DEVICE_ID] in TESY_DEVICE_TYPES:
         title=TESY_DEVICE_TYPES[result[ATTR_DEVICE_ID]]["name"]
 
     

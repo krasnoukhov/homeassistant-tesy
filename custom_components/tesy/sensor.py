@@ -109,6 +109,7 @@ class TesySensor(TesyEntity, SensorEntity):
             watt2 = int(pNF[38 + 1 * 2:40 + 1 * 2], 16) * 20
             tmp_kwh1=(int(power_dict[0])*watt1)/3600.0
             tmp_kwh2=(int(power_dict[1])*watt2)/3600.0
+            
             return tmp_kwh1+tmp_kwh2
         
 
