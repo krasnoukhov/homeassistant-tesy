@@ -49,17 +49,18 @@ class TesySwitch(TesyEntity, SwitchEntity):
 
     def __init__(
         self,
+        hass,
         coordinator: TesyCoordinator,
-        Tesy_id,
-        entity_description: SwitchEntityDescription,
+        entry: ConfigEntry,
+        description: SwitchEntityDescription,
         is_on_func,
         async_turn_on_func,
         async_turn_off_func,
     ) -> None:
         """Initialize the switch."""
-        super().__init__(coordinator, Tesy_id)
-        self.entity_description = entity_description
-        self._attr_name = entity_description.name
+        super().__init__(hass, coordinator, entry,description)
+        self.entity_description = description
+        self._attr_name = description.name
         self._is_on_func = is_on_func
         self._async_turn_on_func = async_turn_on_func
         self._async_turn_off_func = async_turn_off_func
