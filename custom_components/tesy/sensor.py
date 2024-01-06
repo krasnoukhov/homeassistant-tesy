@@ -39,7 +39,7 @@ async def async_setup_entry(
             key="energy_consumed",
             name="Energy Consumed",
             device_class=SensorDeviceClass.ENERGY,
-            state_class=SensorStateClass.MEASUREMENT,
+            state_class=SensorStateClass.TOTAL_INCREASING,
             native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
             icon="mdi:water-thermometer",
         ),
