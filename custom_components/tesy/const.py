@@ -1,4 +1,5 @@
 """Constants for the Tesy integration."""
+
 from homeassistant.const import CONF_IP_ADDRESS
 
 DOMAIN = "tesy"

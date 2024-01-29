@@ -1,4 +1,5 @@
 """The Tesy integration."""
+
 from __future__ import annotations
 
 import logging
@@ -20,8 +21,6 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Tesy from a config entry."""
-    _LOGGER.debug(f"Tesy entry data: {entry.data}")
-
     coordinator = TesyCoordinator(
         entry.data,
         hass,
