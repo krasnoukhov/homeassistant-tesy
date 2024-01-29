@@ -1,4 +1,5 @@
 """Tesy water heater component."""
+
 from typing import Any
 
 from homeassistant.components.water_heater import (
