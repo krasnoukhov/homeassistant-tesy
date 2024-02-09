@@ -12,10 +12,10 @@ HEATER_POWER = "heater_power"
 
 ATTR_API = "api"
 
-#Current software version
+# Current software version
 ATTR_SOFTWARE = "wsw"
 
-#Mac address of the device
+# Mac address of the device
 ATTR_MAC = "MAC"
 
 """Id of the thermocontroller, 
@@ -27,17 +27,17 @@ ATTR_MAC = "MAC"
 """
 ATTR_DEVICE_ID = "id"
 
-#If currently the heater is heating at che moment
+# If currently the heater is heating at che moment
 ATTR_IS_HEATING = "ht"
 
 
-#Current temperature measured. Current showers on Belislimo.
+# Current temperature measured. Current showers on Belislimo.
 ATTR_CURRENT_TEMP = "tmpC"
 
-#Target temperature in manual mode, target showers on Belislimo. Integer value in both cases.
+# Target temperature in manual mode, target showers on Belislimo. Integer value in both cases.
 ATTR_TARGET_TEMP = "tmpT"
 
-#READ-ONLY Target temperature that the controller is using depending on mode. If not on manual it will differ from tmpT.
+# READ-ONLY Target temperature that the controller is using depending on mode. If not on manual it will differ from tmpT.
 ATTR_CURRENT_TARGET_TEMP = "tmpR"
 
 """
@@ -59,24 +59,24 @@ TESY_MODE_EC3 = "EC3"
 
 ATTR_MODE = "mode"
 
-#Standby flag, 0 - Off(Antifreeze), 1 -On. If device is off and plugged in will prevent the water from freezing event if off.
+# Standby flag, 0 - Off(Antifreeze), 1 -On. If device is off and plugged in will prevent the water from freezing event if off.
 ATTR_POWER = "pwr"
 
-#Boost flag 1 - Active, 0 - Inactive. If set Heater will heat once to max, hold there for some time and clear the flag.
+# Boost flag 1 - Active, 0 - Inactive. If set Heater will heat once to max, hold there for some time and clear the flag.
 ATTR_BOOST = "bst"
 
-#Long time counter, counting seconds the heater was operetional. On double tank devices there are  two counters separated by ";" for both heaters. 
-#There is also pwc_u, it can be reset from UI and holds the last reset timestamp
+# Long time counter, counting seconds the heater was operetional. On double tank devices there are  two counters separated by ";" for both heaters.
+# There is also pwc_u, it can be reset from UI and holds the last reset timestamp
 ATTR_LONG_COUNTER = "pwc_t"
 
-#RSSI
+# RSSI
 ATTR_RSSI = "wdBm"
 
 
 ATTR_MAX_SHOWERS = "tmpMX"
 
 
-ATTR_PARAMETERS = "parNF" 
+ATTR_PARAMETERS = "parNF"
 
 """
 some devices have additional parameters:
@@ -90,32 +90,31 @@ some devices have additional parameters:
 
 """
 TESY_DEVICE_TYPES = {
-    "2000":{
-        "name" : "ModEco",
-        "min_setpoint":15,
-        "max_setpoint":75,
+    "2000": {
+        "name": "ModEco",
+        "min_setpoint": 15,
+        "max_setpoint": 75,
     },
-    "2002":{
-        "name" : "BeliSlimo",
-        "min_setpoint":0,
-        "max_setpoint":4,
-        "use_showers": True
+    "2002": {
+        "name": "BeliSlimo",
+        "min_setpoint": 0,
+        "max_setpoint": 4,
+        "use_showers": True,
     },
-    "2003":{
-        "name" : "BiLight Smart",
-        "min_setpoint":15,
-        "max_setpoint":75,
+    "2003": {
+        "name": "BiLight Smart",
+        "min_setpoint": 15,
+        "max_setpoint": 75,
     },
-    "2004":{
-        "name" : "ModEco 2",
-        "min_setpoint":15,
-        "max_setpoint":75,
+    "2004": {
+        "name": "ModEco 2",
+        "min_setpoint": 15,
+        "max_setpoint": 75,
     },
-    "2005":{
-        "name" : "BelliSlimo Lite",
-        "min_setpoint":0,
-        "max_setpoint":4,
-        "use_showers": True
-
-    }
+    "2005": {
+        "name": "BelliSlimo Lite",
+        "min_setpoint": 0,
+        "max_setpoint": 4,
+        "use_showers": True,
+    },
 }

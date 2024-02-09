@@ -16,7 +16,6 @@ from .const import (
     HTTP_TIMEOUT,
     IP_ADDRESS,
     HEATER_POWER,
-
 )
 
 
@@ -29,7 +28,7 @@ class Tesy:
     def __init__(self, data: dict[str, Any]) -> None:
         """Init Tesy."""
         self._ip_address = data[IP_ADDRESS]
-        
+
         self._heater_power = 2400
         if HEATER_POWER in data:
             self._heater_power = data[HEATER_POWER]
@@ -45,11 +44,11 @@ class Tesy:
     def set_power(self, val: str) -> bool:
         """Set power for Tesy component."""
         return self._get_request(name=ATTR_POWER, set=val).json()
-    
+
     def set_boost(self, val: str) -> bool:
         """Set boost for Tesy component."""
         return self._get_request(name=ATTR_BOOST, set=val).json()
-    
+
     def set_operation_mode(self, val: str) -> bool:
         """Set boost for Tesy component."""
         return self._get_request(name=ATTR_MODE, set=val).json()
@@ -73,5 +72,3 @@ class Tesy:
             raise ConnectionError from connection_error
         except requests.exceptions.HTTPError as http_error:
             raise ConnectionError from http_error
-
-

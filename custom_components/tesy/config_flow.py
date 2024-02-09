@@ -19,7 +19,6 @@ from .const import (
     HEATER_POWER,
     ATTR_DEVICE_ID,
     TESY_DEVICE_TYPES,
-
 )
 from .coordinator import TesyCoordinator
 
@@ -42,12 +41,10 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, Any]:
     coordinator = TesyCoordinator(data, hass)
     result = await coordinator.async_validate_input()
 
-    title="Tesy"
+    title = "Tesy"
 
     if ATTR_DEVICE_ID in result and result[ATTR_DEVICE_ID] in TESY_DEVICE_TYPES:
-        title=TESY_DEVICE_TYPES[result[ATTR_DEVICE_ID]]["name"]
-
-    
+        title = TESY_DEVICE_TYPES[result[ATTR_DEVICE_ID]]["name"]
 
     return {"title": title, "unique_id": result[ATTR_MAC]}
 
@@ -72,7 +69,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(info["unique_id"])
             self._abort_if_unique_id_configured()
 
-            return self.async_create_entry(title=info["title"],  data=user_input)
+            return self.async_create_entry(title=info["title"], data=user_input)
         except ConnectionError:
             errors["base"] = "cannot_connect"
         except AbortFlow as abort_flow_error:

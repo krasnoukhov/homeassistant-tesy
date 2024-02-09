@@ -1,4 +1,5 @@
 """Tesy switch component."""
+
 from __future__ import annotations
 
 from homeassistant.components.switch import (
@@ -25,20 +26,24 @@ async def async_setup_entry(
 
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
-    async_add_entities([TesySwitch(
-        hass, 
-        coordinator, 
-        entry, 
-        SwitchEntityDescription(
-            key="boost",
-            name="Boost",
-            icon="mdi:rocket-launch-outline",
-            device_class=SwitchDeviceClass.SWITCH,
-        ),
-        lambda entity: entity.is_boost_mode_on,
-        lambda entity: entity.async_turn_boost_mode_on,
-        lambda entity: entity.async_turn_boost_mode_off,
-    )])
+    async_add_entities(
+        [
+            TesySwitch(
+                hass,
+                coordinator,
+                entry,
+                SwitchEntityDescription(
+                    key="boost",
+                    name="Boost",
+                    icon="mdi:rocket-launch-outline",
+                    device_class=SwitchDeviceClass.SWITCH,
+                ),
+                lambda entity: entity.is_boost_mode_on,
+                lambda entity: entity.async_turn_boost_mode_on,
+                lambda entity: entity.async_turn_boost_mode_off,
+            )
+        ]
+    )
 
 
 class TesySwitch(TesyEntity, SwitchEntity):
@@ -58,7 +63,7 @@ class TesySwitch(TesyEntity, SwitchEntity):
         async_turn_off_func,
     ) -> None:
         """Initialize the switch."""
-        super().__init__(hass, coordinator, entry,description)
+        super().__init__(hass, coordinator, entry, description)
         self.entity_description = description
         self._attr_name = description.name
         self._is_on_func = is_on_func
