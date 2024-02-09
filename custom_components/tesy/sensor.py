@@ -90,7 +90,7 @@ class TesySensor(TesyEntity, SensorEntity):
         """Return the state of the sensor."""
         #Prevent crashes if energy counter is missing
         if ATTR_LONG_COUNTER not in self.coordinator.data:
-            return 0
+            return Null
         
         
         if ";" not in self.coordinator.data[ATTR_LONG_COUNTER]:
@@ -101,7 +101,7 @@ class TesySensor(TesyEntity, SensorEntity):
         else:
             #Prevent crashes if Additional parameters are missing
             if ATTR_PARAMETERS not in self.coordinator.data:
-                return 0
+                return Null
             
             power_dict=self.coordinator.data[ATTR_LONG_COUNTER].split(";")
             pNF=self.coordinator.data[ATTR_PARAMETERS]
