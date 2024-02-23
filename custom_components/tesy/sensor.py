@@ -97,7 +97,7 @@ class TesySensor(TesyEntity, SensorEntity):
         """Return the state of the sensor."""
         # Prevent crashes if energy counter is missing
         if ATTR_LONG_COUNTER not in self.coordinator.data:
-            return Null
+            return None
 
         if ";" not in self.coordinator.data[ATTR_LONG_COUNTER]:
             # For fingle tank heaters, we need to have power walue configured
@@ -109,7 +109,7 @@ class TesySensor(TesyEntity, SensorEntity):
         else:
             # Prevent crashes if Additional parameters are missing
             if ATTR_PARAMETERS not in self.coordinator.data:
-                return Null
+                return None
 
             power_dict = self.coordinator.data[ATTR_LONG_COUNTER].split(";")
             pNF = self.coordinator.data[ATTR_PARAMETERS]
