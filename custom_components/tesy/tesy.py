@@ -11,8 +11,11 @@ import requests
 from .const import (
     ATTR_POWER,
     ATTR_TARGET_TEMP,
+    ATTR_BOOST,
+    ATTR_MODE,
     HTTP_TIMEOUT,
     IP_ADDRESS,
+    HEATER_POWER,
 )
 
 
@@ -26,19 +29,29 @@ class Tesy:
         """Init Tesy."""
         self._ip_address = data[IP_ADDRESS]
 
+        self._heater_power = 2400
+        if HEATER_POWER in data:
+            self._heater_power = data[HEATER_POWER]
+
     def get_data(self) -> dict[str, Any]:
         """Get data for Tesy component."""
         return self._get_request(name="_all").json()
 
     def set_target_temperature(self, val: int) -> bool:
         """Set target temperature for Tesy component."""
-        self._get_request(name=ATTR_TARGET_TEMP, set=val).json()
-        return True
+        return self._get_request(name=ATTR_TARGET_TEMP, set=val).json()
 
     def set_power(self, val: str) -> bool:
         """Set power for Tesy component."""
-        self._get_request(name=ATTR_POWER, set=val).json()
-        return True
+        return self._get_request(name=ATTR_POWER, set=val).json()
+
+    def set_boost(self, val: str) -> bool:
+        """Set boost for Tesy component."""
+        return self._get_request(name=ATTR_BOOST, set=val).json()
+
+    def set_operation_mode(self, val: str) -> bool:
+        """Set boost for Tesy component."""
+        return self._get_request(name=ATTR_MODE, set=val).json()
 
     def _get_request(self, **kwargs) -> requests.Response:
         """Make GET request to the Tesy API."""
