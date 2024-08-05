@@ -3,7 +3,8 @@
     "step": {
       "user": {
         "data": {
-          "ip_address": "IP address"
+          "ip_address": "IP address",
+          "heater_power": "Power of the heater for energy calculation"
         }
       }
     },

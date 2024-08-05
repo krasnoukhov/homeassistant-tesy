@@ -83,21 +83,17 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
 
     async def async_turn_boost_mode_on(self, **kwargs):
         """Turn on boost mode."""
-        # if self.coordinator.data[ATTR_POWER]=="0":
-        #    await self.coordinator.async_set_power("1")
 
         if self.coordinator.data[ATTR_BOOST] == "0":
             response = await self.coordinator.async_set_boost("1")
             await self.partially_update_data_from_api(response, ATTR_BOOST)
 
-        # await self.coordinator.async_request_refresh()
-
     async def async_turn_boost_mode_off(self, **kwargs):
         """Turn off boost mode."""
+
         if self.coordinator.data[ATTR_BOOST] == "1":
             response = await self.coordinator.async_set_boost("0")
             await self.partially_update_data_from_api(response, ATTR_BOOST)
-        # await self.coordinator.async_request_refresh()
 
     async def partially_update_data_from_api(self, response, key):
         old_data = self.coordinator.data
