@@ -182,7 +182,7 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         if ATTR_POWER not in self.coordinator.data:
             return
 
-        if operation_mode == STATE_OFF and self.coordinator.data[ATTR_POWER] == "1":
+        if operation_mode == STATE_OFF:
             response = await self.coordinator.async_set_power("0")
             await self.partially_update_data_from_api(response, ATTR_POWER)
         else:
