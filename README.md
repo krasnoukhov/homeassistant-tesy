@@ -23,15 +23,16 @@ Temperature setpoint is only used in manual (Performance) mode. In any other mod
 
 ## Installation
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
-
 ### Via HACS
-* Add this repo as a ["Custom repository"](https://hacs.xyz/docs/faq/custom_repositories/) with type "Integration"
-* Click "Install" in the new "Tesy" card in HACS.
-* Install
+
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=krasnoukhov&repository=homeassistant-tesy&category=Integration)
+
+* Search for "Tesy" on HACS tab in Home Assistant
+* Click on three dots and use the "Download" option
+* Follow the steps
 * Restart Home Assistant
-* Click Add Integration and choose Tesy, follow the configuration flow
 
 ### Manual Installation (not recommended)
+
 * Copy the entire `custom_components/tesy/` directory to your server's `<config>/custom_components` directory
 * Restart Home Assistant
