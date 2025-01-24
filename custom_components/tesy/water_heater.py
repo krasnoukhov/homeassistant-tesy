@@ -7,7 +7,7 @@ from homeassistant.components.water_heater import (
     STATE_ECO,
     STATE_PERFORMANCE,
     WaterHeaterEntity,
-    WaterHeaterEntityEntityDescription,
+    WaterHeaterEntityDescription,
     WaterHeaterEntityFeature,
 )
 from homeassistant.config_entries import ConfigEntry
@@ -64,7 +64,7 @@ async def async_setup_entry(
                 hass,
                 coordinator,
                 entry,
-                WaterHeaterEntityEntityDescription(
+                WaterHeaterEntityDescription(
                     key="water_heater",
                     translation_key="heater",
                 ),
