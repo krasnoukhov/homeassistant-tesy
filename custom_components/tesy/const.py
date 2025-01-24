@@ -22,17 +22,17 @@ ATTR_MAC = "MAC"
 2002 - BelliSlimo, only support showers 0-4(maximum depends on size and position)
 2003 - BiLight Smart
 2004 - Modeco with bar graph and only two buttons
-2005 - BeliSlimo Lite, only support showers 0-4(maximum depends on size and position)
+2005 - BelliSlimo Lite, only support showers 0-4(maximum depends on size and position)
 """
 ATTR_DEVICE_ID = "id"
 
 # If currently the heater is heating at che moment
 ATTR_IS_HEATING = "ht"
 
-# Current temperature measured. Current showers on Belislimo.
+# Current temperature measured. Current showers on BelliSlimo.
 ATTR_CURRENT_TEMP = "tmpC"
 
-# Target temperature in manual mode, target showers on Belislimo. Integer value in both cases.
+# Target temperature in manual mode, target showers on BelliSlimo. Integer value in both cases.
 ATTR_TARGET_TEMP = "tmpT"
 
 # READ-ONLY Target temperature that the controller is using depending on mode. If not on manual it will differ from tmpT.
@@ -92,7 +92,7 @@ TESY_DEVICE_TYPES = {
         "max_setpoint": 75,
     },
     "2002": {
-        "name": "BeliSlimo",
+        "name": "BelliSlimo",
         "min_setpoint": 0,
         "max_setpoint": 4,
         "use_showers": True,

@@ -7,7 +7,7 @@ Tested with:
 
 - [Tesy Modeco Cloud GCV 150 47 24D C22 ECW](https://tesy.com/products/electric-water-heaters/modeco-series/modeco-cloud/?product=gcv-1504724d-c22-ecw)
 - BilightSmart
-- BeliSlimo
+- BelliSlimo
 
 ## Highlights
 
