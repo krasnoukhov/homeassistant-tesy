@@ -5,7 +5,7 @@
         "data": {
           "ip_address": "IP address",
           "heater_power": "Power of the heater for energy calculation",
-          "use_old_api": "Use old API for devices with ESP8266 chip"
+          "use_old_api": "Use old API for devices with Atheros chip"
         }
       }
     },
