@@ -9,10 +9,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .tesy import Tesy
+from .tesy_oldapi import TesyOldApi
 from .const import (
     ATTR_API,
     DOMAIN,
     UPDATE_INTERVAL,
+    USE_OLD_API,
 )
 import logging
 
@@ -24,7 +26,10 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def __init__(self, data: dict[str, Any], hass: HomeAssistant) -> None:
         """Initialize."""
-        self._client = Tesy(data)
+        if data[USE_OLD_API]:
+            self._client = TesyOldApi(data)
+        else:
+            self._client = Tesy(data)
 
         super().__init__(
             hass,
