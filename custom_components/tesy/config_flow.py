@@ -29,7 +29,7 @@ USER_SCHEMA = vol.Schema(
     {
         vol.Required(IP_ADDRESS): cv.string,
         vol.Required(HEATER_POWER): cv.positive_int,
-        vol.Required(USE_OLD_API): cv.boolean
+        vol.Required(USE_OLD_API): cv.boolean,
     }
 )
 

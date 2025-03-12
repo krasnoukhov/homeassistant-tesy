@@ -26,37 +26,38 @@ class TesyOldApi:
 
     def get_data(self) -> dict[str, Any]:
         """Get data for Tesy component."""
-        
-        return self.convertApi({
-                'status'    : self._get_request(cmd="status").json(),
-                'devstat'   : self._get_request(cmd="devstat").json()
-            })
 
-    def convertApi(self, data:dict[str, Any]) -> dict[str, Any]:
-        onoff = {
-            "on":"1",
-            "off":"0"
-        }
+        return self.convertApi(
+            {
+                "status": self._get_request(cmd="status").json(),
+                "devstat": self._get_request(cmd="devstat").json(),
+            }
+        )
+
+    def convertApi(self, data: dict[str, Any]) -> dict[str, Any]:
+        onoff = {"on": "1", "off": "0"}
 
         o = dict()
-        o.update({
-            ATTR_API          : 'OK',
-            ATTR_SOFTWARE     : data['devstat']['devid'],
-            ATTR_MAC          : data['devstat']['macaddr'],
-            ATTR_DEVICE_ID    : data['devstat']['devid'].split('-')[0],
-            ATTR_MODE         : str(int(data['status']['mode']) - 1),
-            ATTR_CURRENT_TEMP : data['status']['gradus'],
-            ATTR_TARGET_TEMP  : data['status']['ref_gradus'],
-            ATTR_BOOST        : str(data['status']['boost']),
-            ATTR_POWER        : onoff[data['status']['power_sw']]
-        })
+        o.update(
+            {
+                ATTR_API: "OK",
+                ATTR_SOFTWARE: data["devstat"]["devid"],
+                ATTR_MAC: data["devstat"]["macaddr"],
+                ATTR_DEVICE_ID: data["devstat"]["devid"].split("-")[0],
+                ATTR_MODE: str(int(data["status"]["mode"]) - 1),
+                ATTR_CURRENT_TEMP: data["status"]["gradus"],
+                ATTR_TARGET_TEMP: data["status"]["ref_gradus"],
+                ATTR_BOOST: str(data["status"]["boost"]),
+                ATTR_POWER: onoff[data["status"]["power_sw"]],
+            }
+        )
 
-        _LOGGER.debug(f'converted API: {str(o)}')
+        _LOGGER.debug(f"converted API: {str(o)}")
         return o
 
     def set_target_temperature(self, val: int) -> bool:
         """Set target temperature for Tesy component."""
-        return self._get_request('setTemp', val=val).json()
+        return self._get_request("setTemp", val=val).json()
 
     def set_power(self, val: str) -> bool:
         """Set power for Tesy component."""
@@ -66,15 +67,15 @@ class TesyOldApi:
             _val = "on"
         else:
             raise ValueError
-        return self._get_request('power', val=_val).json()
+        return self._get_request("power", val=_val).json()
 
     def set_boost(self, val: str) -> bool:
         """Set boost for Tesy component."""
-        return self._get_request('boostSW', mode=val).json()
+        return self._get_request("boostSW", mode=val).json()
 
     def set_operation_mode(self, val: str) -> bool:
         """Set mode for Tesy component."""
-        return self._get_request('modeSW', mode=int(val)+1).json()
+        return self._get_request("modeSW", mode=int(val) + 1).json()
 
     def _get_request(self, cmd, **kwargs) -> requests.Response:
         """Make GET request to the Tesy API."""
