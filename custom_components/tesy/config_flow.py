@@ -19,6 +19,7 @@ from .const import (
     HEATER_POWER,
     ATTR_DEVICE_ID,
     TESY_DEVICE_TYPES,
+    USE_OLD_API,
 )
 from .coordinator import TesyCoordinator
 
@@ -28,6 +29,7 @@ USER_SCHEMA = vol.Schema(
     {
         vol.Required(IP_ADDRESS): cv.string,
         vol.Required(HEATER_POWER): cv.positive_int,
+        vol.Required(USE_OLD_API): cv.boolean
     }
 )
 

@@ -11,6 +11,8 @@ HEATER_POWER = "heater_power"
 
 ATTR_API = "api"
 
+USE_OLD_API = "use_old_api"
+
 # Current software version
 ATTR_SOFTWARE = "wsw"
 
