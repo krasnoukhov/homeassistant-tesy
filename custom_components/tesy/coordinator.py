@@ -26,7 +26,7 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def __init__(self, data: dict[str, Any], hass: HomeAssistant) -> None:
         """Initialize."""
-        if data[USE_OLD_API]:
+        if data.get(USE_OLD_API):
             self._client = TesyOldApi(data)
         else:
             self._client = Tesy(data)
