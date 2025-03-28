@@ -9,7 +9,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfEnergy
+from homeassistant.const import UnitOfEnergy, UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -18,6 +18,7 @@ from .const import (
     ATTR_PARAMETERS,
     DOMAIN,
     ATTR_LONG_COUNTER,
+    ATTR_CURRENT_TEMP,
 )
 from .coordinator import TesyCoordinator
 
@@ -32,7 +33,22 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         [
-            TesySensor(
+            TesyTemperatureSensor(
+                hass,
+                coordinator,
+                entry,
+                SensorEntityDescription(
+                    key="temperature",
+                    name="Temperature",
+                    device_class=SensorDeviceClass.TEMPERATURE,
+                    state_class=SensorStateClass.MEASUREMENT,
+                    native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+                    icon="mdi:thermometer",
+                ),
+                0.1,
+                None,
+            ),
+            TesyEnergySensor(
                 hass,
                 coordinator,
                 entry,
@@ -52,7 +68,7 @@ async def async_setup_entry(
 
 
 class TesySensor(TesyEntity, SensorEntity):
-    """Represents a sensor for an Tesy water heater controller."""
+    """Represents a sensor for a Tesy water heater controller."""
 
     _attr_has_entity_name = True
     _attr_should_poll = True
@@ -63,7 +79,7 @@ class TesySensor(TesyEntity, SensorEntity):
         coordinator: TesyCoordinator,
         entry: ConfigEntry,
         description: SensorEntityDescription,
-        suggested_precision: int | None,
+        suggested_precision: float | None,
         options: list | None,
     ) -> None:
         """Initialize the sensor."""
@@ -92,6 +108,8 @@ class TesySensor(TesyEntity, SensorEntity):
         if options is not None:
             self._attr_options = options
 
+
+class TesyEnergySensor(TesySensor):
     @property
     def native_value(self):
         """Return the state of the sensor."""
@@ -100,11 +118,11 @@ class TesySensor(TesyEntity, SensorEntity):
             return None
 
         if ";" not in self.coordinator.data[ATTR_LONG_COUNTER]:
-            # For fingle tank heaters, we need to have power walue configured
+            # For single tank heaters, we need to have power value configured
             configured_power = self.coordinator.get_config_power()
             energy_kwh = (
-                int(self.coordinator.data[ATTR_LONG_COUNTER]) * configured_power
-            ) / (3600.0 * 1000)
+                             int(self.coordinator.data[ATTR_LONG_COUNTER]) * configured_power
+                         ) / (3600.0 * 1000)
             return energy_kwh
         else:
             # Prevent crashes if Additional parameters are missing
@@ -113,9 +131,18 @@ class TesySensor(TesyEntity, SensorEntity):
 
             power_dict = self.coordinator.data[ATTR_LONG_COUNTER].split(";")
             pNF = self.coordinator.data[ATTR_PARAMETERS]
-            watt1 = int(pNF[38 + 0 * 2 : 40 + 0 * 2], 16) * 20
-            watt2 = int(pNF[38 + 1 * 2 : 40 + 1 * 2], 16) * 20
+            watt1 = int(pNF[38 + 0 * 2: 40 + 0 * 2], 16) * 20
+            watt2 = int(pNF[38 + 1 * 2: 40 + 1 * 2], 16) * 20
             tmp_kwh1 = (int(power_dict[0]) * watt1) / (3600.0 * 1000)
             tmp_kwh2 = (int(power_dict[1]) * watt2) / (3600.0 * 1000)
 
             return tmp_kwh1 + tmp_kwh2
+
+
+class TesyTemperatureSensor(TesySensor):
+    @property
+    def native_value(self):
+        """Return the state of the sensor."""
+        if ATTR_CURRENT_TEMP not in self.coordinator.data:
+            return None
+        return float(self.coordinator.data[ATTR_CURRENT_TEMP])
