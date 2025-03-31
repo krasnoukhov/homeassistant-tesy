@@ -62,7 +62,7 @@ async def async_setup_entry(
                 ),
                 0.01,
                 None,
-            )
+            ),
         ]
     )
 
@@ -121,8 +121,8 @@ class TesyEnergySensor(TesySensor):
             # For single tank heaters, we need to have power value configured
             configured_power = self.coordinator.get_config_power()
             energy_kwh = (
-                             int(self.coordinator.data[ATTR_LONG_COUNTER]) * configured_power
-                         ) / (3600.0 * 1000)
+                int(self.coordinator.data[ATTR_LONG_COUNTER]) * configured_power
+            ) / (3600.0 * 1000)
             return energy_kwh
         else:
             # Prevent crashes if Additional parameters are missing
@@ -131,8 +131,8 @@ class TesyEnergySensor(TesySensor):
 
             power_dict = self.coordinator.data[ATTR_LONG_COUNTER].split(";")
             pNF = self.coordinator.data[ATTR_PARAMETERS]
-            watt1 = int(pNF[38 + 0 * 2: 40 + 0 * 2], 16) * 20
-            watt2 = int(pNF[38 + 1 * 2: 40 + 1 * 2], 16) * 20
+            watt1 = int(pNF[38 + 0 * 2 : 40 + 0 * 2], 16) * 20
+            watt2 = int(pNF[38 + 1 * 2 : 40 + 1 * 2], 16) * 20
             tmp_kwh1 = (int(power_dict[0]) * watt1) / (3600.0 * 1000)
             tmp_kwh2 = (int(power_dict[1]) * watt2) / (3600.0 * 1000)
 
