@@ -45,7 +45,7 @@ async def async_setup_entry(
                     native_unit_of_measurement=UnitOfTemperature.CELSIUS,
                     icon="mdi:thermometer",
                 ),
-                0.1,
+                1,
                 None,
             ),
             TesyEnergySensor(
@@ -60,7 +60,7 @@ async def async_setup_entry(
                     native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
                     icon="mdi:lightning-bolt",
                 ),
-                0.01,
+                2,
                 None,
             ),
         ]
@@ -79,7 +79,7 @@ class TesySensor(TesyEntity, SensorEntity):
         coordinator: TesyCoordinator,
         entry: ConfigEntry,
         description: SensorEntityDescription,
-        suggested_precision: float | None,
+        suggested_display_precision: int | None,
         options: list | None,
     ) -> None:
         """Initialize the sensor."""
@@ -102,8 +102,8 @@ class TesySensor(TesyEntity, SensorEntity):
         if description.icon is not None:
             self._attr_icon = description.icon
 
-        if suggested_precision is not None:
-            self._attr_suggested_display_precision = suggested_precision
+        if suggested_display_precision is not None:
+            self._attr_suggested_display_precision = suggested_display_precision
 
         if options is not None:
             self._attr_options = options
