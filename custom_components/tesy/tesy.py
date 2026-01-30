@@ -18,7 +18,6 @@ from .const import (
     HEATER_POWER,
 )
 
-
 _LOGGER = logging.getLogger(__name__)
 
 
