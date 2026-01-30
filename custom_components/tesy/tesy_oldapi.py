@@ -54,7 +54,6 @@ class TesyOldApi:
             }
         )
 
-
         _LOGGER.debug(f"converted API: {str(o)}")
         return o
 
@@ -79,6 +78,7 @@ class TesyOldApi:
     def set_operation_mode(self, val: str) -> bool:
         """Set mode for Tesy component."""
         return self._get_request("modeSW", mode=int(val) + 1).json()
+
     def _coerce_mode(self, mode: Any) -> str:
         """Convert mode reported by the old API into the numeric string the integration expects."""
         if mode is None:
