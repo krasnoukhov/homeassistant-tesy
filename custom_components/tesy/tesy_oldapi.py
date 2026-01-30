@@ -36,6 +36,8 @@ class TesyOldApi:
 
     def convertApi(self, data: dict[str, Any]) -> dict[str, Any]:
         onoff = {"on": "1", "off": "0"}
+        status = data["status"]
+        mode = self._coerce_mode(status.get("mode"))
 
         o = dict()
         o.update(
@@ -44,11 +46,11 @@ class TesyOldApi:
                 ATTR_SOFTWARE: data["devstat"]["devid"],
                 ATTR_MAC: data["devstat"]["macaddr"],
                 ATTR_DEVICE_ID: data["devstat"]["devid"].split("-")[0],
-                ATTR_MODE: str(int(data["status"]["mode"]) - 1),
-                ATTR_CURRENT_TEMP: data["status"]["gradus"],
-                ATTR_TARGET_TEMP: data["status"]["ref_gradus"],
-                ATTR_BOOST: str(data["status"]["boost"]),
-                ATTR_POWER: onoff[data["status"]["power_sw"]],
+                ATTR_MODE: mode,
+                ATTR_CURRENT_TEMP: status["gradus"],
+                ATTR_TARGET_TEMP: status["ref_gradus"],
+                ATTR_BOOST: str(status.get("boost", "0")),
+                ATTR_POWER: onoff[status["power_sw"]],
             }
         )
 
@@ -76,6 +78,37 @@ class TesyOldApi:
     def set_operation_mode(self, val: str) -> bool:
         """Set mode for Tesy component."""
         return self._get_request("modeSW", mode=int(val) + 1).json()
+
+    def _coerce_mode(self, mode: Any) -> str:
+        """Convert mode reported by the old API into the numeric string the integration expects."""
+        if mode is None:
+            return "0"
+
+        try:
+            return str(int(mode) - 1)
+        except (TypeError, ValueError):
+            pass
+
+        if isinstance(mode, str):
+            key = mode.strip().lower().replace("_", "").replace(" ", "")
+            mapping = {
+                "manual": "0",
+                "p1": "1",
+                "auto": "1",
+                "p2": "2",
+                "p3": "3",
+                "eco": "4",
+                "ec2": "5",
+                "ec3": "6",
+                "ecoconfort": "5",
+                "ecocomfort": "5",
+                "econight": "6",
+            }
+            if key in mapping:
+                return mapping[key]
+
+        _LOGGER.warning("Unknown mode value from old API: %r", mode)
+        return "0"
 
     def _get_request(self, cmd, **kwargs) -> requests.Response:
         """Make GET request to the Tesy API."""
