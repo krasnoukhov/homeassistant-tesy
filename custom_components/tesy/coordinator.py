@@ -12,6 +12,7 @@ from .tesy import Tesy
 from .tesy_oldapi import TesyOldApi
 from .const import (
     ATTR_API,
+    ATTR_CHILD_LOCK,
     DOMAIN,
     UPDATE_INTERVAL,
     USE_OLD_API,
@@ -76,6 +77,13 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Set mode for Tesy component."""
         return await self.hass.async_add_executor_job(
             self._client.set_operation_mode, val
+        )
+
+    # Set child lock
+    async def async_set_child_lock(self, val: str) -> None:
+        """Set child lock for Tesy component."""
+        return await self.hass.async_add_executor_job(
+            self._client.set_child_lock, val
         )
 
     def _get_data(self) -> dict[str, Any]:

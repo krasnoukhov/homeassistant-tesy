@@ -76,6 +76,11 @@ ATTR_MAX_SHOWERS = "tmpMX"
 
 ATTR_PARAMETERS = "parNF"
 
+ATTR_CDT = "cdt"
+ATTR_ERROR = "err"
+ATTR_UPTIME = "wup"
+ATTR_CHILD_LOCK = "lck"
+
 """
 Some devices have additional parameters:
 "extr" - base64 and url encoded JSON, typically containing custom name if renamed from UI in the CLoud

@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "IP адрес",
+          "heater_power": "Мощност на бойлера за изчисление на енергията",
+          "use_old_api": "Използване на стар API за устройства с Atheros чип"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Устройството вече е конфигурирано",
+      "already_in_progress": "Конфигурацията на устройството е в процес",
+      "cannot_connect": "Неуспешно свързване",
+      "unknown": "Неизвестна грешка"
+    }
+  },
+  "entity": {
+    "water_heater": {
+      "heater": {
+        "name": "Бойлер"
+      }
+    }
+  }
+}

@@ -36,3 +36,61 @@ Temperature setpoint is only used in manual (Performance) mode. In any other mod
 
 * Copy the entire `custom_components/tesy/` directory to your server's `<config>/custom_components` directory
 * Restart Home Assistant
+
+### Water Heater
+
+| Entity | Attributes |
+|--------|------------|
+| `water_heater.heater` | `is_heating`, `target_temp_step` |
+
+### Sensors
+
+| Entity | Description | Device Class | Unit |
+|--------|-------------|-------------|------|
+| `sensor.temperature` | Current temperature / showers | `temperature` | °C |
+| `sensor.energy_consumed` | Total energy consumed | `energy` | kWh |
+| `sensor.cdt` | Timestamp when target is reached | `timestamp` | — |
+| `sensor.current_target_temperature` | Active target temperature | `temperature` | °C |
+| `sensor.error_status` | Error code (`00` = no error) | — | — |
+| `sensor.wifi_signal` | WiFi signal strength | `signal_strength` | dBm |
+| `sensor.uptime` | Device uptime (human-readable) | — | — |
+
+### Switches
+
+| Entity | Description |
+|--------|-------------|
+| `switch.boost` | Boost mode |
+| `switch.child_lock` | Child lock (if supported) |
+
+## Device API Parameters
+
+| Field | Description | Used By |
+|-------|-------------|---------|
+| `pwr` | Power state | Water heater |
+| `mode` | Operation mode | Water heater |
+| `tmpC` | Current temperature / showers | Temperature sensor |
+| `tmpT` | Target temperature setpoint | Water heater |
+| `tmpR` | Active target temperature | Current Target Temperature sensor |
+| `ht` | Heating element active | `is_heating` attr |
+| `bst` | Boost flag | Boost switch |
+| `cdt` | Countdown timer (minutes) | Ready At sensor |
+| `err` | Error code | Error Status sensor |
+| `wdBm` | WiFi RSSI | WiFi Signal sensor |
+| `wup` | Uptime (seconds) | Uptime sensor |
+| `lck` | Child lock | Child Lock switch |
+| `pwc_t` | Runtime counter | Energy calculation |
+| `parNF` | Additional parameters | Dual-tank energy calculation |
+| `id` | Device type ID | Device detection |
+| `MAC` | MAC address | Unique ID |
+| `tmpMX` | Maximum showers | Max setpoint |
+| `wsw` | Software version | Device info |
+
+## Supported Devices
+
+| ID | Model | Range |
+|----|-------|-------|
+| 2000 | ModEco | 15-75°C |
+| 2002 | BelliSlimo | 0-4 showers |
+| 2003 | BiLight Smart | 15-75°C |
+| 2004 | ModEco 2 | 15-75°C |
+| 2005 | BelliSlimo Lite | 0-4 showers |

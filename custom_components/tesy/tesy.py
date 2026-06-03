@@ -13,6 +13,7 @@ from .const import (
     ATTR_TARGET_TEMP,
     ATTR_BOOST,
     ATTR_MODE,
+    ATTR_CHILD_LOCK,
     HTTP_TIMEOUT,
     IP_ADDRESS,
     HEATER_POWER,
@@ -51,6 +52,10 @@ class Tesy:
     def set_operation_mode(self, val: str) -> bool:
         """Set boost for Tesy component."""
         return self._get_request(name=ATTR_MODE, set=val).json()
+
+    def set_child_lock(self, val: str) -> bool:
+        """Set child lock for Tesy component."""
+        return self._get_request(name=ATTR_CHILD_LOCK, set=val).json()
 
     def _get_request(self, **kwargs) -> requests.Response:
         """Make GET request to the Tesy API."""

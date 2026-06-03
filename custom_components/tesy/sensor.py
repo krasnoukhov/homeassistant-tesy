@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from homeassistant.components.sensor import (
     RestoreSensor,
@@ -12,14 +12,24 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfEnergy, UnitOfTemperature
+from homeassistant.const import (
+    UnitOfEnergy,
+    UnitOfTemperature,
+    SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+)
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
 from .entity import TesyEntity
 from .const import (
     ATTR_IS_HEATING,
     ATTR_PARAMETERS,
+    ATTR_CDT,
+    ATTR_CURRENT_TARGET_TEMP,
+    ATTR_ERROR,
+    ATTR_RSSI,
+    ATTR_UPTIME,
     DOMAIN,
     ATTR_LONG_COUNTER,
     ATTR_CURRENT_TEMP,
@@ -65,6 +75,73 @@ async def async_setup_entry(
                     icon="mdi:lightning-bolt",
                 ),
                 2,
+                None,
+            ),
+            TesyCdtSensor(
+                hass,
+                coordinator,
+                entry,
+                SensorEntityDescription(
+                    key="cdt",
+                    name="Ready At",
+                    device_class=SensorDeviceClass.TIMESTAMP,
+                    icon="mdi:clock",
+                ),
+                None,
+                None,
+            ),
+            TesyCurrentTargetTempSensor(
+                hass,
+                coordinator,
+                entry,
+                SensorEntityDescription(
+                    key="current_target_temperature",
+                    name="Current Target Temperature",
+                    device_class=SensorDeviceClass.TEMPERATURE,
+                    state_class=SensorStateClass.MEASUREMENT,
+                    native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+                    icon="mdi:thermometer",
+                ),
+                1,
+                None,
+            ),
+            TesyErrorSensor(
+                hass,
+                coordinator,
+                entry,
+                SensorEntityDescription(
+                    key="error_status",
+                    name="Error Status",
+                    icon="mdi:alert-circle-outline",
+                ),
+                None,
+                None,
+            ),
+            TesyRssiSensor(
+                hass,
+                coordinator,
+                entry,
+                SensorEntityDescription(
+                    key="wifi_signal",
+                    name="WiFi Signal",
+                    device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                    state_class=SensorStateClass.MEASUREMENT,
+                    native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+                    icon="mdi:wifi",
+                ),
+                0,
+                None,
+            ),
+            TesyUptimeSensor(
+                hass,
+                coordinator,
+                entry,
+                SensorEntityDescription(
+                    key="uptime",
+                    name="Uptime",
+                    icon="mdi:clock-outline",
+                ),
+                None,
                 None,
             ),
         ]
@@ -196,3 +273,60 @@ class TesyTemperatureSensor(TesySensor):
         if ATTR_CURRENT_TEMP not in self.coordinator.data:
             return None
         return float(self.coordinator.data[ATTR_CURRENT_TEMP])
+
+
+class TesyCdtSensor(TesySensor):
+    @property
+    def native_value(self):
+        """Return the timestamp when the heater will be ready."""
+        if ATTR_CDT not in self.coordinator.data:
+            return None
+        cdt_minutes = int(self.coordinator.data[ATTR_CDT])
+        return dt_util.utcnow() + timedelta(minutes=cdt_minutes)
+
+
+class TesyCurrentTargetTempSensor(TesySensor):
+    @property
+    def native_value(self):
+        """Return the current target temperature."""
+        if ATTR_CURRENT_TARGET_TEMP not in self.coordinator.data:
+            return None
+        return float(self.coordinator.data[ATTR_CURRENT_TARGET_TEMP])
+
+
+class TesyErrorSensor(TesySensor):
+    @property
+    def native_value(self):
+        """Return the error status code."""
+        if ATTR_ERROR not in self.coordinator.data:
+            return None
+        return self.coordinator.data[ATTR_ERROR]
+
+
+class TesyRssiSensor(TesySensor):
+    @property
+    def native_value(self):
+        """Return the WiFi signal strength."""
+        if ATTR_RSSI not in self.coordinator.data:
+            return None
+        return int(self.coordinator.data[ATTR_RSSI])
+
+
+class TesyUptimeSensor(TesySensor):
+    @property
+    def native_value(self):
+        """Return the device uptime in human-readable format."""
+        if ATTR_UPTIME not in self.coordinator.data:
+            return None
+        total_seconds = int(self.coordinator.data[ATTR_UPTIME])
+        days, remainder = divmod(total_seconds, 86400)
+        hours, remainder = divmod(remainder, 3600)
+        minutes, _ = divmod(remainder, 60)
+        parts = []
+        if days > 0:
+            parts.append(f"{days}d")
+        if hours > 0:
+            parts.append(f"{hours}h")
+        if minutes > 0 and days == 0:
+            parts.append(f"{minutes}m")
+        return " ".join(parts) if parts else "0m"

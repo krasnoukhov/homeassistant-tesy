@@ -13,7 +13,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity import TesyEntity
-from .const import DOMAIN
+from .const import ATTR_CHILD_LOCK, DOMAIN
 from .coordinator import TesyCoordinator
 
 
@@ -26,24 +26,42 @@ async def async_setup_entry(
 
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
-    async_add_entities(
-        [
+    entities: list[TesySwitch] = [
+        TesySwitch(
+            hass,
+            coordinator,
+            entry,
+            SwitchEntityDescription(
+                key="boost",
+                name="Boost",
+                icon="mdi:rocket-launch-outline",
+                device_class=SwitchDeviceClass.SWITCH,
+            ),
+            lambda entity: entity.is_boost_mode_on,
+            lambda entity: entity.async_turn_boost_mode_on,
+            lambda entity: entity.async_turn_boost_mode_off,
+        ),
+    ]
+
+    if ATTR_CHILD_LOCK in coordinator.data:
+        entities.append(
             TesySwitch(
                 hass,
                 coordinator,
                 entry,
                 SwitchEntityDescription(
-                    key="boost",
-                    name="Boost",
-                    icon="mdi:rocket-launch-outline",
+                    key="child_lock",
+                    name="Child Lock",
+                    icon="mdi:lock-outline",
                     device_class=SwitchDeviceClass.SWITCH,
                 ),
-                lambda entity: entity.is_boost_mode_on,
-                lambda entity: entity.async_turn_boost_mode_on,
-                lambda entity: entity.async_turn_boost_mode_off,
-            )
-        ]
-    )
+                lambda entity: entity.is_child_lock_on,
+                lambda entity: entity.async_turn_child_lock_on,
+                lambda entity: entity.async_turn_child_lock_off,
+            ),
+        )
+
+    async_add_entities(entities)
 
 
 class TesySwitch(TesyEntity, SwitchEntity):
