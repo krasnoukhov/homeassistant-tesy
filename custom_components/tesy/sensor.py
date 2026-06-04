@@ -276,13 +276,20 @@ class TesyTemperatureSensor(TesySensor):
 
 
 class TesyCdtSensor(TesySensor):
+    _last_cdt: str | None = None
+
     @property
     def native_value(self):
         """Return the timestamp when the heater will be ready."""
         if ATTR_CDT not in self.coordinator.data:
+            self._last_cdt = None
             return None
-        cdt_minutes = int(self.coordinator.data[ATTR_CDT])
-        return dt_util.utcnow() + timedelta(minutes=cdt_minutes)
+        cdt = self.coordinator.data[ATTR_CDT]
+        if self._last_cdt is not None and self._last_cdt == cdt:
+            return self._attr_native_value
+        self._last_cdt = cdt
+        self._attr_native_value = dt_util.utcnow() + timedelta(minutes=int(cdt))
+        return self._attr_native_value
 
 
 class TesyCurrentTargetTempSensor(TesySensor):
