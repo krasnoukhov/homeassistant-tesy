@@ -27,12 +27,17 @@ class TesyOldApi:
     def get_data(self) -> dict[str, Any]:
         """Get data for Tesy component."""
 
-        return self.convertApi(
-            {
-                "status": self._get_request(cmd="status").json(),
-                "devstat": self._get_request(cmd="devstat").json(),
-            }
-        )
+        data = {
+            "status": self._get_request(cmd="status").json(),
+            "devstat": self._get_request(cmd="devstat").json(),
+        }
+
+        try:
+            data["calcRes"] = self._get_request(cmd="calcRes").json()
+        except (ConnectionError, ValueError):
+            _LOGGER.debug("Energy counter is not available from the old API")
+
+        return self.convertApi(data)
 
     def convertApi(self, data: dict[str, Any]) -> dict[str, Any]:
         onoff = {"on": "1", "off": "0"}
@@ -51,8 +56,29 @@ class TesyOldApi:
                 ATTR_TARGET_TEMP: status["ref_gradus"],
                 ATTR_BOOST: str(status.get("boost", "0")),
                 ATTR_POWER: onoff[status["power_sw"]],
+                ATTR_IS_HEATING: (
+                    "1"
+                    if str(status.get("heater_state", "")).upper() == "HEATING"
+                    else "0"
+                ),
             }
         )
+
+        calc_result = data.get("calcRes", {})
+        energy_counter = calc_result.get("sum")
+        try:
+            if int(energy_counter) >= 0:
+                o[ATTR_LONG_COUNTER] = str(energy_counter)
+        except (TypeError, ValueError):
+            _LOGGER.debug("Invalid old API energy counter: %r", energy_counter)
+
+        reported_power = calc_result.get("watt", status.get("watts"))
+        try:
+            reported_power = int(reported_power)
+            if reported_power > 0:
+                self._heater_power = reported_power
+        except (TypeError, ValueError):
+            _LOGGER.debug("Invalid old API heater power: %r", reported_power)
 
         _LOGGER.debug(f"converted API: {str(o)}")
         return o
