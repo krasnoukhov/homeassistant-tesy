@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
+
 from homeassistant.components.sensor import (
     RestoreSensor,
     SensorEntity,
@@ -15,6 +16,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     UnitOfEnergy,
     UnitOfTemperature,
+    UnitOfTime,
     SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
 )
 from homeassistant.core import HomeAssistant, callback
@@ -27,6 +29,7 @@ from .const import (
     ATTR_PARAMETERS,
     ATTR_CDT,
     ATTR_CURRENT_TARGET_TEMP,
+    ATTR_ENERGY_RESETTABLE,
     ATTR_ERROR,
     ATTR_RSSI,
     ATTR_UPTIME,
@@ -83,20 +86,22 @@ async def async_setup_entry(
                 entry,
                 SensorEntityDescription(
                     key="cdt",
-                    name="Ready At",
-                    device_class=SensorDeviceClass.TIMESTAMP,
+                    name="Ready In",
+                    device_class=SensorDeviceClass.DURATION,
+                    state_class=SensorStateClass.MEASUREMENT,
+                    native_unit_of_measurement=UnitOfTime.MINUTES,
                     icon="mdi:clock",
                 ),
                 None,
                 None,
             ),
-            TesyCurrentTargetTempSensor(
+            TesyTargetTempSensor(
                 hass,
                 coordinator,
                 entry,
                 SensorEntityDescription(
                     key="current_target_temperature",
-                    name="Current Target Temperature",
+                    name="Target Temperature",
                     device_class=SensorDeviceClass.TEMPERATURE,
                     state_class=SensorStateClass.MEASUREMENT,
                     native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -139,9 +144,27 @@ async def async_setup_entry(
                 SensorEntityDescription(
                     key="uptime",
                     name="Uptime",
+                    device_class=SensorDeviceClass.DURATION,
+                    state_class=SensorStateClass.MEASUREMENT,
+                    native_unit_of_measurement=UnitOfTime.SECONDS,
                     icon="mdi:clock-outline",
                 ),
                 None,
+                None,
+            ),
+            TesyResettableEnergySensor(
+                hass,
+                coordinator,
+                entry,
+                SensorEntityDescription(
+                    key="energy_consumed_resettable",
+                    name="Energy Consumed (Resettable)",
+                    device_class=SensorDeviceClass.ENERGY,
+                    state_class=SensorStateClass.TOTAL_INCREASING,
+                    native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+                    icon="mdi:lightning-bolt",
+                ),
+                2,
                 None,
             ),
         ]
@@ -152,7 +175,6 @@ class TesySensor(TesyEntity, SensorEntity):
     """Represents a sensor for a Tesy water heater controller."""
 
     _attr_has_entity_name = True
-    _attr_should_poll = True
 
     def __init__(
         self,
@@ -166,7 +188,7 @@ class TesySensor(TesyEntity, SensorEntity):
         """Initialize the sensor."""
         super().__init__(hass, coordinator, entry, description)
 
-        self.description: description
+        self.entity_description = description
         self._attr_name = description.name
 
         if description.device_class is not None:
@@ -276,13 +298,10 @@ class TesyTemperatureSensor(TesySensor):
 
 
 class TesyCdtSensor(TesySensor):
-    _last_cdt: str | None = None
-
     @property
     def native_value(self):
-        """Return the timestamp when the heater will be ready."""
+        """Return the countdown in minutes until the heater will be ready."""
         if ATTR_CDT not in self.coordinator.data:
-            self._last_cdt = None
             return None
         cdt = self.coordinator.data[ATTR_CDT]
         if self._last_cdt is not None and self._last_cdt == cdt:
@@ -292,7 +311,7 @@ class TesyCdtSensor(TesySensor):
         return self._attr_native_value
 
 
-class TesyCurrentTargetTempSensor(TesySensor):
+class TesyTargetTempSensor(TesySensor):
     @property
     def native_value(self):
         """Return the current target temperature."""
@@ -322,18 +341,37 @@ class TesyRssiSensor(TesySensor):
 class TesyUptimeSensor(TesySensor):
     @property
     def native_value(self):
-        """Return the device uptime in human-readable format."""
+        """Return the device uptime in seconds."""
         if ATTR_UPTIME not in self.coordinator.data:
             return None
-        total_seconds = int(self.coordinator.data[ATTR_UPTIME])
-        days, remainder = divmod(total_seconds, 86400)
-        hours, remainder = divmod(remainder, 3600)
-        minutes, _ = divmod(remainder, 60)
-        parts = []
-        if days > 0:
-            parts.append(f"{days}d")
-        if hours > 0:
-            parts.append(f"{hours}h")
-        if minutes > 0 and days == 0:
-            parts.append(f"{minutes}m")
-        return " ".join(parts) if parts else "0m"
+        return int(self.coordinator.data[ATTR_UPTIME])
+
+
+class TesyResettableEnergySensor(TesySensor):
+    @property
+    def native_value(self):
+        """Return the energy consumed since last reset."""
+        if ATTR_ENERGY_RESETTABLE not in self.coordinator.data:
+            return None
+
+        pwc_u = self.coordinator.data[ATTR_ENERGY_RESETTABLE]
+        if not isinstance(pwc_u, dict) or "utc" not in pwc_u:
+            return None
+
+        utc = pwc_u["utc"]
+        if ";" not in utc:
+            configured_power = self.coordinator.get_config_power()
+            energy_kwh = (int(utc) * configured_power) / (3600.0 * 1000)
+            return energy_kwh
+        else:
+            if ATTR_PARAMETERS not in self.coordinator.data:
+                return None
+
+            power_dict = utc.split(";")
+            pNF = self.coordinator.data[ATTR_PARAMETERS]
+            watt1 = int(pNF[38 + 0 * 2 : 40 + 0 * 2], 16) * 20
+            watt2 = int(pNF[38 + 1 * 2 : 40 + 1 * 2], 16) * 20
+            tmp_kwh1 = (int(power_dict[0]) * watt1) / (3600.0 * 1000)
+            tmp_kwh2 = (int(power_dict[1]) * watt2) / (3600.0 * 1000)
+
+            return tmp_kwh1 + tmp_kwh2

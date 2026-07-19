@@ -68,7 +68,6 @@ class TesySwitch(TesyEntity, SwitchEntity):
     """Represents a toggle switch for an Tesy device."""
 
     _attr_has_entity_name = True
-    _attr_should_poll = True
 
     def __init__(
         self,
