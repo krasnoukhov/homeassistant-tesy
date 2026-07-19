@@ -23,6 +23,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import (
     TESY_DEVICE_TYPES,
     ATTR_CURRENT_TEMP,
+    ATTR_CURRENT_TARGET_TEMP,
     ATTR_DEVICE_ID,
     ATTR_MAX_SHOWERS,
     ATTR_IS_HEATING,
@@ -166,7 +167,7 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             return
 
         if self.coordinator.data[ATTR_POWER] == "1":
-            if self.coordinator.data[ATTR_MODE] != STATE_PERFORMANCE:
+            if self.coordinator.data[ATTR_MODE] != "0":
                 response = await self.coordinator.async_set_operation_mode("0")
                 await self.partially_update_data_from_api(response, ATTR_MODE)
 
@@ -192,21 +193,29 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
 
             if operation_mode == STATE_PERFORMANCE:
                 new_mode = "0"
-            if operation_mode == TESY_MODE_P1:
+            elif operation_mode == TESY_MODE_P1:
                 new_mode = "1"
-            if operation_mode == TESY_MODE_P2:
+            elif operation_mode == TESY_MODE_P2:
                 new_mode = "2"
-            if operation_mode == TESY_MODE_P3:
+            elif operation_mode == TESY_MODE_P3:
                 new_mode = "3"
-            if operation_mode == STATE_ECO:
+            elif operation_mode == STATE_ECO:
                 new_mode = "4"
-            if operation_mode == TESY_MODE_EC2:
-                new_mode = "4"
-            if operation_mode == TESY_MODE_EC3:
+            elif operation_mode == TESY_MODE_EC2:
+                new_mode = "5"
+            elif operation_mode == TESY_MODE_EC3:
                 new_mode = "6"
 
             response = await self.coordinator.async_set_operation_mode(new_mode)
             await self.partially_update_data_from_api(response, ATTR_MODE)
+
+            if operation_mode in (STATE_ECO, TESY_MODE_EC2, TESY_MODE_EC3):
+                response = await self.coordinator.async_set_target_temperature(
+                    self._attr_max_temp
+                )
+                await self.partially_update_data_from_api(
+                    response, ATTR_CURRENT_TARGET_TEMP
+                )
 
     async def turn_on(self, **_kwargs: Any) -> None:
         """Turn on water heater."""
@@ -221,8 +230,7 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
     @property
     def target_temperature(self):
         """Return the target temperature."""
-        # Return setpoint do
-        return float(self.coordinator.data[ATTR_TARGET_TEMP])
+        return float(self.coordinator.data[ATTR_CURRENT_TARGET_TEMP])
 
     @property
     def extra_state_attributes(self) -> dict[str, str] | None:

@@ -17,9 +17,53 @@
     }
   },
   "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Температура"
+      },
+      "energy_consumed": {
+        "name": "Консумирана енергия"
+      },
+      "ready_in": {
+        "name": "Готов след"
+      },
+      "target_temperature": {
+        "name": "Целева температура"
+      },
+      "error_status": {
+        "name": "Състояние на грешка"
+      },
+      "wifi_signal": {
+        "name": "WiFi сигнал"
+      },
+      "uptime": {
+        "name": "Време на работа"
+      },
+      "energy_consumed_resettable": {
+        "name": "Консумирана енергия (нулируема)"
+      }
+    },
+    "switch": {
+      "boost": {
+        "name": "Boost"
+      },
+      "child_lock": {
+        "name": "Детско заключване"
+      }
+    },
     "water_heater": {
       "heater": {
-        "name": "Бойлер"
+        "name": "Бойлер",
+        "state": {
+          "off": "Изкл.",
+          "performance": "Ръчен",
+          "P1": "Програма 1",
+          "P2": "Програма 2",
+          "P3": "Програма 3",
+          "eco": "Еко Смарт",
+          "EC2": "Еко Комфорт",
+          "EC3": "Еко Нощ"
+        }
       }
     }
   }

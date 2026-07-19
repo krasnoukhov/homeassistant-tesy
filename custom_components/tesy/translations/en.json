@@ -17,9 +17,53 @@
     }
   },
   "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Temperature"
+      },
+      "energy_consumed": {
+        "name": "Energy Consumed"
+      },
+      "ready_in": {
+        "name": "Ready In"
+      },
+      "target_temperature": {
+        "name": "Target Temperature"
+      },
+      "error_status": {
+        "name": "Error Status"
+      },
+      "wifi_signal": {
+        "name": "WiFi Signal"
+      },
+      "uptime": {
+        "name": "Uptime"
+      },
+      "energy_consumed_resettable": {
+        "name": "Energy Consumed (Resettable)"
+      }
+    },
+    "switch": {
+      "boost": {
+        "name": "Boost"
+      },
+      "child_lock": {
+        "name": "Child Lock"
+      }
+    },
     "water_heater": {
       "heater": {
-        "name": "Heater"
+        "name": "Heater",
+        "state": {
+          "off": "Off",
+          "performance": "Manual",
+          "P1": "Program 1",
+          "P2": "Program 2",
+          "P3": "Program 3",
+          "eco": "Eco Smart",
+          "EC2": "Eco Comfort",
+          "EC3": "Eco Night"
+        }
       }
     }
   }

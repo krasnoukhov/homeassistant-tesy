@@ -1,0 +1,70 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "Indirizzo IP",
+          "heater_power": "Potenza dello scaldacqua per il calcolo dell\u0027energia",
+          "use_old_api": "Usa la vecchia API per dispositivi con chip Atheros"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Dispositivo già configurato",
+      "already_in_progress": "Configurazione del dispositivo in corso",
+      "cannot_connect": "Connessione non riuscita",
+      "unknown": "Errore sconosciuto"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Temperatura"
+      },
+      "energy_consumed": {
+        "name": "Energia consumata"
+      },
+      "ready_in": {
+        "name": "Pronto tra"
+      },
+      "target_temperature": {
+        "name": "Temperatura obiettivo"
+      },
+      "error_status": {
+        "name": "Stato errore"
+      },
+      "wifi_signal": {
+        "name": "Segnale WiFi"
+      },
+      "uptime": {
+        "name": "Tempo di funzionamento"
+      },
+      "energy_consumed_resettable": {
+        "name": "Energia consumata (Azzerabile)"
+      }
+    },
+    "switch": {
+      "boost": {
+        "name": "Boost"
+      },
+      "child_lock": {
+        "name": "Blocco bambini"
+      }
+    },
+    "water_heater": {
+      "heater": {
+        "name": "Boiler",
+        "state": {
+          "off": "Spento",
+          "performance": "Manuale",
+          "P1": "Programma 1",
+          "P2": "Programma 2",
+          "P3": "Programma 3",
+          "eco": "Eco Smart",
+          "EC2": "Eco Comfort",
+          "EC3": "Eco Notte"
+        }
+      }
+    }
+  }
+}

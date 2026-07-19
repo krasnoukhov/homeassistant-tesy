@@ -33,7 +33,7 @@ async def async_setup_entry(
             entry,
             SwitchEntityDescription(
                 key="boost",
-                name="Boost",
+                translation_key="boost",
                 icon="mdi:rocket-launch-outline",
                 device_class=SwitchDeviceClass.SWITCH,
             ),
@@ -51,7 +51,7 @@ async def async_setup_entry(
                 entry,
                 SwitchEntityDescription(
                     key="child_lock",
-                    name="Child Lock",
+                    translation_key="child_lock",
                     icon="mdi:lock-outline",
                     device_class=SwitchDeviceClass.SWITCH,
                 ),
@@ -82,7 +82,6 @@ class TesySwitch(TesyEntity, SwitchEntity):
         """Initialize the switch."""
         super().__init__(hass, coordinator, entry, description)
         self.entity_description = description
-        self._attr_name = description.name
         self._is_on_func = is_on_func
         self._async_turn_on_func = async_turn_on_func
         self._async_turn_off_func = async_turn_off_func

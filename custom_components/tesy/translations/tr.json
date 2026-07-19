@@ -1,0 +1,70 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "IP adresi",
+          "heater_power": "Isıtıcının gücü (enerji hesaplaması için)",
+          "use_old_api": "Atheros çipli cihazlar için eski API'yi kullan"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Cihaz zaten yapılandırılmış",
+      "already_in_progress": "Cihaz yapılandırması devam ediyor",
+      "cannot_connect": "Bağlantı kurulamadı",
+      "unknown": "Bilinmeyen hata"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Sıcaklık"
+      },
+      "energy_consumed": {
+        "name": "Tüketilen enerji"
+      },
+      "ready_in": {
+        "name": "Hazır olma"
+      },
+      "target_temperature": {
+        "name": "Hedef sıcaklık"
+      },
+      "error_status": {
+        "name": "Hata durumu"
+      },
+      "wifi_signal": {
+        "name": "WiFi sinyali"
+      },
+      "uptime": {
+        "name": "Çalışma süresi"
+      },
+      "energy_consumed_resettable": {
+        "name": "Tüketilen enerji (Sıfırlanabilir)"
+      }
+    },
+    "switch": {
+      "boost": {
+        "name": "Boost"
+      },
+      "child_lock": {
+        "name": "Çocuk kilidi"
+      }
+    },
+    "water_heater": {
+      "heater": {
+        "name": "Su Isıtıcısı",
+        "state": {
+          "off": "Kapalı",
+          "performance": "Manuel",
+          "P1": "Program 1",
+          "P2": "Program 2",
+          "P3": "Program 3",
+          "eco": "Eco Smart",
+          "EC2": "Eco Konfor",
+          "EC3": "Eco Gece"
+        }
+      }
+    }
+  }
+}

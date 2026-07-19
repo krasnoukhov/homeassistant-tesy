@@ -1,0 +1,70 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "IP-adres",
+          "heater_power": "Vermogen van de waterverwarmer voor energieberekening",
+          "use_old_api": "Oude API gebruiken voor apparaten met Atheros-chip"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Apparaat is al geconfigureerd",
+      "already_in_progress": "Apparaatconfiguratie is bezig",
+      "cannot_connect": "Verbinding mislukt",
+      "unknown": "Onbekende fout"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Temperatuur"
+      },
+      "energy_consumed": {
+        "name": "Verbruikte energie"
+      },
+      "ready_in": {
+        "name": "Gereed over"
+      },
+      "target_temperature": {
+        "name": "Doeltemperatuur"
+      },
+      "error_status": {
+        "name": "Foutstatus"
+      },
+      "wifi_signal": {
+        "name": "WiFi-signaal"
+      },
+      "uptime": {
+        "name": "Bedrijfstijd"
+      },
+      "energy_consumed_resettable": {
+        "name": "Verbruikte energie (Resetbaar)"
+      }
+    },
+    "switch": {
+      "boost": {
+        "name": "Boost"
+      },
+      "child_lock": {
+        "name": "Kinderslot"
+      }
+    },
+    "water_heater": {
+      "heater": {
+        "name": "Boiler",
+        "state": {
+          "off": "Uit",
+          "performance": "Handmatig",
+          "P1": "Programma 1",
+          "P2": "Programma 2",
+          "P3": "Programma 3",
+          "eco": "Eco Smart",
+          "EC2": "Eco Comfort",
+          "EC3": "Eco Nacht"
+        }
+      }
+    }
+  }
+}

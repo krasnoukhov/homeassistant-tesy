@@ -56,7 +56,7 @@ async def async_setup_entry(
                 entry,
                 SensorEntityDescription(
                     key="temperature",
-                    name="Temperature",
+                    translation_key="temperature",
                     device_class=SensorDeviceClass.TEMPERATURE,
                     state_class=SensorStateClass.MEASUREMENT,
                     native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -71,7 +71,7 @@ async def async_setup_entry(
                 entry,
                 SensorEntityDescription(
                     key="energy_consumed",
-                    name="Energy Consumed",
+                    translation_key="energy_consumed",
                     device_class=SensorDeviceClass.ENERGY,
                     state_class=SensorStateClass.TOTAL_INCREASING,
                     native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
@@ -86,7 +86,7 @@ async def async_setup_entry(
                 entry,
                 SensorEntityDescription(
                     key="cdt",
-                    name="Ready In",
+                    translation_key="ready_in",
                     device_class=SensorDeviceClass.DURATION,
                     state_class=SensorStateClass.MEASUREMENT,
                     native_unit_of_measurement=UnitOfTime.MINUTES,
@@ -100,8 +100,8 @@ async def async_setup_entry(
                 coordinator,
                 entry,
                 SensorEntityDescription(
-                    key="current_target_temperature",
-                    name="Target Temperature",
+                    key="target_temperature",
+                    translation_key="target_temperature",
                     device_class=SensorDeviceClass.TEMPERATURE,
                     state_class=SensorStateClass.MEASUREMENT,
                     native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -116,7 +116,7 @@ async def async_setup_entry(
                 entry,
                 SensorEntityDescription(
                     key="error_status",
-                    name="Error Status",
+                    translation_key="error_status",
                     icon="mdi:alert-circle-outline",
                 ),
                 None,
@@ -128,7 +128,7 @@ async def async_setup_entry(
                 entry,
                 SensorEntityDescription(
                     key="wifi_signal",
-                    name="WiFi Signal",
+                    translation_key="wifi_signal",
                     device_class=SensorDeviceClass.SIGNAL_STRENGTH,
                     state_class=SensorStateClass.MEASUREMENT,
                     native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
@@ -143,7 +143,7 @@ async def async_setup_entry(
                 entry,
                 SensorEntityDescription(
                     key="uptime",
-                    name="Uptime",
+                    translation_key="uptime",
                     device_class=SensorDeviceClass.DURATION,
                     state_class=SensorStateClass.MEASUREMENT,
                     native_unit_of_measurement=UnitOfTime.SECONDS,
@@ -158,7 +158,7 @@ async def async_setup_entry(
                 entry,
                 SensorEntityDescription(
                     key="energy_consumed_resettable",
-                    name="Energy Consumed (Resettable)",
+                    translation_key="energy_consumed_resettable",
                     device_class=SensorDeviceClass.ENERGY,
                     state_class=SensorStateClass.TOTAL_INCREASING,
                     native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
@@ -189,7 +189,6 @@ class TesySensor(TesyEntity, SensorEntity):
         super().__init__(hass, coordinator, entry, description)
 
         self.entity_description = description
-        self._attr_name = description.name
 
         if description.device_class is not None:
             self._attr_device_class = description.device_class

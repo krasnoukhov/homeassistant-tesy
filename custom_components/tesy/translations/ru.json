@@ -1,0 +1,70 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "IP-адрес",
+          "heater_power": "Мощность водонагревателя для расчёта энергии",
+          "use_old_api": "Использовать старое API для устройств с чипом Atheros"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Устройство уже настроено",
+      "already_in_progress": "Настройка устройства в процессе",
+      "cannot_connect": "Не удалось подключиться",
+      "unknown": "Неизвестная ошибка"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Температура"
+      },
+      "energy_consumed": {
+        "name": "Потреблённая энергия"
+      },
+      "ready_in": {
+        "name": "Готовность через"
+      },
+      "target_temperature": {
+        "name": "Целевая температура"
+      },
+      "error_status": {
+        "name": "Статус ошибки"
+      },
+      "wifi_signal": {
+        "name": "Сигнал WiFi"
+      },
+      "uptime": {
+        "name": "Время работы"
+      },
+      "energy_consumed_resettable": {
+        "name": "Потреблённая энергия (Сбрасываемая)"
+      }
+    },
+    "switch": {
+      "boost": {
+        "name": "Турбо"
+      },
+      "child_lock": {
+        "name": "Детская блокировка"
+      }
+    },
+    "water_heater": {
+      "heater": {
+        "name": "Водонагреватель",
+        "state": {
+          "off": "Выкл.",
+          "performance": "Ручной",
+          "P1": "Программа 1",
+          "P2": "Программа 2",
+          "P3": "Программа 3",
+          "eco": "Эко Умный",
+          "EC2": "Эко Комфорт",
+          "EC3": "Эко Ночь"
+        }
+      }
+    }
+  }
+}

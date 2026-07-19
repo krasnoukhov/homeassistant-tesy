@@ -1,0 +1,70 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "Adresse IP",
+          "heater_power": "Puissance du chauffe-eau pour le calcul de l\u0027énergie",
+          "use_old_api": "Utiliser l\u0027ancienne API pour les appareils avec puce Atheros"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "L\u0027appareil est déjà configuré",
+      "already_in_progress": "La configuration de l\u0027appareil est en cours",
+      "cannot_connect": "Échec de la connexion",
+      "unknown": "Erreur inconnue"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Température"
+      },
+      "energy_consumed": {
+        "name": "Énergie consommée"
+      },
+      "ready_in": {
+        "name": "Prêt dans"
+      },
+      "target_temperature": {
+        "name": "Température cible"
+      },
+      "error_status": {
+        "name": "État d\u0027erreur"
+      },
+      "wifi_signal": {
+        "name": "Signal WiFi"
+      },
+      "uptime": {
+        "name": "Temps de fonctionnement"
+      },
+      "energy_consumed_resettable": {
+        "name": "Énergie consommée (Réinitialisable)"
+      }
+    },
+    "switch": {
+      "boost": {
+        "name": "Boost"
+      },
+      "child_lock": {
+        "name": "Verrouillage enfant"
+      }
+    },
+    "water_heater": {
+      "heater": {
+        "name": "Chauffe-eau",
+        "state": {
+          "off": "Arrêt",
+          "performance": "Manuel",
+          "P1": "Programme 1",
+          "P2": "Programme 2",
+          "P3": "Programme 3",
+          "eco": "Eco Smart",
+          "EC2": "Eco Confort",
+          "EC3": "Eco Nuit"
+        }
+      }
+    }
+  }
+}
