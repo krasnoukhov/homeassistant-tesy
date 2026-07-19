@@ -79,6 +79,11 @@ class TesyOldApi:
         """Set mode for Tesy component."""
         return self._get_request("modeSW", mode=int(val) + 1).json()
 
+    def set_child_lock(self, val: str) -> bool:
+        """Set child lock for Tesy component. Not supported on old API."""
+        _LOGGER.warning("set_child_lock is not supported on the old API")
+        return {ATTR_API: "OK"}
+
     def _coerce_mode(self, mode: Any) -> str:
         """Convert mode reported by the old API into the numeric string the integration expects."""
         if mode is None:

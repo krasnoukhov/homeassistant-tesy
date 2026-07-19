@@ -8,12 +8,15 @@ Tested with:
 - [Tesy Modeco Cloud GCV 150 47 24D C22 ECW](https://tesy.com/products/electric-water-heaters/modeco-series/modeco-cloud/?product=gcv-1504724d-c22-ecw)
 - BilightSmart
 - BelliSlimo
+- [Tesy BelliSlimo Cloud GCR 80 27 22 E31 ECW](https://tesy.com/products/electric-water-heaters/bellislimo-series/bellislimo-cloud/?product=gcr-80-27-22-e31-ecw)
 
 ## Highlights
 
-This intergation allows you to change modes of the water heater as well as controling the temperature setpoint in manual mode (defined as Performance in HA).
+This integration allows you to change modes of the water heater as well as controlling the temperature setpoint in manual mode (defined as Performance in HA).
 
-Energy counter is also working. It uses long term counter from the device that counts the seconds the heater was on. In order for this to work propperly you need to enter your heater power rating in the setup dialog. This information could be found on the device's label. For double tank devices this is read from the device and leaving it as zero is recommended.
+Energy counter is also working. It uses long term counter from the device that counts the seconds the heater was on. In order for this to work properly you need to enter your heater power rating in the setup dialog. This information could be found on the device's label. For double tank devices this is read from the device and leaving it as zero is recommended.
+
+The integration provides two energy sensors: `Energy Consumed` tracks total lifetime usage. `Energy Consumed (Resettable)` uses the device's built-in resettable counter - reset it from the Tesy app to track usage over a specific period, like a trip odometer.
 
 This integration exposes boost mode of the heaters as a switch. It can be switched on and off, but in order to work the heater should on.
 
@@ -49,11 +52,12 @@ Temperature setpoint is only used in manual (Performance) mode. In any other mod
 |--------|-------------|-------------|------|
 | `sensor.temperature` | Current temperature / showers | `temperature` | °C |
 | `sensor.energy_consumed` | Total energy consumed | `energy` | kWh |
-| `sensor.cdt` | Timestamp when target is reached | `timestamp` | — |
-| `sensor.current_target_temperature` | Active target temperature | `temperature` | °C |
-| `sensor.error_status` | Error code (`00` = no error) | — | — |
+| `sensor.ready_in` | Minutes until target is reached | `duration` | min |
+| `sensor.target_temperature` | Active target temperature | `temperature` | °C |
+| `sensor.error_status` | Error code (`00` = no error) | - | - |
 | `sensor.wifi_signal` | WiFi signal strength | `signal_strength` | dBm |
-| `sensor.uptime` | Device uptime (human-readable) | — | — |
+| `sensor.uptime` | Device uptime | `duration` | s |
+| `sensor.energy_consumed_resettable` | Energy consumed (since last reset from device) | `energy` | kWh |
 
 ### Switches
 
@@ -70,20 +74,32 @@ Temperature setpoint is only used in manual (Performance) mode. In any other mod
 | `mode` | Operation mode | Water heater |
 | `tmpC` | Current temperature / showers | Temperature sensor |
 | `tmpT` | Target temperature setpoint | Water heater |
-| `tmpR` | Active target temperature | Current Target Temperature sensor |
+| `tmpR` | Active target temperature | Target Temperature sensor |
 | `ht` | Heating element active | `is_heating` attr |
 | `bst` | Boost flag | Boost switch |
-| `cdt` | Countdown timer (minutes) | Ready At sensor |
+| `cdt` | Countdown timer (minutes) | Ready In sensor |
 | `err` | Error code | Error Status sensor |
 | `wdBm` | WiFi RSSI | WiFi Signal sensor |
 | `wup` | Uptime (seconds) | Uptime sensor |
 | `lck` | Child lock | Child Lock switch |
 | `pwc_t` | Runtime counter | Energy calculation |
+| `pwc_u` | Resettable runtime counter | Resettable Energy sensor |
 | `parNF` | Additional parameters | Dual-tank energy calculation |
 | `id` | Device type ID | Device detection |
 | `MAC` | MAC address | Unique ID |
 | `tmpMX` | Maximum showers | Max setpoint |
 | `wsw` | Software version | Device info |
+| `hsw` | Hardware version | Device info |
+
+## API Details
+
+The device exposes a local HTTP API at `http://{device_ip}/api`. You can retrieve all device parameters in a single request:
+
+```
+http://{device_ip}/api?name=_all
+```   
+
+This returns a JSON object with all fields listed in the table above.
 
 ## Supported Devices
 

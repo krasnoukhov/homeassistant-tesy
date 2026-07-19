@@ -80,6 +80,8 @@ ATTR_CDT = "cdt"
 ATTR_ERROR = "err"
 ATTR_UPTIME = "wup"
 ATTR_CHILD_LOCK = "lck"
+ATTR_HARDWARE = "hsw"
+ATTR_ENERGY_RESETTABLE = "pwc_u"
 
 """
 Some devices have additional parameters:

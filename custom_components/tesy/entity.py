@@ -14,6 +14,7 @@ from .const import (
     ATTR_MAC,
     ATTR_BOOST,
     ATTR_CHILD_LOCK,
+    ATTR_HARDWARE,
     ATTR_SOFTWARE,
     DOMAIN,
     ATTR_API,
@@ -70,6 +71,7 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
             manufacturer="Tesy",
             model=device_model,
             sw_version=self.coordinator.data[ATTR_SOFTWARE],
+            hw_version=self.coordinator.data.get(ATTR_HARDWARE),
         )
 
     @property
