@@ -20,6 +20,8 @@ The integration provides two energy sensors: `Energy Consumed` tracks total life
 
 This integration exposes boost mode of the heaters as a switch. It can be switched on and off, but in order to work the heater should on.
 
+Child lock switch prevents accidental changes (if supported by the device).
+
 Temperature setpoint is only used in manual (Performance) mode. In any other modes it is ignored. If setpoint is manually changed operation mode will jump to performance in case the heater is powered on.
 
 <img src="https://github.com/krasnoukhov/homeassistant-tesy/assets/944286/a08289f7-d7cc-49a0-9747-9fbd765e58d1" alt="heater" width="400">
@@ -45,6 +47,21 @@ Temperature setpoint is only used in manual (Performance) mode. In any other mod
 | Entity | Attributes |
 |--------|------------|
 | `water_heater.heater` | `is_heating`, `target_temp_step` |
+
+### Operation Modes
+
+| Mode | Description |
+|------|-------------|
+| Off | Heater is powered off |
+| Manual | Direct temperature control (default) |
+| Program 1 | Schedule-based heating preset 1 |
+| Program 2 | Schedule-based heating preset 2 |
+| Program 3 | Schedule-based heating preset 3 |
+| Eco Smart | Energy-saving mode |
+| Eco Comfort | Balanced comfort and efficiency |
+| Eco Night | Overnight energy-saving mode |
+
+Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core HA icons.
 
 ### Sensors
 
@@ -110,3 +127,7 @@ This returns a JSON object with all fields listed in the table above.
 | 2003 | BiLight Smart | 15-75°C |
 | 2004 | ModEco 2 | 15-75°C |
 | 2005 | BelliSlimo Lite | 0-4 showers |
+
+## Translations
+
+Available in 9 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Russian, Turkish. Operation modes, sensors, switches, and config flow are all translated.
