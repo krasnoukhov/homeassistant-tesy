@@ -101,12 +101,10 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
     @property
     def is_child_lock_on(self):
         """Return true if child lock is on."""
-        if (
+        return (
             ATTR_CHILD_LOCK in self.coordinator.data
             and self.coordinator.data[ATTR_CHILD_LOCK] == "1"
-        ):
-            return True
-        return False
+        )
 
     async def async_turn_child_lock_on(self, **kwargs):
         """Turn on child lock."""

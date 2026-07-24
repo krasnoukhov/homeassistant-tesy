@@ -368,6 +368,8 @@ class TesyResettableEnergySensor(TesySensor):
 
             power_dict = utc.split(";")
             pNF = self.coordinator.data[ATTR_PARAMETERS]
+            # pNF hex string: bytes at offset 38-41 encode heating element
+            # power. Each hex byte * 20 = watts for that element.
             watt1 = int(pNF[38 + 0 * 2 : 40 + 0 * 2], 16) * 20
             watt2 = int(pNF[38 + 1 * 2 : 40 + 1 * 2], 16) * 20
             tmp_kwh1 = (int(power_dict[0]) * watt1) / (3600.0 * 1000)

@@ -42,6 +42,8 @@ Temperature setpoint is only used in manual (Performance) mode. In any other mod
 * Copy the entire `custom_components/tesy/` directory to your server's `<config>/custom_components` directory
 * Restart Home Assistant
 
+## Entities
+
 ### Water Heater
 
 | Entity | Attributes |
