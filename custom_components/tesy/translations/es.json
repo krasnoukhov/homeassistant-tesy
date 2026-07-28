@@ -57,12 +57,12 @@
         "state": {
           "off": "Apagado",
           "performance": "Manual",
-          "P1": "Programa 1",
-          "P2": "Programa 2",
-          "P3": "Programa 3",
+          "p1": "Programa 1",
+          "p2": "Programa 2",
+          "p3": "Programa 3",
           "eco": "Eco Smart",
-          "EC2": "Eco Confort",
-          "EC3": "Eco Noche"
+          "ec2": "Eco Confort",
+          "ec3": "Eco Noche"
         }
       }
     }

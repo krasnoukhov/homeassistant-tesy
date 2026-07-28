@@ -57,12 +57,12 @@
         "state": {
           "off": "Uit",
           "performance": "Handmatig",
-          "P1": "Programma 1",
-          "P2": "Programma 2",
-          "P3": "Programma 3",
+          "p1": "Programma 1",
+          "p2": "Programma 2",
+          "p3": "Programma 3",
           "eco": "Eco Smart",
-          "EC2": "Eco Comfort",
-          "EC3": "Eco Nacht"
+          "ec2": "Eco Comfort",
+          "ec3": "Eco Nacht"
         }
       }
     }

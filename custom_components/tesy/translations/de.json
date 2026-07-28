@@ -57,12 +57,12 @@
         "state": {
           "off": "Aus",
           "performance": "Manuell",
-          "P1": "Programm 1",
-          "P2": "Programm 2",
-          "P3": "Programm 3",
+          "p1": "Programm 1",
+          "p2": "Programm 2",
+          "p3": "Programm 3",
           "eco": "Eco Smart",
-          "EC2": "Eco Komfort",
-          "EC3": "Eco Nacht"
+          "ec2": "Eco Komfort",
+          "ec3": "Eco Nacht"
         }
       }
     }

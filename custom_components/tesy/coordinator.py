@@ -82,9 +82,7 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     # Set child lock
     async def async_set_child_lock(self, val: str) -> None:
         """Set child lock for Tesy component."""
-        return await self.hass.async_add_executor_job(
-            self._client.set_child_lock, val
-        )
+        return await self.hass.async_add_executor_job(self._client.set_child_lock, val)
 
     def _get_data(self) -> dict[str, Any]:
         """Get new sensor data using Tesy API."""

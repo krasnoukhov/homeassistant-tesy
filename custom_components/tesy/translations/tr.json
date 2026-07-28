@@ -57,12 +57,12 @@
         "state": {
           "off": "Kapalı",
           "performance": "Manuel",
-          "P1": "Program 1",
-          "P2": "Program 2",
-          "P3": "Program 3",
+          "p1": "Program 1",
+          "p2": "Program 2",
+          "p3": "Program 3",
           "eco": "Eco Smart",
-          "EC2": "Eco Konfor",
-          "EC3": "Eco Gece"
+          "ec2": "Eco Konfor",
+          "ec3": "Eco Gece"
         }
       }
     }

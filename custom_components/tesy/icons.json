@@ -5,11 +5,11 @@
         "state_attributes": {
           "operation_mode": {
             "state": {
-              "P1": "mdi:numeric-1-circle-outline",
-              "P2": "mdi:numeric-2-circle-outline",
-              "P3": "mdi:numeric-3-circle-outline",
-              "EC2": "mdi:flower-outline",
-              "EC3": "mdi:weather-night"
+              "p1": "mdi:numeric-1-circle-outline",
+              "p2": "mdi:numeric-2-circle-outline",
+              "p3": "mdi:numeric-3-circle-outline",
+              "ec2": "mdi:flower-outline",
+              "ec3": "mdi:weather-night"
             }
           }
         }

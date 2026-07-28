@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 
 from homeassistant.components.sensor import (
@@ -21,7 +21,6 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.util import dt as dt_util
 
 from .entity import TesyEntity
 from .const import (
@@ -302,12 +301,7 @@ class TesyCdtSensor(TesySensor):
         """Return the countdown in minutes until the heater will be ready."""
         if ATTR_CDT not in self.coordinator.data:
             return None
-        cdt = self.coordinator.data[ATTR_CDT]
-        if self._last_cdt is not None and self._last_cdt == cdt:
-            return self._attr_native_value
-        self._last_cdt = cdt
-        self._attr_native_value = dt_util.utcnow() + timedelta(minutes=int(cdt))
-        return self._attr_native_value
+        return int(self.coordinator.data[ATTR_CDT])
 
 
 class TesyTargetTempSensor(TesySensor):

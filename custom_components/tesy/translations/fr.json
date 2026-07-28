@@ -57,12 +57,12 @@
         "state": {
           "off": "Arrêt",
           "performance": "Manuel",
-          "P1": "Programme 1",
-          "P2": "Programme 2",
-          "P3": "Programme 3",
+          "p1": "Programme 1",
+          "p2": "Programme 2",
+          "p3": "Programme 3",
           "eco": "Eco Smart",
-          "EC2": "Eco Confort",
-          "EC3": "Eco Nuit"
+          "ec2": "Eco Confort",
+          "ec3": "Eco Nuit"
         }
       }
     }
