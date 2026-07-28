@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from homeassistant.components.sensor import (
+    RestoreSensor,
     SensorEntity,
     SensorDeviceClass,
     SensorStateClass,
@@ -10,11 +13,12 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfEnergy, UnitOfTemperature
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity import TesyEntity
 from .const import (
+    ATTR_IS_HEATING,
     ATTR_PARAMETERS,
     DOMAIN,
     ATTR_LONG_COUNTER,
@@ -109,34 +113,80 @@ class TesySensor(TesyEntity, SensorEntity):
             self._attr_options = options
 
 
-class TesyEnergySensor(TesySensor):
+class TesyEnergySensor(TesySensor, RestoreSensor):
+    """Energy sensor that accumulates kWh in real-time from the is-heating flag.
+
+    The boiler's pwc_t counter (cumulative seconds heated) is only updated every
+    few hours by the firmware. Using it directly causes energy to be attributed to
+    the wrong hourly bucket in HA's energy dashboard. Instead, this sensor tracks
+    energy by observing the ht (is-heating) flag on every 30-second poll and
+    accumulating power × elapsed_time, giving accurate per-hour attribution.
+
+    For double-tank devices the per-tank ht mapping is unknown, so the original
+    pwc_t counter is kept for those.
+    """
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        coordinator: TesyCoordinator,
+        entry: ConfigEntry,
+        description: SensorEntityDescription,
+        suggested_display_precision: int | None,
+        options: list | None,
+    ) -> None:
+        super().__init__(
+            hass, coordinator, entry, description, suggested_display_precision, options
+        )
+        self._energy_kwh: float = 0.0
+        self._last_update: datetime | None = None
+
+    async def async_added_to_hass(self) -> None:
+        """Restore previous energy total on startup."""
+        await super().async_added_to_hass()
+        if (last_state := await self.async_get_last_sensor_data()) is not None:
+            try:
+                self._energy_kwh = float(last_state.native_value or 0)
+            except (TypeError, ValueError):
+                pass
+        self._last_update = datetime.now(timezone.utc)
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Accumulate energy based on heating state, then write HA state."""
+        now = datetime.now(timezone.utc)
+        data = self.coordinator.data
+
+        is_double_tank = ";" in data.get(ATTR_LONG_COUNTER, "")
+
+        if not is_double_tank and self._last_update is not None:
+            elapsed = (now - self._last_update).total_seconds()
+            if data.get(ATTR_IS_HEATING) == "1":
+                power_w = self.coordinator.get_config_power()
+                self._energy_kwh += (power_w * elapsed) / 3_600_000.0
+
+        self._last_update = now
+        super()._handle_coordinator_update()
+
     @property
     def native_value(self):
         """Return the state of the sensor."""
-        # Prevent crashes if energy counter is missing
-        if ATTR_LONG_COUNTER not in self.coordinator.data:
-            return None
+        data = self.coordinator.data
 
-        if ";" not in self.coordinator.data[ATTR_LONG_COUNTER]:
-            # For single tank heaters, we need to have power value configured
-            configured_power = self.coordinator.get_config_power()
-            energy_kwh = (
-                int(self.coordinator.data[ATTR_LONG_COUNTER]) * configured_power
-            ) / (3600.0 * 1000)
-            return energy_kwh
-        else:
-            # Prevent crashes if Additional parameters are missing
-            if ATTR_PARAMETERS not in self.coordinator.data:
+        # Double-tank: fall back to pwc_t counter (per-tank ht mapping unknown)
+        if ";" in data.get(ATTR_LONG_COUNTER, ""):
+            if ATTR_PARAMETERS not in data:
                 return None
-
-            power_dict = self.coordinator.data[ATTR_LONG_COUNTER].split(";")
-            pNF = self.coordinator.data[ATTR_PARAMETERS]
+            power_dict = data[ATTR_LONG_COUNTER].split(";")
+            pNF = data[ATTR_PARAMETERS]
             watt1 = int(pNF[38 + 0 * 2 : 40 + 0 * 2], 16) * 20
             watt2 = int(pNF[38 + 1 * 2 : 40 + 1 * 2], 16) * 20
             tmp_kwh1 = (int(power_dict[0]) * watt1) / (3600.0 * 1000)
             tmp_kwh2 = (int(power_dict[1]) * watt2) / (3600.0 * 1000)
-
             return tmp_kwh1 + tmp_kwh2
+
+        # Single-tank: return real-time accumulated value
+        return round(self._energy_kwh, 6)
 
 
 class TesyTemperatureSensor(TesySensor):
