@@ -1,0 +1,70 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "IP-Adresse",
+          "heater_power": "Leistung des Heizers für die Energieberechnung",
+          "use_old_api": "Altes API für Geräte mit Atheros-Chip verwenden"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Gerät ist bereits konfiguriert",
+      "already_in_progress": "Gerätekonfiguration wird durchgeführt",
+      "cannot_connect": "Verbindung fehlgeschlagen",
+      "unknown": "Unbekannter Fehler"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Temperatur"
+      },
+      "energy_consumed": {
+        "name": "Verbrauchte Energie"
+      },
+      "ready_in": {
+        "name": "Fertig in"
+      },
+      "target_temperature": {
+        "name": "Zieltemperatur"
+      },
+      "error_status": {
+        "name": "Fehlerstatus"
+      },
+      "wifi_signal": {
+        "name": "WLAN-Signal"
+      },
+      "uptime": {
+        "name": "Betriebszeit"
+      },
+      "energy_consumed_resettable": {
+        "name": "Verbrauchte Energie (Rücksetzbar)"
+      }
+    },
+    "switch": {
+      "boost": {
+        "name": "Boost"
+      },
+      "child_lock": {
+        "name": "Kindersicherung"
+      }
+    },
+    "water_heater": {
+      "heater": {
+        "name": "Boiler",
+        "state": {
+          "off": "Aus",
+          "performance": "Manuell",
+          "p1": "Programm 1",
+          "p2": "Programm 2",
+          "p3": "Programm 3",
+          "eco": "Eco Smart",
+          "ec2": "Eco Komfort",
+          "ec3": "Eco Nacht"
+        }
+      }
+    }
+  }
+}

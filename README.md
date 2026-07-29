@@ -8,14 +8,19 @@ Tested with:
 - [Tesy Modeco Cloud GCV 150 47 24D C22 ECW](https://tesy.com/products/electric-water-heaters/modeco-series/modeco-cloud/?product=gcv-1504724d-c22-ecw)
 - BilightSmart
 - BelliSlimo
+- [Tesy BelliSlimo Cloud GCR 80 27 22 E31 ECW](https://tesy.com/products/electric-water-heaters/bellislimo-series/bellislimo-cloud/?product=gcr-80-27-22-e31-ecw)
 
 ## Highlights
 
-This intergation allows you to change modes of the water heater as well as controling the temperature setpoint in manual mode (defined as Performance in HA).
+This integration allows you to change modes of the water heater as well as controlling the temperature setpoint in manual mode (defined as Performance in HA).
 
-Energy counter is also working. It uses long term counter from the device that counts the seconds the heater was on. In order for this to work propperly you need to enter your heater power rating in the setup dialog. This information could be found on the device's label. For double tank devices this is read from the device and leaving it as zero is recommended.
+Energy counter is also working. It uses long term counter from the device that counts the seconds the heater was on. In order for this to work properly you need to enter your heater power rating in the setup dialog. This information could be found on the device's label. For double tank devices this is read from the device and leaving it as zero is recommended.
+
+The integration provides two energy sensors: `Energy Consumed` tracks total lifetime usage. `Energy Consumed (Resettable)` uses the device's built-in resettable counter - reset it from the Tesy app to track usage over a specific period, like a trip odometer.
 
 This integration exposes boost mode of the heaters as a switch. It can be switched on and off, but in order to work the heater should on.
+
+Child lock switch prevents accidental changes (if supported by the device).
 
 Temperature setpoint is only used in manual (Performance) mode. In any other modes it is ignored. If setpoint is manually changed operation mode will jump to performance in case the heater is powered on.
 
@@ -36,3 +41,95 @@ Temperature setpoint is only used in manual (Performance) mode. In any other mod
 
 * Copy the entire `custom_components/tesy/` directory to your server's `<config>/custom_components` directory
 * Restart Home Assistant
+
+## Entities
+
+### Water Heater
+
+| Entity | Attributes |
+|--------|------------|
+| `water_heater.heater` | `is_heating`, `target_temp_step` |
+
+### Operation Modes
+
+| Mode | Description |
+|------|-------------|
+| Off | Heater is powered off |
+| Manual | Direct temperature control (default) |
+| Program 1 | Schedule-based heating preset 1 |
+| Program 2 | Schedule-based heating preset 2 |
+| Program 3 | Schedule-based heating preset 3 |
+| Eco Smart | Energy-saving mode |
+| Eco Comfort | Balanced comfort and efficiency |
+| Eco Night | Overnight energy-saving mode |
+
+Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core HA icons.
+
+### Sensors
+
+| Entity | Description | Device Class | Unit |
+|--------|-------------|-------------|------|
+| `sensor.temperature` | Current temperature / showers | `temperature` | °C |
+| `sensor.energy_consumed` | Total energy consumed | `energy` | kWh |
+| `sensor.ready_in` | Minutes until target is reached | `duration` | min |
+| `sensor.target_temperature` | Active target temperature | `temperature` | °C |
+| `sensor.error_status` | Error code (`00` = no error) | - | - |
+| `sensor.wifi_signal` | WiFi signal strength | `signal_strength` | dBm |
+| `sensor.uptime` | Device uptime | `duration` | s |
+| `sensor.energy_consumed_resettable` | Energy consumed (since last reset from device) | `energy` | kWh |
+
+### Switches
+
+| Entity | Description |
+|--------|-------------|
+| `switch.boost` | Boost mode |
+| `switch.child_lock` | Child lock (if supported) |
+
+## Device API Parameters
+
+| Field | Description | Used By |
+|-------|-------------|---------|
+| `pwr` | Power state | Water heater |
+| `mode` | Operation mode | Water heater |
+| `tmpC` | Current temperature / showers | Temperature sensor |
+| `tmpT` | Target temperature setpoint | Water heater |
+| `tmpR` | Active target temperature | Target Temperature sensor |
+| `ht` | Heating element active | `is_heating` attr |
+| `bst` | Boost flag | Boost switch |
+| `cdt` | Countdown timer (minutes) | Ready In sensor |
+| `err` | Error code | Error Status sensor |
+| `wdBm` | WiFi RSSI | WiFi Signal sensor |
+| `wup` | Uptime (seconds) | Uptime sensor |
+| `lck` | Child lock | Child Lock switch |
+| `pwc_t` | Runtime counter | Energy calculation |
+| `pwc_u` | Resettable runtime counter | Resettable Energy sensor |
+| `parNF` | Additional parameters | Dual-tank energy calculation |
+| `id` | Device type ID | Device detection |
+| `MAC` | MAC address | Unique ID |
+| `tmpMX` | Maximum showers | Max setpoint |
+| `wsw` | Software version | Device info |
+| `hsw` | Hardware version | Device info |
+
+## API Details
+
+The device exposes a local HTTP API at `http://{device_ip}/api`. You can retrieve all device parameters in a single request:
+
+```
+http://{device_ip}/api?name=_all
+```   
+
+This returns a JSON object with all fields listed in the table above.
+
+## Supported Devices
+
+| ID | Model | Range |
+|----|-------|-------|
+| 2000 | ModEco | 15-75°C |
+| 2002 | BelliSlimo | 0-4 showers |
+| 2003 | BiLight Smart | 15-75°C |
+| 2004 | ModEco 2 | 15-75°C |
+| 2005 | BelliSlimo Lite | 0-4 showers |
+
+## Translations
+
+Available in 9 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Russian, Turkish. Operation modes, sensors, switches, and config flow are all translated.

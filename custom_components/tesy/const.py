@@ -51,11 +51,11 @@ Current Operating mode, depending on the device. P1 and P2 heat up in advance so
 6		ECO Night
 """
 
-TESY_MODE_P1 = "P1"
-TESY_MODE_P2 = "P2"
-TESY_MODE_P3 = "P3"
-TESY_MODE_EC2 = "EC2"
-TESY_MODE_EC3 = "EC3"
+TESY_MODE_P1 = "p1"
+TESY_MODE_P2 = "p2"
+TESY_MODE_P3 = "p3"
+TESY_MODE_EC2 = "ec2"
+TESY_MODE_EC3 = "ec3"
 
 ATTR_MODE = "mode"
 
@@ -75,6 +75,13 @@ ATTR_RSSI = "wdBm"
 ATTR_MAX_SHOWERS = "tmpMX"
 
 ATTR_PARAMETERS = "parNF"
+
+ATTR_CDT = "cdt"
+ATTR_ERROR = "err"
+ATTR_UPTIME = "wup"
+ATTR_CHILD_LOCK = "lck"
+ATTR_HARDWARE = "hsw"
+ATTR_ENERGY_RESETTABLE = "pwc_u"
 
 """
 Some devices have additional parameters:

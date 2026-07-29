@@ -1,0 +1,70 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "IP адрес",
+          "heater_power": "Мощност на бойлера за изчисление на енергията",
+          "use_old_api": "Използване на стар API за устройства с Atheros чип"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Устройството вече е конфигурирано",
+      "already_in_progress": "Конфигурацията на устройството е в процес",
+      "cannot_connect": "Неуспешно свързване",
+      "unknown": "Неизвестна грешка"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": {
+        "name": "Температура"
+      },
+      "energy_consumed": {
+        "name": "Консумирана енергия"
+      },
+      "ready_in": {
+        "name": "Готов след"
+      },
+      "target_temperature": {
+        "name": "Целева температура"
+      },
+      "error_status": {
+        "name": "Състояние на грешка"
+      },
+      "wifi_signal": {
+        "name": "WiFi сигнал"
+      },
+      "uptime": {
+        "name": "Време на работа"
+      },
+      "energy_consumed_resettable": {
+        "name": "Консумирана енергия (нулируема)"
+      }
+    },
+    "switch": {
+      "boost": {
+        "name": "Boost"
+      },
+      "child_lock": {
+        "name": "Детско заключване"
+      }
+    },
+    "water_heater": {
+      "heater": {
+        "name": "Бойлер",
+        "state": {
+          "off": "Изключен",
+          "performance": "Ръчен",
+          "p1": "Програма 1",
+          "p2": "Програма 2",
+          "p3": "Програма 3",
+          "eco": "Еко Смарт",
+          "ec2": "Еко Комфорт",
+          "ec3": "Еко Нощ"
+        }
+      }
+    }
+  }
+}

@@ -13,6 +13,8 @@ from .const import (
     ATTR_DEVICE_ID,
     ATTR_MAC,
     ATTR_BOOST,
+    ATTR_CHILD_LOCK,
+    ATTR_HARDWARE,
     ATTR_SOFTWARE,
     DOMAIN,
     ATTR_API,
@@ -69,6 +71,7 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
             manufacturer="Tesy",
             model=device_model,
             sw_version=self.coordinator.data[ATTR_SOFTWARE],
+            hw_version=self.coordinator.data.get(ATTR_HARDWARE),
         )
 
     @property
@@ -94,6 +97,32 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
         if self.coordinator.data[ATTR_BOOST] == "1":
             response = await self.coordinator.async_set_boost("0")
             await self.partially_update_data_from_api(response, ATTR_BOOST)
+
+    @property
+    def is_child_lock_on(self):
+        """Return true if child lock is on."""
+        return (
+            ATTR_CHILD_LOCK in self.coordinator.data
+            and self.coordinator.data[ATTR_CHILD_LOCK] == "1"
+        )
+
+    async def async_turn_child_lock_on(self, **kwargs):
+        """Turn on child lock."""
+
+        if ATTR_CHILD_LOCK not in self.coordinator.data:
+            return
+        if self.coordinator.data[ATTR_CHILD_LOCK] == "0":
+            response = await self.coordinator.async_set_child_lock("1")
+            await self.partially_update_data_from_api(response, ATTR_CHILD_LOCK)
+
+    async def async_turn_child_lock_off(self, **kwargs):
+        """Turn off child lock."""
+
+        if ATTR_CHILD_LOCK not in self.coordinator.data:
+            return
+        if self.coordinator.data[ATTR_CHILD_LOCK] == "1":
+            response = await self.coordinator.async_set_child_lock("0")
+            await self.partially_update_data_from_api(response, ATTR_CHILD_LOCK)
 
     async def partially_update_data_from_api(self, response, key):
         old_data = self.coordinator.data

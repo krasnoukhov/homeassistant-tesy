@@ -1,0 +1,19 @@
+{
+  "entity": {
+    "water_heater": {
+      "heater": {
+        "state_attributes": {
+          "operation_mode": {
+            "state": {
+              "p1": "mdi:numeric-1-circle-outline",
+              "p2": "mdi:numeric-2-circle-outline",
+              "p3": "mdi:numeric-3-circle-outline",
+              "ec2": "mdi:flower-outline",
+              "ec3": "mdi:weather-night"
+            }
+          }
+        }
+      }
+    }
+  }
+}
