@@ -132,4 +132,4 @@ This returns a JSON object with all fields listed in the table above.
 
 ## Translations
 
-Available in 9 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Russian, Turkish. Operation modes, sensors, switches, and config flow are all translated.
+Available in 10 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Russian, Turkish, Ukrainian. Operation modes, sensors, switches, and config flow are all translated.

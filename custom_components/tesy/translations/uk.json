@@ -1,0 +1,50 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "ip_address": "IP-адреса",
+          "heater_power": "Потужність водонагрівача для розрахунку енергії",
+          "use_old_api": "Використовувати старий API для пристроїв із чипом Atheros"
+        }
+      }
+    },
+    "error": {
+      "already_configured": "Пристрій уже налаштовано",
+      "already_in_progress": "Налаштування пристрою триває",
+      "cannot_connect": "Не вдалося підключитися",
+      "unknown": "Невідома помилка"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "temperature": { "name": "Температура" },
+      "energy_consumed": { "name": "Спожита енергія" },
+      "ready_in": { "name": "Готовність через" },
+      "target_temperature": { "name": "Цільова температура" },
+      "error_status": { "name": "Статус помилки" },
+      "wifi_signal": { "name": "Сигнал WiFi" },
+      "uptime": { "name": "Час роботи" },
+      "energy_consumed_resettable": { "name": "Спожита енергія (скидається)" }
+    },
+    "switch": {
+      "boost": { "name": "Турбо" },
+      "child_lock": { "name": "Дитячий замок" }
+    },
+    "water_heater": {
+      "heater": {
+        "name": "Водонагрівач",
+        "state": {
+          "off": "Вимкнено",
+          "performance": "Ручний",
+          "p1": "Програма 1",
+          "p2": "Програма 2",
+          "p3": "Програма 3",
+          "eco": "Еко Розумний",
+          "ec2": "Еко Комфорт",
+          "ec3": "Еко Ніч"
+        }
+      }
+    }
+  }
+}
