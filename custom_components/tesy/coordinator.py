@@ -93,3 +93,8 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def get_config_power(self) -> int:
         return self._client._heater_power
+
+    @property
+    def is_old_api(self) -> bool:
+        """Return True if the device is accessed via the old (unofficial) API."""
+        return isinstance(self._client, TesyOldApi)

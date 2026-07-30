@@ -174,7 +174,9 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         response = await self.coordinator.async_set_target_temperature(
             kwargs.get(ATTR_TEMPERATURE)
         )
-        await self.partially_update_data_from_api(response, ATTR_TARGET_TEMP)
+        await self.partially_update_data_from_api(
+            response, ATTR_TARGET_TEMP, ATTR_CURRENT_TARGET_TEMP
+        )
 
     async def async_set_operation_mode(self, operation_mode: str) -> None:
         """Set new target operation mode."""
@@ -207,9 +209,18 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
                 new_mode = "6"
 
             response = await self.coordinator.async_set_operation_mode(new_mode)
-            await self.partially_update_data_from_api(response, ATTR_MODE)
+            await self.partially_update_data_from_api(
+                response,
+                ATTR_MODE,
+                ATTR_TARGET_TEMP,
+                ATTR_CURRENT_TARGET_TEMP,
+                ATTR_POWER,
+            )
 
-            if operation_mode in (STATE_ECO, TESY_MODE_EC2, TESY_MODE_EC3):
+            if (
+                operation_mode in (STATE_ECO, TESY_MODE_EC2, TESY_MODE_EC3)
+                and not self.coordinator.is_old_api
+            ):
                 response = await self.coordinator.async_set_target_temperature(
                     self._attr_max_temp
                 )
@@ -217,12 +228,12 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
                     response, ATTR_CURRENT_TARGET_TEMP
                 )
 
-    async def turn_on(self, **_kwargs: Any) -> None:
+    async def async_turn_on(self, **_kwargs: Any) -> None:
         """Turn on water heater."""
         response = await self.coordinator.async_set_power("1")
         await self.partially_update_data_from_api(response, ATTR_POWER)
 
-    async def turn_off(self, **_kwargs: Any) -> None:
+    async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn off water heater."""
         response = await self.coordinator.async_set_power("0")
         await self.partially_update_data_from_api(response, ATTR_POWER)

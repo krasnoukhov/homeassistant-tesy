@@ -37,9 +37,9 @@ class TesyOldApi:
         except (ConnectionError, ValueError):
             _LOGGER.debug("Energy counter is not available from the old API")
 
-        return self.convertApi(data)
+        return self._convert_api(data)
 
-    def convertApi(self, data: dict[str, Any]) -> dict[str, Any]:
+    def _convert_api(self, data: dict[str, Any]) -> dict[str, Any]:
         onoff = {"on": "1", "off": "0"}
         status = data["status"]
         mode = self._coerce_mode(status.get("mode"))
@@ -52,10 +52,13 @@ class TesyOldApi:
                 ATTR_MAC: data["devstat"]["macaddr"],
                 ATTR_DEVICE_ID: data["devstat"]["devid"].split("-")[0],
                 ATTR_MODE: mode,
-                ATTR_CURRENT_TEMP: status["gradus"],
-                ATTR_TARGET_TEMP: status["ref_gradus"],
+                ATTR_ERROR: status.get("err_flag", "0"),
+                ATTR_CURRENT_TEMP: status.get("gradus", "0"),
+                ATTR_TARGET_TEMP: status.get("ref_gradus", "0"),
+                ATTR_CURRENT_TARGET_TEMP: status.get("ref_gradus", "0"),
                 ATTR_BOOST: str(status.get("boost", "0")),
-                ATTR_POWER: onoff[status["power_sw"]],
+                ATTR_POWER: onoff.get(status["power_sw"], "0"),
+                ATTR_CHILD_LOCK: onoff.get(status["lockB"], "0"),
                 ATTR_IS_HEATING: (
                     "1"
                     if str(status.get("heater_state", "")).upper() == "HEATING"
@@ -68,7 +71,7 @@ class TesyOldApi:
         energy_counter = calc_result.get("sum")
         try:
             if int(energy_counter) >= 0:
-                o[ATTR_LONG_COUNTER] = str(energy_counter)
+                o[ATTR_ENERGY_RESETTABLE] = dict(utc=str(energy_counter))
         except (TypeError, ValueError):
             _LOGGER.debug("Invalid old API energy counter: %r", energy_counter)
 
@@ -83,11 +86,17 @@ class TesyOldApi:
         _LOGGER.debug(f"converted API: {str(o)}")
         return o
 
-    def set_target_temperature(self, val: int) -> bool:
-        """Set target temperature for Tesy component."""
-        return self._get_request("setTemp", val=val).json()
+    def _convert_setter_api(self, ack: dict[str, Any]) -> dict[str, Any]:
+        """Old API setters only ack the request; refetch and convert on success."""
+        if ack.get("stat") != "ok":
+            return {ATTR_API: "ERROR"}
+        return self.get_data()
 
-    def set_power(self, val: str) -> bool:
+    def set_target_temperature(self, val: int) -> dict[str, Any]:
+        """Set target temperature for Tesy component."""
+        return self._convert_setter_api(self._get_request("setTemp", val=val).json())
+
+    def set_power(self, val: str) -> dict[str, Any]:
         """Set power for Tesy component."""
         if val == "0":
             _val = "off"
@@ -95,17 +104,19 @@ class TesyOldApi:
             _val = "on"
         else:
             raise ValueError
-        return self._get_request("power", val=_val).json()
+        return self._convert_setter_api(self._get_request("power", val=_val).json())
 
-    def set_boost(self, val: str) -> bool:
+    def set_boost(self, val: str) -> dict[str, Any]:
         """Set boost for Tesy component."""
-        return self._get_request("boostSW", mode=val).json()
+        return self._convert_setter_api(self._get_request("boostSW", mode=val).json())
 
-    def set_operation_mode(self, val: str) -> bool:
+    def set_operation_mode(self, val: str) -> dict[str, Any]:
         """Set mode for Tesy component."""
-        return self._get_request("modeSW", mode=int(val) + 1).json()
+        return self._convert_setter_api(
+            self._get_request("modeSW", mode=int(val) + 1).json()
+        )
 
-    def set_child_lock(self, val: str) -> bool:
+    def set_child_lock(self, val: str) -> dict[str, Any]:
         """Set child lock for Tesy component. Not supported on old API."""
         _LOGGER.warning("set_child_lock is not supported on the old API")
         return {ATTR_API: "OK"}

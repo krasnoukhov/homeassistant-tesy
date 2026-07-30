@@ -34,10 +34,13 @@ def load_old_api_module():
         "ATTR_MODE": "mode",
         "ATTR_CURRENT_TEMP": "tmpC",
         "ATTR_TARGET_TEMP": "tmpT",
+        "ATTR_CURRENT_TARGET_TEMP": "tmpT",
         "ATTR_BOOST": "bst",
         "ATTR_POWER": "pwr",
+        "ATTR_CHILD_LOCK": "lck",
         "ATTR_IS_HEATING": "ht",
-        "ATTR_LONG_COUNTER": "pwc_t",
+        "ATTR_ERROR": "err",
+        "ATTR_ENERGY_RESETTABLE": "pwc_u",
     }
     for name, value in values.items():
         setattr(constants, name, value)
@@ -86,6 +89,7 @@ class TesyOldApiTest(TestCase):
             "mode": "1",
             "boost": "0",
             "power_sw": "on",
+            "lockB": "off",
             "gradus": "71.0",
             "ref_gradus": "55",
             "watts": "2400",
@@ -114,7 +118,7 @@ class TesyOldApiTest(TestCase):
 
         data = self.client.get_data()
 
-        self.assertEqual(data["pwc_t"], "8211003")
+        self.assertEqual(data["pwc_u"], {"utc": "8211003"})
         self.assertEqual(data["ht"], "1")
         self.assertEqual(self.client._heater_power, 2400)
 
@@ -131,7 +135,7 @@ class TesyOldApiTest(TestCase):
 
         data = self.client.get_data()
 
-        self.assertNotIn("pwc_t", data)
+        self.assertNotIn("pwc_u", data)
         self.assertEqual(data["ht"], "0")
         self.assertEqual(data["tmpC"], "71.0")
         self.assertEqual(self.client._heater_power, 2400)
@@ -150,5 +154,5 @@ class TesyOldApiTest(TestCase):
 
         data = self.client.get_data()
 
-        self.assertNotIn("pwc_t", data)
+        self.assertNotIn("pwc_u", data)
         self.assertEqual(data["ht"], "1")

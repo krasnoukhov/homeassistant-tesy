@@ -124,9 +124,15 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
             response = await self.coordinator.async_set_child_lock("0")
             await self.partially_update_data_from_api(response, ATTR_CHILD_LOCK)
 
-    async def partially_update_data_from_api(self, response, key):
+    async def partially_update_data_from_api(self, response, *keys):
+        if ATTR_API not in response or response[ATTR_API] != "OK":
+            return
+
+        updated = {key: response[key] for key in keys if key in response}
+        if not updated:
+            return
+
         old_data = self.coordinator.data
-        if ATTR_API in response and response[ATTR_API] == "OK" and key in response:
-            old_data[key] = response[key]
-            self.coordinator.async_set_updated_data(old_data)
-            _LOGGER.debug("Partial update: setting %s to %s", key, response[key])
+        old_data.update(updated)
+        self.coordinator.async_set_updated_data(old_data)
+        _LOGGER.debug("Partial update: %s", updated)
