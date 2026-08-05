@@ -258,6 +258,17 @@ class TesyEnergySensor(TesySensor, RestoreSensor):
 
         if not is_double_tank and self._last_update is not None:
             elapsed = (now - self._last_update).total_seconds()
+
+            # Seed from firmware counter if no restored value (fresh install / RestoreSensor failed)
+            if self._energy_kwh == 0:
+                pwc_t = data.get(ATTR_LONG_COUNTER, "")
+                if pwc_t:
+                    try:
+                        power_w = self.coordinator.get_config_power()
+                        self._energy_kwh = (int(pwc_t) * power_w) / 3_600_000.0
+                    except (TypeError, ValueError):
+                        pass
+
             if data.get(ATTR_IS_HEATING) == "1":
                 power_w = self.coordinator.get_config_power()
                 self._energy_kwh += (power_w * elapsed) / 3_600_000.0
