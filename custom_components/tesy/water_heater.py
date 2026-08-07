@@ -177,6 +177,11 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         await self.partially_update_data_from_api(
             response, ATTR_TARGET_TEMP, ATTR_CURRENT_TARGET_TEMP
         )
+        # Optimistic: in manual mode, tmpR always equals tmpT
+        new_temp = kwargs.get(ATTR_TEMPERATURE)
+        if new_temp is not None:
+            self.coordinator.data[ATTR_CURRENT_TARGET_TEMP] = new_temp
+            self.coordinator.async_set_updated_data(self.coordinator.data)
 
     async def async_set_operation_mode(self, operation_mode: str) -> None:
         """Set new target operation mode."""
