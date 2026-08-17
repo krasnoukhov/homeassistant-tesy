@@ -51,6 +51,11 @@
         "name": "Verrouillage enfant"
       }
     },
+    "button": {
+      "energy_reset": {
+        "name": "Réinitialiser l'énergie consommée"
+      }
+    },
     "water_heater": {
       "heater": {
         "name": "Chauffe-eau",

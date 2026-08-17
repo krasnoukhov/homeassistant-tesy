@@ -156,3 +156,20 @@ class TesyOldApiTest(TestCase):
 
         self.assertNotIn("pwc_u", data)
         self.assertEqual(data["ht"], "1")
+
+    def test_reset_energy_counter_ok(self):
+        """Reset the energy counter when the device confirms it."""
+        self.client._get_request = Mock(return_value=response({"err": "0"}))
+
+        result = self.client.reset_energy_counter()
+
+        self.client._get_request.assert_called_with(cmd="resetPow")
+        self.assertEqual(result["api"], "OK")
+
+    def test_reset_energy_counter_error(self):
+        """Report failure when the device rejects the reset."""
+        self.client._get_request = Mock(return_value=response({"err": "1"}))
+
+        result = self.client.reset_energy_counter()
+
+        self.assertEqual(result["api"], "ERROR")

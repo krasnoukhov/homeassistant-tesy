@@ -51,6 +51,11 @@
         "name": "Child Lock"
       }
     },
+    "button": {
+      "energy_reset": {
+        "name": "Reset Consumed Energy"
+      }
+    },
     "water_heater": {
       "heater": {
         "name": "Heater",

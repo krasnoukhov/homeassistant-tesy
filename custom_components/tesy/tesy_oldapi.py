@@ -121,6 +121,14 @@ class TesyOldApi:
         _LOGGER.warning("set_child_lock is not supported on the old API")
         return {ATTR_API: "OK"}
 
+    def reset_energy_counter(self) -> dict[str, Any]:
+        """Reset the resettable energy counter."""
+        resp = self._get_request(cmd="resetPow").json()
+        _LOGGER.debug("Reset response: %s", resp)
+        if str(resp.get("err", 0)) != "0":
+            return {ATTR_API: "ERROR"}
+        return {ATTR_API: "OK"}
+
     def _coerce_mode(self, mode: Any) -> str:
         """Convert mode reported by the old API into the numeric string the integration expects."""
         if mode is None:

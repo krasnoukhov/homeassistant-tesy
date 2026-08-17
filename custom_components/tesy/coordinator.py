@@ -84,6 +84,10 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Set child lock for Tesy component."""
         return await self.hass.async_add_executor_job(self._client.set_child_lock, val)
 
+    async def async_reset_energy_counter(self) -> dict[str, Any]:
+        """Reset the resettable energy counter."""
+        return await self.hass.async_add_executor_job(self._client.reset_energy_counter)
+
     def _get_data(self) -> dict[str, Any]:
         """Get new sensor data using Tesy API."""
         try:
