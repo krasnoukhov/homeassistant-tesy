@@ -51,6 +51,11 @@
         "name": "Bloqueo infantil"
       }
     },
+    "button": {
+      "energy_reset": {
+        "name": "Restablecer energía consumida"
+      }
+    },
     "water_heater": {
       "heater": {
         "name": "Calentador de agua",

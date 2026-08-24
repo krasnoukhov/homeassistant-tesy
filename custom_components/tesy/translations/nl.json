@@ -51,6 +51,11 @@
         "name": "Kinderslot"
       }
     },
+    "button": {
+      "energy_reset": {
+        "name": "Verbruikte energie resetten"
+      }
+    },
     "water_heater": {
       "heater": {
         "name": "Boiler",

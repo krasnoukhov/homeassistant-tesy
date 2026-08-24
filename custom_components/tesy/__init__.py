@@ -18,6 +18,7 @@ PLATFORMS: list[Platform] = [
     Platform.WATER_HEATER,
     Platform.SENSOR,
     Platform.SWITCH,
+    Platform.BUTTON,
 ]
 
 _LOGGER = logging.getLogger(__name__)

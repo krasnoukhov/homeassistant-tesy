@@ -14,6 +14,8 @@ from .const import (
     ATTR_BOOST,
     ATTR_MODE,
     ATTR_CHILD_LOCK,
+    ATTR_API,
+    ATTR_ENERGY_RESETTABLE,
     HTTP_TIMEOUT,
     IP_ADDRESS,
     HEATER_POWER,
@@ -56,6 +58,12 @@ class Tesy:
     def set_child_lock(self, val: str) -> bool:
         """Set child lock for Tesy component."""
         return self._get_request(name=ATTR_CHILD_LOCK, set=val).json()
+
+    def reset_energy_counter(self) -> dict[str, Any]:
+        """Reset the resettable energy counter."""
+        resp = self._get_request(name=ATTR_ENERGY_RESETTABLE, set="0").json()
+        _LOGGER.debug("Reset response: %s", resp)
+        return {ATTR_API: "OK"}
 
     def _get_request(self, **kwargs) -> requests.Response:
         """Make GET request to the Tesy API."""
