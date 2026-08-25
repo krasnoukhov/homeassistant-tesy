@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from typing import Any
 
 from urllib.parse import urlparse, urlencode
@@ -24,6 +25,11 @@ class TesyOldApi:
         if HEATER_POWER in data:
             self._heater_power = data[HEATER_POWER]
 
+        # ponytail: cache calcRes separately — energy counter changes slowly, and
+        # the Atheros chip chokes when polled for all 3 endpoints every 30 s.
+        self._calc_res_cache = None
+        self._calc_res_fetched_at = 0.0
+
     def get_data(self) -> dict[str, Any]:
         """Get data for Tesy component."""
 
@@ -32,10 +38,21 @@ class TesyOldApi:
             "devstat": self._get_request(cmd="devstat").json(),
         }
 
-        try:
-            data["calcRes"] = self._get_request(cmd="calcRes").json()
-        except (ConnectionError, ValueError):
-            _LOGGER.debug("Energy counter is not available from the old API")
+        # Cache calcRes — energy counter changes slowly (~10 min granularity is
+        # fine).  The Atheros web-server drops requests when hammered with 3
+        # rapid-fire HTTP calls every 30 s; skipping this one cuts normal poll
+        # traffic by a third and setter bursts by two-thirds.
+        now = time.time()
+        if self._calc_res_cache is not None and (now - self._calc_res_fetched_at) < 600:
+            data["calcRes"] = self._calc_res_cache
+        else:
+            try:
+                calc_res = self._get_request(cmd="calcRes").json()
+                data["calcRes"] = calc_res
+                self._calc_res_cache = calc_res
+                self._calc_res_fetched_at = now
+            except (ConnectionError, ValueError):
+                _LOGGER.debug("Energy counter is not available from the old API")
 
         return self._convert_api(data)
 
@@ -87,10 +104,10 @@ class TesyOldApi:
         return o
 
     def _convert_setter_api(self, ack: dict[str, Any]) -> dict[str, Any]:
-        """Old API setters only ack the request; refetch and convert on success."""
+        """Old API setters only ack the request; no refetch needed."""
         if ack.get("stat") != "ok":
             return {ATTR_API: "ERROR"}
-        return self.get_data()
+        return {ATTR_API: "OK"}
 
     def set_target_temperature(self, val: int) -> dict[str, Any]:
         """Set target temperature for Tesy component."""

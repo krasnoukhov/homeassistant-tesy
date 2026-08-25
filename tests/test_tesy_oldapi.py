@@ -3,6 +3,7 @@
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 import sys
+import time
 from types import ModuleType
 from unittest import TestCase
 from unittest.mock import Mock
@@ -156,3 +157,54 @@ class TesyOldApiTest(TestCase):
 
         self.assertNotIn("pwc_u", data)
         self.assertEqual(data["ht"], "1")
+
+    def test_calcres_cached_within_10_minutes(self):
+        """Second get_data() within 10 min should skip the calcRes HTTP call."""
+        self.client._get_request = Mock(
+            side_effect=[
+                response(self.status),
+                response(self.devstat),
+                response({"sum": "12345", "watt": "2400"}),
+                response(self.status),
+                response(self.devstat),
+            ]
+        )
+
+        data1 = self.client.get_data()
+        self.assertEqual(self.client._get_request.call_count, 3)
+        self.assertEqual(data1["pwc_u"], {"utc": "12345"})
+
+        data2 = self.client.get_data()
+        self.assertEqual(self.client._get_request.call_count, 5)
+        self.assertEqual(data2["pwc_u"], {"utc": "12345"})
+
+    def test_calcres_refetched_after_10_minutes(self):
+        """Cache expires after 10 minutes, triggering a fresh calcRes fetch."""
+        self.client._get_request = Mock(
+            side_effect=[
+                response(self.status),
+                response(self.devstat),
+                response({"sum": "12345", "watt": "2400"}),
+                response(self.status),
+                response(self.devstat),
+                response({"sum": "12400", "watt": "2400"}),
+            ]
+        )
+
+        self.client.get_data()
+        self.assertEqual(self.client._get_request.call_count, 3)
+
+        self.client._calc_res_fetched_at = time.time() - 601
+
+        data2 = self.client.get_data()
+        self.assertEqual(self.client._get_request.call_count, 6)
+        self.assertEqual(data2["pwc_u"], {"utc": "12400"})
+
+    def test_setter_returns_ok_without_refetch(self):
+        """Setter should return OK with a single HTTP call, not four."""
+        self.client._get_request = Mock(return_value=response({"stat": "ok"}))
+
+        result = self.client.set_target_temperature(55)
+
+        self.assertEqual(result, {"api": "OK"})
+        self.client._get_request.assert_called_once()
