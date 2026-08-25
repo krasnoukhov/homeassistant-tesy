@@ -31,6 +31,9 @@
       "boost": { "name": "Турбо" },
       "child_lock": { "name": "Дитячий замок" }
     },
+    "button": {
+      "energy_reset": { "name": "Скинути спожиту енергію" }
+    },
     "water_heater": {
       "heater": {
         "name": "Водонагрівач",

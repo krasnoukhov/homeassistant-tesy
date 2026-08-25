@@ -51,6 +51,11 @@
         "name": "Kindersicherung"
       }
     },
+    "button": {
+      "energy_reset": {
+        "name": "Verbrauchte Energie zurücksetzen"
+      }
+    },
     "water_heater": {
       "heater": {
         "name": "Boiler",

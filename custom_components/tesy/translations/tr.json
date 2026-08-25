@@ -51,6 +51,11 @@
         "name": "Çocuk kilidi"
       }
     },
+    "button": {
+      "energy_reset": {
+        "name": "Tüketilen enerjiyi sıfırla"
+      }
+    },
     "water_heater": {
       "heater": {
         "name": "Su Isıtıcısı",

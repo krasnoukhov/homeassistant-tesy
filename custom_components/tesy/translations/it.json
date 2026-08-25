@@ -51,6 +51,11 @@
         "name": "Blocco bambini"
       }
     },
+    "button": {
+      "energy_reset": {
+        "name": "Azzera energia consumata"
+      }
+    },
     "water_heater": {
       "heater": {
         "name": "Boiler",

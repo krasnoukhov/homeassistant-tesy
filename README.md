@@ -16,7 +16,7 @@ This integration allows you to change modes of the water heater as well as contr
 
 Energy counter is also working. It uses long term counter from the device that counts the seconds the heater was on. In order for this to work properly you need to enter your heater power rating in the setup dialog. This information could be found on the device's label. For double tank devices this is read from the device and leaving it as zero is recommended.
 
-The integration provides two energy sensors: `Energy Consumed` tracks total lifetime usage. `Energy Consumed (Resettable)` uses the device's built-in resettable counter - reset it from the Tesy app to track usage over a specific period, like a trip odometer.
+The integration provides two energy sensors: `Energy Consumed` tracks total lifetime usage. `Energy Consumed (Resettable)` uses the device's built-in resettable counter - a `Reset Consumed Energy` button is provided to reset it, like a trip odometer.
 
 This integration exposes boost mode of the heaters as a switch. It can be switched on and off, but in order to work the heater should on.
 
@@ -85,6 +85,12 @@ Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core
 | `switch.boost` | Boost mode |
 | `switch.child_lock` | Child lock (if supported) |
 
+### Buttons
+
+| Entity | Description |
+|--------|-------------|
+| `button.energy_reset` | Reset the resettable energy counter |
+
 ## Device API Parameters
 
 | Field | Description | Used By |
@@ -132,4 +138,4 @@ This returns a JSON object with all fields listed in the table above.
 
 ## Translations
 
-Available in 10 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Russian, Turkish, Ukrainian. Operation modes, sensors, switches, and config flow are all translated.
+Available in 10 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Russian, Turkish, Ukrainian. Operation modes, sensors, switches, buttons, and config flow are all translated.
