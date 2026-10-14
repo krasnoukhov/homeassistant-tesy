@@ -31,7 +31,11 @@
       "boost": { "name": "Турбо" },
       "child_lock": { "name": "Дитячий замок" }
     },
+    "binary_sensor": {
+      "clock_problem": { "name": "Проблема з годинником" }
+    },
     "button": {
+      "sync_timezone": { "name": "Синхронізувати часовий пояс" },
       "energy_reset": { "name": "Скинути спожиту енергію" }
     },
     "water_heater": {
@@ -80,6 +84,19 @@
         "fr": "П'ятниця",
         "sa": "Субота",
         "su": "Неділя"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Параметри",
+        "data": {
+          "scan_interval": "Інтервал опитування, секунд"
+        },
+        "data_description": {
+          "scan_interval": "Як часто читати стан бойлера (5-300). Зміни з панелі або з MyTESY зʼявляться не пізніше цього часу."
+        }
       }
     }
   }

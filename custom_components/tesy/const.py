@@ -5,6 +5,11 @@ from homeassistant.const import CONF_IP_ADDRESS
 DOMAIN = "tesy"
 HTTP_TIMEOUT = 15
 UPDATE_INTERVAL = 30
+# Options: how often the heater is polled (changes made on its panel or in
+# MyTESY reach Home Assistant within this time).
+SCAN_INTERVAL = "scan_interval"
+MIN_SCAN_INTERVAL = 5
+MAX_SCAN_INTERVAL = 300
 
 IP_ADDRESS = CONF_IP_ADDRESS
 HEATER_POWER = "heater_power"

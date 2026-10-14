@@ -9,9 +9,10 @@ _SPEC = spec_from_file_location("tesy_features", _PATH)
 features = module_from_spec(_SPEC)
 _SPEC.loader.exec_module(features)
 
-ALL = {features.FEATURE_SCHEDULE}
+ALL = {features.FEATURE_SCHEDULE, features.FEATURE_TIMEZONE}
 PROGRAMS = {
     "id": "2004",
+    "tz": "EET-2EEST,M3.5.0/3,M10.5.0/4",
     **{f"prgP{p}{d}": "FF" * 24 for p in (1, 2, 3) for d in features._DAYS},
 }
 
@@ -28,9 +29,13 @@ class DeviceFeaturesTest(TestCase):
 
     def test_missing_fields_disable_their_feature(self):
         self.assertEqual(features.device_features({"id": 2004}), frozenset())
+        self.assertEqual(
+            features.device_features({"id": 2004, "tz": "UTC0"}),
+            {features.FEATURE_TIMEZONE},
+        )
         # All 21 program days are needed, not just the first one.
         partial = {k: v for k, v in PROGRAMS.items() if k != "prgP3SU"}
-        self.assertEqual(features.device_features(partial), frozenset())
+        self.assertEqual(features.device_features(partial), {features.FEATURE_TIMEZONE})
 
     def test_no_data(self):
         self.assertEqual(features.device_features(None), frozenset())

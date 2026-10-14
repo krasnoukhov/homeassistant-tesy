@@ -51,9 +51,17 @@
         "name": "Child Lock"
       }
     },
+    "binary_sensor": {
+      "clock_problem": {
+        "name": "Clock problem"
+      }
+    },
     "button": {
       "energy_reset": {
         "name": "Reset Consumed Energy"
+      },
+      "sync_timezone": {
+        "name": "Sync time zone"
       }
     },
     "water_heater": {
@@ -102,6 +110,19 @@
         "fr": "Friday",
         "sa": "Saturday",
         "su": "Sunday"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "scan_interval": "Poll interval, seconds"
+        },
+        "data_description": {
+          "scan_interval": "How often the heater is read (5-300). Changes made on its panel or in MyTESY appear within this time."
+        }
       }
     }
   }
