@@ -15,6 +15,7 @@ from homeassistant.components.water_heater import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     ATTR_TEMPERATURE,
+    PRECISION_TENTHS,
     PRECISION_WHOLE,
     STATE_OFF,
     UnitOfTemperature,
@@ -145,7 +146,6 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         {f"schedule_p{program}" for program in PROGRAMS} | {"tesy_features"}
     )
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
-    _attr_precision = PRECISION_WHOLE
     _attr_supported_features = (
         WaterHeaterEntityFeature.TARGET_TEMPERATURE
         | WaterHeaterEntityFeature.OPERATION_MODE
@@ -186,6 +186,15 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
                 self._attr_max_temp = (
                     int(tmp_max) if tmp_max.isdecimal() else self._attr_max_temp
                 )
+
+    @property
+    def precision(self) -> float:
+        """Water temperature in tenths as the heater reports it (tmpC "54.2").
+
+        Shower models report a whole number of showers instead.
+        """
+        device = TESY_DEVICE_TYPES.get(self.coordinator.data.get(ATTR_DEVICE_ID), {})
+        return PRECISION_WHOLE if device.get("use_showers") else PRECISION_TENTHS
 
     @property
     def current_temperature(self):
@@ -327,8 +336,7 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
 
         features = self.coordinator.features
         if features:
-            # Lets dashboards tell a heater with extended features from one
-            # with basic control.
+            # Lets the card tell a supported heater from one with basic control.
             attributes["tesy_features"] = sorted(features)
 
         if self.coordinator.supports_schedule:

@@ -30,6 +30,62 @@ Temperature setpoint is only used in manual (Performance) mode. In any other mod
 
 The heater is read every 30 seconds by default, so changes made on its panel or in the MyTESY app show up in Home Assistant within that time. To make it faster, open the integration → **Configure** and set **Poll interval** (5-300 s); 10 s is a good value for a local device. After any command from Home Assistant the heater is also read again ~2 s later, so the heating state and target follow right away. This works on every model.
 
+## Thermostat card
+
+The card is served by the integration and registered as a dashboard resource by itself — nothing to install or add under *Resources*. It is registered once a supported heater (so far the ModEco 2, see *Weekly programs*) is set up; on another model it shows a notice instead of the controls. After installing or updating the integration, restart Home Assistant and reload the browser once (Ctrl+F5; in the companion app: Settings → Debugging → Clear frontend cache).
+
+<img src="docs/card.png" alt="Tesy boiler card, dark and light theme" width="720">
+
+Add it from **Add card → Tesy boiler**, or with YAML:
+
+```yaml
+type: custom:tesy-boiler-card
+entity: water_heater.boiler_modeco_2_heater
+# optional
+name: Boiler
+subtitle: ModEco 2 · 100 L
+animation: auto     # auto (off when the system asks for reduced motion) | always | off
+auto_reload: true   # reload a page that still runs an older card after an update
+```
+
+- **Dial** with the current water temperature and the active target. In manual mode a handle on the dial sets the setpoint (15–75 °C); other modes show the target they work to.
+- **Power** button at the top right of the dial; **modes** Manual, P1–P3, Eco Smart/Comfort/Night; **Boost**, **schedule** and **statistics** as icon buttons.
+- Heating status (heating / target reached / heating off / off) with a subtle animation while the element heats.
+- The clock line under the buttons shows the heater's own time; a warning appears when its time zone or clock is off.
+- Follows the Home Assistant light/dark theme and UI language: English and Ukrainian; any other language gets English (numbers keep the UI language format).
+
+Related entities (Boost switch, energy and diagnostic sensors, clock sensor, time zone button) are found automatically on the same device.
+
+**Updates and caching.** On every start the integration keeps one resource, `/tesy_static/tesy-boiler-card.js?v=<hash>`, in Settings → Dashboards → Resources: the hash changes with the card, so an update gets a new URL. A resource added by hand for the same path is taken over; one pointing to another copy (in `/local`, say) is left alone with a warning in the log. With YAML-mode dashboards resources cannot be changed by an integration, so the card is added to every page instead. The resource is removed with the last heater. The card is served with `Cache-Control: no-cache` and an ETag, so browsers and reverse proxies (Cloudflare, nginx) check for a newer file on every page load. A page opened before Home Assistant restarted with a new card (a wall tablet, say) reloads itself once; if that does not help, the card shows a reload banner. A page that never loaded the card needs one manual reload.
+
+### Card: schedule
+
+The calendar button opens the weekly programs P1–P3. Each cell is one hour of one day, by the heater's clock.
+
+<img src="docs/schedule.png" alt="Weekly programs dialog: 7×24 grid" width="720">
+
+- **Program tabs** P1–P3; the badge shows which program the heater runs now, and a frame marks the current heater hour.
+- **Brush**: pick a temperature (15–75 °C, step 1) or ❄ *Off* (heating off for that hour, stored as 14 °C on the heater), then tap cells to paint them. Empty cells have no entry.
+- **Copy**: choose a source day and copy it to other days, weekdays or the whole week.
+- **Write to heater** saves only the changed days through `tesy.set_schedule` and returns to the card. While nothing is edited, the dialog follows changes made on the heater panel or in MyTESY.
+
+On phones and portrait screens (narrower than 720 px) the same editor works day by day:
+
+<img src="docs/schedule-phone.png" alt="Weekly programs on a phone: one day at a time" width="300">
+
+A mini-map of the week sits on top, then the day buttons and the 24 hours of the selected day as 4×6 tiles. The brush and *Copy &lt;day&gt; to* work as on the wide grid.
+
+### Card: statistics
+
+The chart button opens energy and diagnostics.
+
+<img src="docs/statistics.png" alt="Energy and diagnostics dialog" width="420">
+
+- **Energy**: total consumption and the resettable counter (since its last reset). The heater updates its own counter in hourly batches; for the Energy dashboard the integration adds heating time × configured power at every poll.
+- **Errors**: current error code with a description (E01/E02 lower sensor open/short, E03/E04 upper sensor open/short).
+- **Wi-Fi** signal in dBm, marked *weak* below −67 dBm.
+- **Module uptime**, **clock** state (heater time and time zone compared with Home Assistant) and **firmware** versions.
+
 ## Installation
 
 ### Via HACS
@@ -91,7 +147,7 @@ Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core
 
 ### Weekly programs
 
-Weekly programs (and the time zone sync below) are enabled per model, for models where they were verified: so far the ModEco 2 (id 2004, firmware 200407 / Wi-Fi 0.29). Other models keep the previous behaviour; the list is in [`features.py`](custom_components/tesy/features.py), and a model is added there once it has been tested. A feature is enabled only if the heater also reports the fields it needs (`prgP1MO` … `prgP3SU`).
+Weekly programs, the time zone sync below and the thermostat card are enabled per model, for models where they were verified: so far the ModEco 2 (id 2004, firmware 200407 / Wi-Fi 0.29). Other models keep the previous behaviour; the list is in [`features.py`](custom_components/tesy/features.py), and a model is added there once it has been tested. A feature is enabled only if the heater also reports the fields it needs (`prgP1MO` … `prgP3SU`).
 
 On those heaters the water heater entity gets extra attributes:
 
@@ -100,7 +156,7 @@ On those heaters the water heater entity gets extra attributes:
 | `schedule_p1` … `schedule_p3` | `{"mo": [24 values], …, "su": [...]}`, °C per hour from 00:00; `14` = heating off for that hour (snowflake in MyTESY), `null` = no program entry (not stored in history) |
 | `active_program` | `1`-`3` while a program runs, otherwise `null` |
 | `manual_temperature` | Setpoint kept for manual mode (`tmpT`) |
-| `tesy_features` | Extended features enabled for this heater, e.g. `["schedule", "timezone"]` (not stored in history) |
+| `tesy_features` | Extended features enabled for this heater, e.g. `["card", "schedule", "timezone"]` (not stored in history) |
 
 While a program runs, the target temperature (entity and `Target Temperature` sensor) is the one the heater reports in `tmpR`; it can already be the next hour's value while the heater warms up ahead of it. When the heater is idle in a program, the firmware reports a placeholder (`9`) there instead, and the target is taken from the program for the current hour of the device clock.
 
@@ -182,11 +238,11 @@ This returns a JSON object with all fields listed in the table above.
 | 2000 | ModEco | 15-75°C | — |
 | 2002 | BelliSlimo | 0-4 showers | — |
 | 2003 | BiLight Smart | 15-75°C | — |
-| 2004 | ModEco 2 | 15-75°C | weekly programs, time zone sync |
+| 2004 | ModEco 2 | 15-75°C | weekly programs, time zone sync, card |
 | 2005 | BelliSlimo Lite | 0-4 showers | — |
 
 Extended features are enabled per model in [`features.py`](custom_components/tesy/features.py), once verified on that model; other models keep the basic behaviour.
 
 ## Translations
 
-Available in 9 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Turkish, Ukrainian. Operation modes, sensors, switches, buttons, and config flow are all translated.
+Available in 9 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Turkish, Ukrainian. Operation modes, sensors, switches, buttons, and config flow are all translated. The thermostat card follows the Home Assistant UI language in English and Ukrainian and falls back to English.

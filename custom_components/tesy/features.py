@@ -1,6 +1,7 @@
 """Extended features, enabled per heater model.
 
-Weekly programs and time zone sync were developed and tested on the ModEco 2 (id 2004). Other
+Weekly programs, time zone sync and the thermostat card were developed and
+tested on the ModEco 2 (id 2004). Other
 models keep the basic behaviour of the integration until they are verified:
 add their id here once they are.
 
@@ -14,10 +15,11 @@ from typing import Any
 
 FEATURE_SCHEDULE = "schedule"  # weekly programs P1-P3, tesy.set_schedule
 FEATURE_TIMEZONE = "timezone"  # time zone sync, clock problem sensor
+FEATURE_CARD = "card"  # custom:tesy-boiler-card
 
 # Device type id (``id`` in /api?name=_all) -> features verified on it.
 EXTENDED_MODELS: dict[str, frozenset[str]] = {
-    "2004": frozenset({FEATURE_SCHEDULE, FEATURE_TIMEZONE}),  # ModEco 2
+    "2004": frozenset({FEATURE_SCHEDULE, FEATURE_TIMEZONE, FEATURE_CARD}),  # ModEco 2
 }
 
 _DAYS = ("MO", "TU", "WE", "TH", "FR", "SA", "SU")

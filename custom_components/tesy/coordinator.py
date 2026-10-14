@@ -11,7 +11,7 @@ from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
-from .features import FEATURE_SCHEDULE, FEATURE_TIMEZONE, device_features
+from .features import FEATURE_CARD, FEATURE_SCHEDULE, FEATURE_TIMEZONE, device_features
 from .tesy import Tesy
 from .timezone import TZ_FIELD, posix_tz_for
 from .tesy_oldapi import TesyOldApi
@@ -201,6 +201,11 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     def supports_timezone(self) -> bool:
         """Return True if time zone sync is enabled for this heater."""
         return FEATURE_TIMEZONE in self.features
+
+    @property
+    def supports_card(self) -> bool:
+        """Return True if the thermostat card supports this heater."""
+        return FEATURE_CARD in self.features
 
     @property
     def expected_timezone(self) -> str | None:
