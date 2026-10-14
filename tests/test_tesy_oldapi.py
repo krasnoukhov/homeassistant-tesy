@@ -218,6 +218,46 @@ class TesyOldApiTest(TestCase):
         self.client._get_request.assert_called_with(cmd="resetPow")
         self.assertEqual(result["api"], "OK")
 
+    def test_reset_energy_counter_drops_cached_counter(self):
+        """After a reset the next get_data() reads the counter again."""
+        self.client._get_request = Mock(
+            side_effect=[
+                response(self.status),
+                response(self.devstat),
+                response({"sum": "12345", "watt": "2400"}),
+                response({"err": "0"}),
+                response(self.status),
+                response(self.devstat),
+                response({"sum": "0", "watt": "2400"}),
+            ]
+        )
+
+        self.client.get_data()
+        self.client.reset_energy_counter()
+        data = self.client.get_data()
+
+        self.assertEqual(self.client._get_request.call_count, 7)
+        self.assertEqual(data["pwc_u"], {"utc": "0"})
+
+    def test_read_started_before_reset_is_not_cached(self):
+        """A calcRes read that overlaps a reset must not refill the cache."""
+        client = self.client
+        responses = iter([response(self.status), response(self.devstat)])
+
+        def get_request(**kwargs):
+            if kwargs.get("cmd") == "calcRes":
+                # The reset lands while this read is on its way.
+                client._get_request = Mock(return_value=response({"err": "0"}))
+                client.reset_energy_counter()
+                client._get_request = get_request
+                return response({"sum": "12345", "watt": "2400"})
+            return next(responses)
+
+        client._get_request = get_request
+        client.get_data()
+
+        self.assertIsNone(client._calc_res_cache)
+
     def test_reset_energy_counter_error(self):
         """Report failure when the device rejects the reset."""
         self.client._get_request = Mock(return_value=response({"err": "1"}))

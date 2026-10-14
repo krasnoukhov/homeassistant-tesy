@@ -63,6 +63,10 @@ class Tesy:
         """Write one day of a weekly program, e.g. key=prgP1MO, val=48 hex chars."""
         return self._get_request(name=key, set=val).json()
 
+    def set_timezone(self, val: str) -> dict[str, Any]:
+        """Write the POSIX TZ string the module uses for local time."""
+        return self._get_request(name="tz", set=val).json()
+
     def reset_energy_counter(self) -> dict[str, Any]:
         """Reset the resettable energy counter."""
         resp = self._get_request(name=ATTR_ENERGY_RESETTABLE, set="0").json()

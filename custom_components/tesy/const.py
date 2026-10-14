@@ -5,6 +5,22 @@ from homeassistant.const import CONF_IP_ADDRESS
 DOMAIN = "tesy"
 HTTP_TIMEOUT = 15
 UPDATE_INTERVAL = 30
+# Options: how often the heater is polled (changes made on its panel or in
+# MyTESY reach Home Assistant within this time).
+SCAN_INTERVAL = "scan_interval"
+MIN_SCAN_INTERVAL = 5
+# The old API's Atheros module chokes on bursts of requests (see the calcRes
+# cache in tesy_oldapi.py), so it is not polled faster than the default.
+MIN_SCAN_INTERVAL_OLD_API = 30
+MAX_SCAN_INTERVAL = 300
+# Options: keep the heater's time zone in step with Home Assistant's.
+SYNC_TIMEZONE = "sync_timezone"
+
+
+def min_scan_interval(use_old_api: bool) -> int:
+    """Shortest poll interval allowed for the API in use."""
+    return MIN_SCAN_INTERVAL_OLD_API if use_old_api else MIN_SCAN_INTERVAL
+
 
 IP_ADDRESS = CONF_IP_ADDRESS
 HEATER_POWER = "heater_power"
