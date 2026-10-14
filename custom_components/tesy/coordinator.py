@@ -8,6 +8,7 @@ from typing import Any
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
+from .features import FEATURE_SCHEDULE, device_features
 from .tesy import Tesy
 from .tesy_oldapi import TesyOldApi
 from .const import (
@@ -84,6 +85,14 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Set child lock for Tesy component."""
         return await self.hass.async_add_executor_job(self._client.set_child_lock, val)
 
+    async def async_set_schedule(self, key: str, val: str) -> dict[str, Any]:
+        """Write one day of a weekly program."""
+        if self.is_old_api:
+            raise NotImplementedError("Schedules are not supported by the old API")
+        return await self.hass.async_add_executor_job(
+            self._client.set_schedule, key, val
+        )
+
     async def async_reset_energy_counter(self) -> dict[str, Any]:
         """Reset the resettable energy counter."""
         return await self.hass.async_add_executor_job(self._client.reset_energy_counter)
@@ -102,3 +111,15 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     def is_old_api(self) -> bool:
         """Return True if the device is accessed via the old (unofficial) API."""
         return isinstance(self._client, TesyOldApi)
+
+    @property
+    def features(self) -> frozenset[str]:
+        """Extended features enabled for this heater model (see features.py)."""
+        if self.is_old_api:
+            return frozenset()
+        return device_features(self.data)
+
+    @property
+    def supports_schedule(self) -> bool:
+        """Return True if weekly programs are enabled for this heater."""
+        return FEATURE_SCHEDULE in self.features
