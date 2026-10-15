@@ -25,7 +25,6 @@ from .const import (
     ATTR_CURRENT_TEMP,
     ATTR_CURRENT_TARGET_TEMP,
     ATTR_DEVICE_ID,
-    ATTR_MAX_SHOWERS,
     ATTR_IS_HEATING,
     ATTR_MODE,
     ATTR_POWER,
@@ -39,6 +38,7 @@ from .const import (
 )
 
 from .entity import TesyEntity
+from .helpers import max_showers, to_float
 
 OPERATION_LIST = [
     STATE_OFF,
@@ -116,15 +116,14 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
                 ]
                 == True
             ):
-                tmp_max = self.coordinator.data[ATTR_MAX_SHOWERS]
-                self._attr_max_temp = (
-                    int(tmp_max) if tmp_max.isdecimal() else self._attr_max_temp
+                self._attr_max_temp = max_showers(
+                    self.coordinator.data, self._attr_max_temp
                 )
 
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return float(self.coordinator.data[ATTR_CURRENT_TEMP])
+        return to_float(self.coordinator.data.get(ATTR_CURRENT_TEMP))
 
     @property
     def current_operation(self):
@@ -246,7 +245,7 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
     @property
     def target_temperature(self):
         """Return the target temperature."""
-        return float(self.coordinator.data[ATTR_CURRENT_TARGET_TEMP])
+        return to_float(self.coordinator.data.get(ATTR_CURRENT_TARGET_TEMP))
 
     @property
     def extra_state_attributes(self) -> dict[str, str] | None:
