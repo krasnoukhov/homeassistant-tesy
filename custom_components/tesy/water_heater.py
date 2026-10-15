@@ -38,7 +38,7 @@ from .const import (
 )
 
 from .entity import TesyEntity
-from .helpers import max_showers, to_float
+from .helpers import TESY_MODE_TO_OPERATION, max_showers, tesy_mode, to_float
 
 OPERATION_LIST = [
     STATE_OFF,
@@ -139,25 +139,8 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         if self.coordinator.data[ATTR_POWER] != "1":
             return STATE_OFF
 
-        mode = self.coordinator.data[ATTR_MODE]
-
-        if mode == "0":
-            return STATE_PERFORMANCE
-        if mode == "1":
-            return TESY_MODE_P1
-        if mode == "2":
-            return TESY_MODE_P2
-        if mode == "3":
-            return TESY_MODE_P3
-        if mode == "4":
-            return STATE_ECO
-        if mode == "5":
-            return TESY_MODE_EC2
-        if mode == "6":
-            return TESY_MODE_EC3
-
-        # Handle unknown state
-        return STATE_OFF
+        # Unknown modes are reported as off
+        return TESY_MODE_TO_OPERATION.get(self.coordinator.data[ATTR_MODE], STATE_OFF)
 
     async def async_set_temperature(self, **kwargs: Any) -> None:
         """Set new target temperature."""
@@ -193,24 +176,12 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             response = await self.coordinator.async_set_power("0")
             await self.partially_update_data_from_api(response, ATTR_POWER)
         else:
+            # Raises ValueError for an unknown mode, before anything is sent
+            new_mode = tesy_mode(operation_mode)
+
             if self.coordinator.data[ATTR_POWER] == "0":
                 response = await self.coordinator.async_set_power("1")
                 await self.partially_update_data_from_api(response, ATTR_POWER)
-
-            if operation_mode == STATE_PERFORMANCE:
-                new_mode = "0"
-            elif operation_mode == TESY_MODE_P1:
-                new_mode = "1"
-            elif operation_mode == TESY_MODE_P2:
-                new_mode = "2"
-            elif operation_mode == TESY_MODE_P3:
-                new_mode = "3"
-            elif operation_mode == STATE_ECO:
-                new_mode = "4"
-            elif operation_mode == TESY_MODE_EC2:
-                new_mode = "5"
-            elif operation_mode == TESY_MODE_EC3:
-                new_mode = "6"
 
             response = await self.coordinator.async_set_operation_mode(new_mode)
             await self.partially_update_data_from_api(

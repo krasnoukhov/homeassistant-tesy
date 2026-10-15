@@ -24,6 +24,11 @@ def load_helpers_module():
 
     values = {
         "ATTR_MAX_SHOWERS": "tmpMX",
+        "TESY_MODE_P1": "p1",
+        "TESY_MODE_P2": "p2",
+        "TESY_MODE_P3": "p3",
+        "TESY_MODE_EC2": "ec2",
+        "TESY_MODE_EC3": "ec3",
     }
     for name, value in values.items():
         setattr(constants, name, value)
@@ -89,3 +94,50 @@ class MaxShowersTest(TestCase):
         self.assertEqual(HELPERS.max_showers({"tmpMX": "x"}, 4), 4)
         self.assertEqual(HELPERS.max_showers({"tmpMX": None}, 4), 4)
         self.assertEqual(HELPERS.max_showers({"tmpMX": "-1"}, 4), 4)
+
+
+# Values sent before the mode map was introduced
+EXPECTED_MODES = {
+    "performance": "0",
+    "p1": "1",
+    "p2": "2",
+    "p3": "3",
+    "eco": "4",
+    "ec2": "5",
+    "ec3": "6",
+}
+
+
+class ModeMapTest(TestCase):
+    """Test the operation mode map."""
+
+    def test_operation_to_tesy_mode(self):
+        """Map every known operation mode to the same value as before."""
+        self.assertEqual(HELPERS.OPERATION_TO_TESY_MODE, EXPECTED_MODES)
+        for operation, mode in EXPECTED_MODES.items():
+            self.assertEqual(HELPERS.tesy_mode(operation), mode)
+
+    def test_tesy_mode_to_operation(self):
+        """Map every Tesy mode back to its operation mode."""
+        for operation, mode in EXPECTED_MODES.items():
+            self.assertEqual(HELPERS.TESY_MODE_TO_OPERATION[mode], operation)
+        self.assertEqual(len(HELPERS.TESY_MODE_TO_OPERATION), len(EXPECTED_MODES))
+
+    def test_rejects_unknown_operation_mode(self):
+        """Raise ValueError for modes that are not in the map."""
+        for operation in ("off", "heat_pump", "", None):
+            with self.assertRaises(ValueError):
+                HELPERS.tesy_mode(operation)
+
+    def test_unknown_tesy_mode_is_not_mapped(self):
+        """Leave unknown Tesy modes unmapped so the caller can fall back."""
+        self.assertIsNone(HELPERS.TESY_MODE_TO_OPERATION.get("7"))
+
+    def test_state_values_match_home_assistant(self):
+        """Keep the local state values in line with Home Assistant."""
+        try:
+            from homeassistant.components import water_heater
+        except ImportError:
+            self.skipTest("Home Assistant is not installed")
+        self.assertEqual(HELPERS.STATE_PERFORMANCE, water_heater.STATE_PERFORMANCE)
+        self.assertEqual(HELPERS.STATE_ECO, water_heater.STATE_ECO)
