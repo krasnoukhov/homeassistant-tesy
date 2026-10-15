@@ -51,9 +51,17 @@
         "name": "Child Lock"
       }
     },
+    "binary_sensor": {
+      "clock_problem": {
+        "name": "Clock problem"
+      }
+    },
     "button": {
       "energy_reset": {
         "name": "Reset Consumed Energy"
+      },
+      "sync_timezone": {
+        "name": "Sync time zone"
       }
     },
     "water_heater": {
@@ -68,6 +76,52 @@
           "eco": "Eco Smart",
           "ec2": "Eco Comfort",
           "ec3": "Eco Night"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_schedule": {
+      "name": "Set weekly program",
+      "description": "Writes 24 hourly temperatures to days of a weekly program.",
+      "fields": {
+        "program": {
+          "name": "Program",
+          "description": "Weekly program to change (1-3)."
+        },
+        "days": {
+          "name": "Days",
+          "description": "Days to write. All days if omitted."
+        },
+        "temperatures": {
+          "name": "Temperatures",
+          "description": "24 values, one per hour starting at 00:00: 15-75 °C, or 14 to switch heating off for that hour. Use null for an hour with no program entry."
+        }
+      }
+    }
+  },
+  "selector": {
+    "days": {
+      "options": {
+        "mo": "Monday",
+        "tu": "Tuesday",
+        "we": "Wednesday",
+        "th": "Thursday",
+        "fr": "Friday",
+        "sa": "Saturday",
+        "su": "Sunday"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "scan_interval": "Poll interval, seconds"
+        },
+        "data_description": {
+          "scan_interval": "How often the heater is read (5-300). Changes made on its panel or in MyTESY appear within this time."
         }
       }
     }

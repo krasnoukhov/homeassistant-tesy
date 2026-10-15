@@ -27,7 +27,6 @@ from .const import (
     ATTR_IS_HEATING,
     ATTR_PARAMETERS,
     ATTR_CDT,
-    ATTR_CURRENT_TARGET_TEMP,
     ATTR_ENERGY_RESETTABLE,
     ATTR_ERROR,
     ATTR_RSSI,
@@ -37,6 +36,7 @@ from .const import (
     ATTR_CURRENT_TEMP,
 )
 from .coordinator import TesyCoordinator
+from .schedule import active_target
 
 
 async def async_setup_entry(
@@ -319,9 +319,9 @@ class TesyTargetTempSensor(TesySensor):
     @property
     def native_value(self):
         """Return the current target temperature."""
-        if ATTR_CURRENT_TARGET_TEMP not in self.coordinator.data:
-            return None
-        return float(self.coordinator.data[ATTR_CURRENT_TARGET_TEMP])
+        return active_target(
+            self.coordinator.data, use_schedule=self.coordinator.supports_schedule
+        )
 
 
 class TesyErrorSensor(TesySensor):
