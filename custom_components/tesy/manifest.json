@@ -3,10 +3,14 @@
   "name": "Tesy",
   "codeowners": [
     "@krasnoukhov",
-    "@artin961"
+    "@artin961",
+    "@pollstar"
   ],
   "config_flow": true,
-  "dependencies": [],
+  "dependencies": [
+    "frontend",
+    "http"
+  ],
   "documentation": "https://github.com/krasnoukhov/homeassistant-tesy",
   "integration_type": "device",
   "iot_class": "local_polling",

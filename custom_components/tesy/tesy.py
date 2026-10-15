@@ -59,6 +59,14 @@ class Tesy:
         """Set child lock for Tesy component."""
         return self._get_request(name=ATTR_CHILD_LOCK, set=val).json()
 
+    def set_schedule(self, key: str, val: str) -> dict[str, Any]:
+        """Write one day of a weekly program, e.g. key=prgP1MO, val=48 hex chars."""
+        return self._get_request(name=key, set=val).json()
+
+    def set_timezone(self, val: str) -> dict[str, Any]:
+        """Write the POSIX TZ string the module uses for local time."""
+        return self._get_request(name="tz", set=val).json()
+
     def reset_energy_counter(self) -> dict[str, Any]:
         """Reset the resettable energy counter."""
         resp = self._get_request(name=ATTR_ENERGY_RESETTABLE, set="0").json()
@@ -84,3 +92,6 @@ class Tesy:
             raise ConnectionError from connection_error
         except requests.exceptions.HTTPError as http_error:
             raise ConnectionError from http_error
+        except requests.exceptions.RequestException as request_error:
+            # Read timeouts and the like: callers handle ConnectionError only.
+            raise ConnectionError from request_error

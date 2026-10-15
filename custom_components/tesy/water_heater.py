@@ -3,6 +3,8 @@
 from typing import Any
 from custom_components.tesy.coordinator import TesyCoordinator
 
+import voluptuous as vol
+
 from homeassistant.components.water_heater import (
     STATE_ECO,
     STATE_PERFORMANCE,
@@ -13,11 +15,14 @@ from homeassistant.components.water_heater import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     ATTR_TEMPERATURE,
+    PRECISION_TENTHS,
     PRECISION_WHOLE,
     STATE_OFF,
     UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
+from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
@@ -39,6 +44,55 @@ from .const import (
 )
 
 from .entity import TesyEntity
+from .schedule import (
+    DAYS,
+    HOURS_PER_DAY,
+    MAX_SLOT_TEMP,
+    MIN_SLOT_TEMP,
+    PROGRAMS,
+    active_program,
+    active_target,
+    encode_day,
+    get_program,
+    schedule_key,
+    whole_number,
+)
+
+SERVICE_SET_SCHEDULE = "set_schedule"
+ATTR_PROGRAM = "program"
+ATTR_DAYS = "days"
+ATTR_TEMPERATURES = "temperatures"
+
+
+def _whole_number(value: Any) -> int:
+    """Voluptuous validator: a whole number, fractions rejected."""
+    try:
+        return whole_number(value)
+    except (TypeError, ValueError) as err:
+        raise vol.Invalid(str(err)) from err
+
+
+SET_SCHEDULE_SCHEMA = {
+    vol.Required(ATTR_PROGRAM): vol.All(_whole_number, vol.In(PROGRAMS)),
+    vol.Optional(ATTR_DAYS, default=[day.lower() for day in DAYS]): vol.All(
+        cv.ensure_list,
+        vol.Length(min=1, max=len(DAYS)),
+        [vol.All(cv.string, vol.Lower, vol.In([d.lower() for d in DAYS]))],
+    ),
+    vol.Required(ATTR_TEMPERATURES): vol.All(
+        cv.ensure_list,
+        vol.Length(min=HOURS_PER_DAY, max=HOURS_PER_DAY),
+        [
+            vol.Any(
+                None,
+                vol.All(
+                    _whole_number,
+                    vol.Range(min=MIN_SLOT_TEMP, max=MAX_SLOT_TEMP),
+                ),
+            )
+        ],
+    ),
+}
 
 OPERATION_LIST = [
     STATE_OFF,
@@ -59,6 +113,15 @@ async def async_setup_entry(
 ) -> None:
     """Create Tesy water heater in HASS."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
+
+    if coordinator.supports_schedule:
+        platform = entity_platform.async_get_current_platform()
+        platform.async_register_entity_service(
+            SERVICE_SET_SCHEDULE,
+            SET_SCHEDULE_SCHEMA,
+            "async_set_schedule",
+        )
+
     async_add_entities(
         [
             TesyWaterHeater(
@@ -78,8 +141,11 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
     """Representation of an Tesy water heater."""
 
     _attr_operation_list = OPERATION_LIST
+    # Weekly programs are a few KB and change rarely; keep them out of history.
+    _unrecorded_attributes = frozenset(
+        {f"schedule_p{program}" for program in PROGRAMS} | {"tesy_features"}
+    )
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
-    _attr_precision = PRECISION_WHOLE
     _attr_supported_features = (
         WaterHeaterEntityFeature.TARGET_TEMPERATURE
         | WaterHeaterEntityFeature.OPERATION_MODE
@@ -120,6 +186,15 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
                 self._attr_max_temp = (
                     int(tmp_max) if tmp_max.isdecimal() else self._attr_max_temp
                 )
+
+    @property
+    def precision(self) -> float:
+        """Water temperature in tenths as the heater reports it (tmpC "54.2").
+
+        Shower models report a whole number of showers instead.
+        """
+        device = TESY_DEVICE_TYPES.get(self.coordinator.data.get(ATTR_DEVICE_ID), {})
+        return PRECISION_WHOLE if device.get("use_showers") else PRECISION_TENTHS
 
     @property
     def current_temperature(self):
@@ -245,14 +320,60 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
 
     @property
     def target_temperature(self):
-        """Return the target temperature."""
-        return float(self.coordinator.data[ATTR_CURRENT_TARGET_TEMP])
+        """Return the target the heater is currently working towards."""
+        return active_target(
+            self.coordinator.data, use_schedule=self.coordinator.supports_schedule
+        )
 
     @property
-    def extra_state_attributes(self) -> dict[str, str] | None:
+    def extra_state_attributes(self) -> dict[str, Any] | None:
         """Return the state attributes."""
-        return {
-            "is_heating": ATTR_IS_HEATING in self.coordinator.data
-            and self.coordinator.data[ATTR_IS_HEATING] == "1",
+        data = self.coordinator.data
+        attributes: dict[str, Any] = {
+            "is_heating": ATTR_IS_HEATING in data and data[ATTR_IS_HEATING] == "1",
             "target_temp_step": 1,
         }
+
+        features = self.coordinator.features
+        if features:
+            # Lets the card tell a supported heater from one with basic control.
+            attributes["tesy_features"] = sorted(features)
+
+        if self.coordinator.supports_schedule:
+            # Setpoint used in manual mode, kept while another mode is active.
+            if ATTR_TARGET_TEMP in data:
+                attributes["manual_temperature"] = int(data[ATTR_TARGET_TEMP])
+            attributes["active_program"] = active_program(data)
+            for program in PROGRAMS:
+                attributes[f"schedule_p{program}"] = get_program(data, program)
+
+        return attributes
+
+    async def async_set_schedule(
+        self, program: int, temperatures: list[int | None], days: list[str]
+    ) -> None:
+        """Write 24 hourly temperatures (None = empty hour) to program days."""
+        if not self.coordinator.supports_schedule:
+            # The service is per platform; another Tesy heater may support it.
+            raise ServiceValidationError(
+                f"Weekly programs are not supported on {self.entity_id}"
+            )
+        try:
+            value = encode_day(temperatures)
+        except ValueError as err:
+            raise ServiceValidationError(str(err)) from err
+
+        for day in days:
+            key = schedule_key(program, day)
+            try:
+                response = await self.coordinator.async_set_schedule(key, value)
+            except (ConnectionError, NotImplementedError) as err:
+                raise HomeAssistantError(
+                    f"Failed to write {key} to the heater: {err}"
+                ) from err
+
+            if response.get("api") != "OK" or response.get(key) != value:
+                raise HomeAssistantError(
+                    f"Heater rejected {key}: {response.get('api', response)}"
+                )
+            await self.partially_update_data_from_api(response, key)
