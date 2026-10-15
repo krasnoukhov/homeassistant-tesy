@@ -1,0 +1,35 @@
+set_schedule:
+  target:
+    entity:
+      integration: tesy
+      domain: water_heater
+  fields:
+    program:
+      required: true
+      example: 1
+      selector:
+        select:
+          options:
+            - "1"
+            - "2"
+            - "3"
+    days:
+      required: false
+      example: '["mo", "tu", "we", "th", "fr"]'
+      selector:
+        select:
+          multiple: true
+          translation_key: days
+          options:
+            - "mo"
+            - "tu"
+            - "we"
+            - "th"
+            - "fr"
+            - "sa"
+            - "su"
+    temperatures:
+      required: true
+      example: "[14, 14, 14, 14, 14, 14, 60, 60, 60, 14, 14, 14, 14, 14, 14, 14, 14, 14, 60, 60, 60, 60, 14, 14]"
+      selector:
+        object:
