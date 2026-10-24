@@ -1,5 +1,8 @@
 # Home Assistant Tesy integration
 
+<h3>⚠️ WARNING:  This integration does not currently support BiLight Cloud B15 as it uses different hardware lacking local API.</h3>
+
+
 This unofficial Tesy integration allows you to control smart wifi devices based on external esp32 wifi module (black pcb).
 It won't work if you have older device based on Atheros AR9331 chipset since the local API is different. In this case the module could be replaced with esp32 replacement module as they are compatible with most of Tesy water heaters, even if not comming with WiFi from the factory.
 
