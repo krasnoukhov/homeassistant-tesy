@@ -146,6 +146,10 @@ If the clock is off with the right time zone, the module has no internet; set th
 |--------|-------------|
 | `button.energy_reset` | Reset the resettable energy counter |
 
+## Dashboard card
+
+[tesy-boiler-card](https://github.com/pollstar/tesy-boiler-card) by [@pollstar](https://github.com/pollstar) is a thermostat card for this integration, with a weekly program editor. Add it to HACS as a custom repository of type **Dashboard**. It builds on the weekly programs and time zone sync, so for now it works on the ModEco 2 only.
+
 ## Device API Parameters
 
 | Field | Description | Used By |
@@ -199,3 +203,22 @@ Extended features are enabled per model in [`features.py`](custom_components/tes
 ## Translations
 
 Available in 9 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Turkish, Ukrainian. Operation modes, sensors, switches, buttons, and config flow are all translated.
+
+## Contributors
+
+Devices are listed so changes can be tested on the right hardware. To add or correct yours, edit [`.github/contributors.json`](.github/contributors.json); the table is regenerated on every push to `dev`.
+
+<!-- contributors:start -->
+| Contributor | Devices |
+|---|---|
+| <img src="https://github.com/krasnoukhov.png?size=40" width="20" height="20"> [@krasnoukhov](https://github.com/krasnoukhov) | ModEco 2 (2004), new API |
+| <img src="https://github.com/TheDjRider.png?size=40" width="20" height="20"> [@TheDjRider](https://github.com/TheDjRider) | BelliSlimo Cloud GCR 80 27 22 E31 ECW (2002), new API |
+| <img src="https://github.com/artin961.png?size=40" width="20" height="20"> [@artin961](https://github.com/artin961) | BelliSlimo (2002), new API<br>BiLight Smart (2003), new API |
+| <img src="https://github.com/d-sergienko.png?size=40" width="20" height="20"> [@d-sergienko](https://github.com/d-sergienko) | ModEco, old API |
+| <img src="https://github.com/pollstar.png?size=40" width="20" height="20"> [@pollstar](https://github.com/pollstar) | ModEco 2 GCV 100 47 24D C22 ECW (2004), new API |
+| <img src="https://github.com/kolarski.png?size=40" width="20" height="20"> [@kolarski](https://github.com/kolarski) | Unknown model (1006), old API |
+| <img src="https://github.com/Nebr88.png?size=40" width="20" height="20"> [@Nebr88](https://github.com/Nebr88) | ModEco (2000), old API |
+| <img src="https://github.com/RoastSlav.png?size=40" width="20" height="20"> [@RoastSlav](https://github.com/RoastSlav) | BelliSlimo (2002), new API |
+| <img src="https://github.com/Zst.png?size=40" width="20" height="20"> [@Zst](https://github.com/Zst) | — |
+| <img src="https://github.com/jvbemmelen.png?size=40" width="20" height="20"> [@jvbemmelen](https://github.com/jvbemmelen) | — |
+<!-- contributors:end -->
