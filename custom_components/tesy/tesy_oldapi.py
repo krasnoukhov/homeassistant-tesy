@@ -29,6 +29,8 @@ class TesyOldApi:
         # the Atheros chip chokes when polled for all 3 endpoints every 30 s.
         self._calc_res_cache = None
         self._calc_res_fetched_at = 0.0
+        # Bumped by a reset: a calcRes read started before it must not be cached.
+        self._calc_res_generation = 0
 
     def get_data(self) -> dict[str, Any]:
         """Get data for Tesy component."""
@@ -46,11 +48,13 @@ class TesyOldApi:
         if self._calc_res_cache is not None and (now - self._calc_res_fetched_at) < 600:
             data["calcRes"] = self._calc_res_cache
         else:
+            generation = self._calc_res_generation
             try:
                 calc_res = self._get_request(cmd="calcRes").json()
                 data["calcRes"] = calc_res
-                self._calc_res_cache = calc_res
-                self._calc_res_fetched_at = now
+                if generation == self._calc_res_generation:
+                    self._calc_res_cache = calc_res
+                    self._calc_res_fetched_at = now
             except (ConnectionError, ValueError):
                 _LOGGER.debug("Energy counter is not available from the old API")
 
@@ -144,6 +148,10 @@ class TesyOldApi:
         _LOGGER.debug("Reset response: %s", resp)
         if str(resp.get("err", 0)) != "0":
             return {ATTR_API: "ERROR"}
+        # The counter changed: read it on the next get_data() instead of
+        # serving the cached pre-reset value for up to 10 minutes.
+        self._calc_res_cache = None
+        self._calc_res_generation += 1
         return {ATTR_API: "OK"}
 
     def _coerce_mode(self, mode: Any) -> str:

@@ -42,6 +42,7 @@ from .const import (
 )
 from .coordinator import TesyCoordinator
 from .helpers import to_float, uses_showers
+from .schedule import active_target
 
 
 async def async_setup_entry(
@@ -378,9 +379,9 @@ class TesyTargetTempSensor(TesySensor):
     @property
     def native_value(self):
         """Return the current target temperature."""
-        if ATTR_CURRENT_TARGET_TEMP not in self.coordinator.data:
-            return None
-        return float(self.coordinator.data[ATTR_CURRENT_TARGET_TEMP])
+        return active_target(
+            self.coordinator.data, use_schedule=self.coordinator.supports_schedule
+        )
 
 
 class TesyHotWaterSensor(TesySensor):
