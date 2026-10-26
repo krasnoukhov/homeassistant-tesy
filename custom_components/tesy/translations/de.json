@@ -43,6 +43,11 @@
         "name": "Verbrauchte Energie (Rücksetzbar)"
       }
     },
+    "number": {
+      "target_showers": {
+        "name": "Ziel-Duschen"
+      }
+    },
     "switch": {
       "boost": {
         "name": "Boost"

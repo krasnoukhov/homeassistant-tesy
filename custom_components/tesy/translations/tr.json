@@ -43,6 +43,11 @@
         "name": "Tüketilen enerji (Sıfırlanabilir)"
       }
     },
+    "number": {
+      "target_showers": {
+        "name": "Hedef duş sayısı"
+      }
+    },
     "switch": {
       "boost": {
         "name": "Boost"

@@ -43,6 +43,11 @@
         "name": "Консумирана енергия (нулируема)"
       }
     },
+    "number": {
+      "target_showers": {
+        "name": "Целеви душове"
+      }
+    },
     "switch": {
       "boost": {
         "name": "Boost"

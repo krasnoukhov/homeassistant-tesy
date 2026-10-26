@@ -43,6 +43,11 @@
         "name": "Verbruikte energie (Resetbaar)"
       }
     },
+    "number": {
+      "target_showers": {
+        "name": "Doel douches"
+      }
+    },
     "switch": {
       "boost": {
         "name": "Boost"

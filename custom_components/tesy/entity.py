@@ -14,7 +14,11 @@ from .const import (
     ATTR_MAC,
     ATTR_BOOST,
     ATTR_CHILD_LOCK,
+    ATTR_CURRENT_TARGET_TEMP,
     ATTR_HARDWARE,
+    ATTR_MODE,
+    ATTR_POWER,
+    ATTR_TARGET_TEMP,
     ATTR_SOFTWARE,
     DOMAIN,
     ATTR_API,
@@ -123,6 +127,33 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
         if self.coordinator.data[ATTR_CHILD_LOCK] == "1":
             response = await self.coordinator.async_set_child_lock("0")
             await self.partially_update_data_from_api(response, ATTR_CHILD_LOCK)
+
+    async def async_set_manual_target(self, value: int) -> None:
+        """Set the manual target (tmpT), switching to manual mode if on."""
+        # Just in case if power is missing from json, prevent crashes
+        if ATTR_POWER not in self.coordinator.data:
+            return
+
+        if (
+            self.coordinator.data[ATTR_POWER] == "1"
+            and self.coordinator.data.get(ATTR_MODE) != "0"
+        ):
+            response = await self.coordinator.async_set_operation_mode("0")
+            await self.partially_update_data_from_api(response, ATTR_MODE)
+
+        response = await self.coordinator.async_set_target_temperature(value)
+        await self.partially_update_data_from_api(
+            response, ATTR_TARGET_TEMP, ATTR_CURRENT_TARGET_TEMP
+        )
+        if ATTR_API not in response or response[ATTR_API] != "OK":
+            return
+
+        # Optimistic: in manual mode, tmpR always equals tmpT
+        data = self.coordinator.data
+        data[ATTR_TARGET_TEMP] = str(value)
+        if data.get(ATTR_MODE) == "0":
+            data[ATTR_CURRENT_TARGET_TEMP] = str(value)
+        self.coordinator.async_set_updated_data(data)
 
     async def partially_update_data_from_api(self, response, *keys):
         if ATTR_API not in response or response[ATTR_API] != "OK":

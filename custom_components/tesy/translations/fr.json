@@ -43,6 +43,11 @@
         "name": "Énergie consommée (Réinitialisable)"
       }
     },
+    "number": {
+      "target_showers": {
+        "name": "Douches cibles"
+      }
+    },
     "switch": {
       "boost": {
         "name": "Boost"

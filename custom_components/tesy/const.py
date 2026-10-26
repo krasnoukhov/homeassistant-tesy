@@ -74,6 +74,9 @@ ATTR_RSSI = "wdBm"
 
 ATTR_MAX_SHOWERS = "tmpMX"
 
+# Unit of tmpC, tmpT and tmpR on models with "use_showers"
+UNIT_SHOWERS = "showers"
+
 ATTR_PARAMETERS = "parNF"
 
 ATTR_CDT = "cdt"

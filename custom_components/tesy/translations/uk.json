@@ -27,6 +27,9 @@
       "uptime": { "name": "Час роботи" },
       "energy_consumed_resettable": { "name": "Спожита енергія (скидається)" }
     },
+    "number": {
+      "target_showers": { "name": "Цільова кількість душів" }
+    },
     "switch": {
       "boost": { "name": "Турбо" },
       "child_lock": { "name": "Дитячий замок" }

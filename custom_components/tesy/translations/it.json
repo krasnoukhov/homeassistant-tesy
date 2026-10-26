@@ -43,6 +43,11 @@
         "name": "Energia consumata (Azzerabile)"
       }
     },
+    "number": {
+      "target_showers": {
+        "name": "Docce obiettivo"
+      }
+    },
     "switch": {
       "boost": {
         "name": "Boost"

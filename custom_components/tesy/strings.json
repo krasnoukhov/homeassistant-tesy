@@ -43,6 +43,11 @@
         "name": "Energy Consumed (Resettable)"
       }
     },
+    "number": {
+      "target_showers": {
+        "name": "Target Showers"
+      }
+    },
     "switch": {
       "boost": {
         "name": "Boost"
