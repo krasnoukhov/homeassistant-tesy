@@ -88,6 +88,35 @@ Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core
 | `switch.boost` | Boost mode |
 | `switch.child_lock` | Child lock (if supported) |
 
+### Weekly programs
+
+Weekly programs are enabled per model, for models where they were verified: so far the ModEco 2 (id 2004, firmware 200407 / Wi-Fi 0.29). Other models keep the previous behaviour; the list is in [`features.py`](custom_components/tesy/features.py), and a model is added there once it has been tested. A feature is enabled only if the heater also reports the fields it needs (`prgP1MO` … `prgP3SU`).
+
+On those heaters the water heater entity gets extra attributes:
+
+| Attribute | Description |
+|-----------|-------------|
+| `schedule_p1` … `schedule_p3` | `{"mo": [24 values], …, "su": [...]}`, °C per hour from 00:00; `14` = heating off for that hour (snowflake in MyTESY), `null` = no program entry (not stored in history) |
+| `active_program` | `1`-`3` while a program runs, otherwise `null` |
+| `manual_temperature` | Setpoint kept for manual mode (`tmpT`) |
+| `tesy_features` | Extended features enabled for this heater, e.g. `["schedule"]` (not stored in history) |
+
+While a program runs, the target temperature (entity and `Target Temperature` sensor) is the one the heater reports in `tmpR`; it can already be the next hour's value while the heater warms up ahead of it. When the heater is idle in a program, the firmware reports a placeholder (`9`) there instead, and the target is taken from the program for the current hour of the device clock.
+
+Programs can be written with the `tesy.set_schedule` action. Use 15-75 °C for a setpoint and `14` to switch heating off for an hour:
+
+```yaml
+action: tesy.set_schedule
+target:
+  entity_id: water_heater.heater
+data:
+  program: 3
+  days: [mo, tu, we, th, fr]   # optional, all days if omitted or empty
+  temperatures: [14, 14, 14, 14, 14, 14, 60, 60, 60, 14, 14, 14, 14, 14, 14, 14, 14, 14, 60, 60, 60, 60, 14, 14]
+```
+
+Each day is a 24-byte hex string on the device and is written with `/api?name=prgP3MO&set=<48 hex chars>`.
+
 ### Buttons
 
 | Entity | Description |
@@ -102,7 +131,9 @@ Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core
 | `mode` | Operation mode | Water heater |
 | `tmpC` | Current temperature / showers | Temperature sensor |
 | `tmpT` | Target temperature setpoint | Water heater |
-| `tmpR` | Active target temperature | Target Temperature sensor |
+| `tmpR` | Active target temperature (in a program it can be the next hour's value; placeholder `9` while idle) | Target Temperature sensor |
+| `date` | Device local time | Program target lookup |
+| `prgP{1-3}{MO..SU}` | Weekly programs, 24 bytes hex per day, °C per hour, `FF` = empty | Schedule attributes, `tesy.set_schedule` |
 | `ht` | Heating element active | `is_heating` attr |
 | `bst` | Boost flag | Boost switch |
 | `cdt` | Countdown timer (minutes) | Ready In sensor |
@@ -131,14 +162,16 @@ This returns a JSON object with all fields listed in the table above.
 
 ## Supported Devices
 
-| ID | Model | Range |
-|----|-------|-------|
-| 2000 | ModEco | 15-75°C |
-| 2002 | BelliSlimo | 0-4 showers |
-| 2003 | BiLight Smart | 15-75°C |
-| 2004 | ModEco 2 | 15-75°C |
-| 2005 | BelliSlimo Lite | 0-4 showers |
+| ID | Model | Range | Extended features |
+|----|-------|-------|-------------------|
+| 2000 | ModEco | 15-75°C | — |
+| 2002 | BelliSlimo | 0-4 showers | — |
+| 2003 | BiLight Smart | 15-75°C | — |
+| 2004 | ModEco 2 | 15-75°C | weekly programs |
+| 2005 | BelliSlimo Lite | 0-4 showers | — |
+
+Extended features are enabled per model in [`features.py`](custom_components/tesy/features.py), once verified on that model; other models keep the basic behaviour.
 
 ## Translations
 
-Available in 10 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Russian, Turkish, Ukrainian. Operation modes, sensors, switches, buttons, and config flow are all translated.
+Available in 9 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Turkish, Ukrainian. Operation modes, sensors, switches, buttons, and config flow are all translated.
