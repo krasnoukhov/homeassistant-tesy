@@ -41,6 +41,12 @@
       },
       "energy_consumed_resettable": {
         "name": "Консумирана енергия (нулируема)"
+      },
+      "hot_water": {
+        "name": "Топла вода"
+      },
+      "active_target": {
+        "name": "Активна цел"
       }
     },
     "number": {

@@ -41,6 +41,12 @@
       },
       "energy_consumed_resettable": {
         "name": "Énergie consommée (Réinitialisable)"
+      },
+      "hot_water": {
+        "name": "Eau chaude"
+      },
+      "active_target": {
+        "name": "Cible active"
       }
     },
     "number": {

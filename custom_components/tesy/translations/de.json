@@ -41,6 +41,12 @@
       },
       "energy_consumed_resettable": {
         "name": "Verbrauchte Energie (Rücksetzbar)"
+      },
+      "hot_water": {
+        "name": "Warmwasser"
+      },
+      "active_target": {
+        "name": "Aktives Ziel"
       }
     },
     "number": {

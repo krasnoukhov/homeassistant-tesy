@@ -41,6 +41,12 @@
       },
       "energy_consumed_resettable": {
         "name": "Energy Consumed (Resettable)"
+      },
+      "hot_water": {
+        "name": "Hot Water"
+      },
+      "active_target": {
+        "name": "Active Target"
       }
     },
     "number": {

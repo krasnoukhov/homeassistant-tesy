@@ -41,6 +41,12 @@
       },
       "energy_consumed_resettable": {
         "name": "Verbruikte energie (Resetbaar)"
+      },
+      "hot_water": {
+        "name": "Warm water"
+      },
+      "active_target": {
+        "name": "Actief doel"
       }
     },
     "number": {

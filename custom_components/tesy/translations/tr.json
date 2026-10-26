@@ -41,6 +41,12 @@
       },
       "energy_consumed_resettable": {
         "name": "Tüketilen enerji (Sıfırlanabilir)"
+      },
+      "hot_water": {
+        "name": "Sıcak su"
+      },
+      "active_target": {
+        "name": "Etkin hedef"
       }
     },
     "number": {

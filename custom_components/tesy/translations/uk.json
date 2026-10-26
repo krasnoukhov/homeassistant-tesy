@@ -25,7 +25,9 @@
       "error_status": { "name": "Статус помилки" },
       "wifi_signal": { "name": "Сигнал WiFi" },
       "uptime": { "name": "Час роботи" },
-      "energy_consumed_resettable": { "name": "Спожита енергія (скидається)" }
+      "energy_consumed_resettable": { "name": "Спожита енергія (скидається)" },
+      "hot_water": { "name": "Гаряча вода" },
+      "active_target": { "name": "Активна ціль" }
     },
     "number": {
       "target_showers": { "name": "Цільова кількість душів" }

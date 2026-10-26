@@ -41,6 +41,12 @@
       },
       "energy_consumed_resettable": {
         "name": "Energía consumida (Reinicializable)"
+      },
+      "hot_water": {
+        "name": "Agua caliente"
+      },
+      "active_target": {
+        "name": "Objetivo activo"
       }
     },
     "number": {

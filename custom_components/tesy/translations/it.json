@@ -41,6 +41,12 @@
       },
       "energy_consumed_resettable": {
         "name": "Energia consumata (Azzerabile)"
+      },
+      "hot_water": {
+        "name": "Acqua calda"
+      },
+      "active_target": {
+        "name": "Obiettivo attivo"
       }
     },
     "number": {
