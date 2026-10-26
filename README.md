@@ -101,6 +101,7 @@ BelliSlimo (2002) and BelliSlimo Lite (2005) report hot water in showers, not de
 - Setting Target Showers switches the heater to manual mode if it is on, like the temperature setpoint on other models.
 - The old `sensor.temperature` and `sensor.target_temperature` entities are removed. Automations that called `water_heater.set_temperature` on these models need to use `number.set_value` on `number.target_showers` instead.
 - Devices set up with the old API keep the temperature entities.
+- Downgrading to an earlier version brings back the temperature entities and leaves Hot Water, Active Target and Target Showers as orphaned entities; remove them from **Settings > Devices & services > Entities**.
 
 ### Switches
 
