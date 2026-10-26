@@ -150,6 +150,8 @@ If the clock is off with the right time zone, the module has no internet; set th
 
 [tesy-boiler-card](https://github.com/pollstar/tesy-boiler-card) by [@pollstar](https://github.com/pollstar) is a thermostat card for this integration, with a weekly program editor. Add it to HACS as a custom repository of type **Dashboard**. It builds on the weekly programs and time zone sync, so for now it works on the ModEco 2 only.
 
+<img src="https://raw.githubusercontent.com/pollstar/tesy-boiler-card/main/docs/card.png" alt="Tesy boiler card in dark and light themes" width="420">
+
 ## Device API Parameters
 
 | Field | Description | Used By |
