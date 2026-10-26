@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import EntityDescription
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -28,6 +29,11 @@ from .coordinator import TesyCoordinator
 import logging
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _is_ok(response) -> bool:
+    """Return True if a setter reply reports success."""
+    return isinstance(response, dict) and response.get(ATTR_API) == "OK"
 
 
 class TesyEntity(CoordinatorEntity[TesyCoordinator]):
@@ -129,30 +135,50 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
             await self.partially_update_data_from_api(response, ATTR_CHILD_LOCK)
 
     async def async_set_manual_target(self, value: int) -> None:
-        """Set the manual target (tmpT), switching to manual mode if on."""
+        """Set the manual target (tmpT), switching to manual mode if on.
+
+        tmpT is not written if switching to manual mode fails. Failures are
+        raised as HomeAssistantError.
+        """
         # Just in case if power is missing from json, prevent crashes
         if ATTR_POWER not in self.coordinator.data:
             return
 
-        if (
-            self.coordinator.data[ATTR_POWER] == "1"
-            and self.coordinator.data.get(ATTR_MODE) != "0"
-        ):
-            response = await self.coordinator.async_set_operation_mode("0")
-            await self.partially_update_data_from_api(response, ATTR_MODE)
+        try:
+            if (
+                self.coordinator.data[ATTR_POWER] == "1"
+                and self.coordinator.data.get(ATTR_MODE) != "0"
+            ):
+                response = await self.coordinator.async_set_operation_mode("0")
+                if not _is_ok(response):
+                    raise HomeAssistantError(
+                        "Heater did not switch to manual mode; target not set"
+                    )
+                await self.partially_update_data_from_api(response, ATTR_MODE)
 
-        response = await self.coordinator.async_set_target_temperature(value)
+            response = await self.coordinator.async_set_target_temperature(value)
+        except ConnectionError as err:
+            # The client wraps transport errors in a bare ConnectionError
+            reason = str(err) or (
+                f"Cannot reach heater: {type(err.__cause__ or err).__name__}"
+            )
+            raise HomeAssistantError(reason) from err
+        except ValueError as err:  # not JSON
+            raise HomeAssistantError("Invalid response from heater") from err
+
+        if not _is_ok(response):
+            raise HomeAssistantError("Heater rejected the target")
         await self.partially_update_data_from_api(
             response, ATTR_TARGET_TEMP, ATTR_CURRENT_TARGET_TEMP
         )
-        if ATTR_API not in response or response[ATTR_API] != "OK":
-            return
 
-        # Optimistic: in manual mode, tmpR always equals tmpT
+        # Optimistic, but keep what the heater echoed: it may clamp the value.
+        # In manual mode, tmpR always equals tmpT.
         data = self.coordinator.data
-        data[ATTR_TARGET_TEMP] = str(value)
-        if data.get(ATTR_MODE) == "0":
-            data[ATTR_CURRENT_TARGET_TEMP] = str(value)
+        if ATTR_TARGET_TEMP not in response:
+            data[ATTR_TARGET_TEMP] = str(value)
+        if data.get(ATTR_MODE) == "0" and ATTR_CURRENT_TARGET_TEMP not in response:
+            data[ATTR_CURRENT_TARGET_TEMP] = data[ATTR_TARGET_TEMP]
         self.coordinator.async_set_updated_data(data)
 
     async def partially_update_data_from_api(self, response, *keys):
