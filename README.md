@@ -146,6 +146,12 @@ If the clock is off with the right time zone, the module has no internet; set th
 |--------|-------------|
 | `button.energy_reset` | Reset the resettable energy counter |
 
+## Dashboard card
+
+[tesy-boiler-card](https://github.com/pollstar/tesy-boiler-card) by [@pollstar](https://github.com/pollstar) is a thermostat card for this integration, with a weekly program editor. Add it to HACS as a custom repository of type **Dashboard**. It builds on the weekly programs and time zone sync, so for now it works on the ModEco 2 only.
+
+<img src="https://raw.githubusercontent.com/pollstar/tesy-boiler-card/main/docs/card.png" alt="Tesy boiler card in dark and light themes" width="420">
+
 ## Device API Parameters
 
 | Field | Description | Used By |
@@ -199,3 +205,9 @@ Extended features are enabled per model in [`features.py`](custom_components/tes
 ## Translations
 
 Available in 9 languages: English, Bulgarian, German, French, Dutch, Spanish, Italian, Turkish, Ukrainian. Operation modes, sensors, switches, buttons, and config flow are all translated.
+
+## Contributors
+
+<a href="https://github.com/krasnoukhov/homeassistant-tesy/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=krasnoukhov/homeassistant-tesy" alt="Contributors">
+</a>
