@@ -91,9 +91,24 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     def _get_data(self) -> dict[str, Any]:
         """Get new sensor data using Tesy API."""
         try:
-            return self._client.get_data()
+            result = self._client.get_data()
         except ConnectionError as http_error:
-            raise UpdateFailed from http_error
+            cause = http_error.__cause__ or http_error
+            _LOGGER.debug("Cannot reach heater: %r", cause)
+            raise UpdateFailed(
+                f"Cannot reach heater: {type(cause).__name__}"
+            ) from http_error
+        except (ValueError, KeyError, TypeError, AttributeError) as err:
+            # Non-JSON or malformed response
+            raise UpdateFailed(f"Invalid response from heater: {err!r}") from err
+        # Report only the type or api value: the payload includes the MAC address
+        if not isinstance(result, dict):
+            raise UpdateFailed(f"Invalid response from heater: {type(result).__name__}")
+        if result.get(ATTR_API) != "OK":
+            raise UpdateFailed(
+                f"Invalid response from heater: api={result.get(ATTR_API)!r}"
+            )
+        return result
 
     def get_config_power(self) -> int:
         return self._client._heater_power
