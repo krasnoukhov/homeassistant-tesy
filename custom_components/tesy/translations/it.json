@@ -7,13 +7,25 @@
           "heater_power": "Potenza dello scaldacqua per il calcolo dell\u0027energia",
           "use_old_api": "Usa la vecchia API per dispositivi con chip Atheros"
         }
+      },
+      "reconfigure": {
+        "title": "Riconfigura",
+        "description": "Modifica l\u0027indirizzo IP del dispositivo, ad esempio se il router gliene ha assegnato uno nuovo, oppure la potenza usata per il calcolo dell\u0027energia.",
+        "data": {
+          "ip_address": "Indirizzo IP",
+          "heater_power": "Potenza dello scaldacqua per il calcolo dell\u0027energia"
+        }
       }
     },
     "error": {
       "already_configured": "Dispositivo già configurato",
       "already_in_progress": "Configurazione del dispositivo in corso",
       "cannot_connect": "Connessione non riuscita",
-      "unknown": "Errore sconosciuto"
+      "unknown": "Errore sconosciuto",
+      "wrong_device": "A questo indirizzo risponde un altro dispositivo"
+    },
+    "abort": {
+      "reconfigure_successful": "Il dispositivo è stato riconfigurato"
     }
   },
   "entity": {

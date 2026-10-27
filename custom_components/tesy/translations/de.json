@@ -7,13 +7,25 @@
           "heater_power": "Leistung des Heizers für die Energieberechnung",
           "use_old_api": "Altes API für Geräte mit Atheros-Chip verwenden"
         }
+      },
+      "reconfigure": {
+        "title": "Neu konfigurieren",
+        "description": "Ändern Sie die IP-Adresse des Geräts, zum Beispiel wenn der Router ihm eine neue zugewiesen hat, oder die Leistung für die Energieberechnung.",
+        "data": {
+          "ip_address": "IP-Adresse",
+          "heater_power": "Leistung des Heizers für die Energieberechnung"
+        }
       }
     },
     "error": {
       "already_configured": "Gerät ist bereits konfiguriert",
       "already_in_progress": "Gerätekonfiguration wird durchgeführt",
       "cannot_connect": "Verbindung fehlgeschlagen",
-      "unknown": "Unbekannter Fehler"
+      "unknown": "Unbekannter Fehler",
+      "wrong_device": "Unter dieser Adresse antwortet ein anderes Gerät"
+    },
+    "abort": {
+      "reconfigure_successful": "Das Gerät wurde neu konfiguriert"
     }
   },
   "entity": {

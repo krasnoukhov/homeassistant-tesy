@@ -7,13 +7,25 @@
           "heater_power": "Power of the heater for energy calculation",
           "use_old_api": "Use old API for devices with Atheros chip"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigure",
+        "description": "Change the heater's IP address, for example after your router gave it a new one, or the power used for the energy calculation.",
+        "data": {
+          "ip_address": "IP address",
+          "heater_power": "Power of the heater for energy calculation"
+        }
       }
     },
     "error": {
       "already_configured": "Device is already configured",
       "already_in_progress": "Device configuration is in progress",
       "cannot_connect": "Failed to connect",
-      "unknown": "Unknown error"
+      "unknown": "Unknown error",
+      "wrong_device": "A different heater answers at this address"
+    },
+    "abort": {
+      "reconfigure_successful": "The heater has been reconfigured"
     }
   },
   "entity": {

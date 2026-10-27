@@ -35,6 +35,10 @@ The heater is read every 30 seconds by default, so changes made on its panel or 
 
 On models where it was verified (the ModEco 2 so far, see *Weekly programs*) the heater is also read again ~2 s after any command from Home Assistant, so the heating state and target follow right away. Other models are read at the regular interval only.
 
+## Changing the IP address or heater power
+
+If the heater gets a new IP address (for example after a router change), open the integration, click the three dots next to the heater and choose **Reconfigure** (Home Assistant 2024.4 or newer). Enter the new address and, if needed, the heater power. The integration checks that the same heater (same MAC address) answers there, then reloads; entities and their history are kept. A static DHCP lease for the heater on your router avoids the problem altogether.
+
 ## Diagnostics
 
 When reporting a problem, attach the diagnostics file: open the integration, click the three dots next to the heater and choose **Download diagnostics**. It contains the integration settings and the heater's last reply, with the MAC and IP addresses, the MyTESY email, the Wi-Fi network name and the cloud device name removed.

@@ -8,6 +8,7 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant import config_entries
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import AbortFlow
 import homeassistant.helpers.config_validation as cv
@@ -35,6 +36,16 @@ USER_SCHEMA = vol.Schema(
         vol.Required(IP_ADDRESS): cv.string,
         vol.Required(HEATER_POWER): cv.positive_int,
         vol.Required(USE_OLD_API): cv.boolean,
+    }
+)
+
+RECONFIGURE_FIELDS = (IP_ADDRESS, HEATER_POWER)
+# Entries made before the power was asked for have none: left empty, the
+# power in use (the client's default) is kept.
+RECONFIGURE_SCHEMA = vol.Schema(
+    {
+        vol.Required(IP_ADDRESS): cv.string,
+        vol.Optional(HEATER_POWER): cv.positive_int,
     }
 )
 
@@ -94,6 +105,46 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         data_schema = self.add_suggested_values_to_schema(USER_SCHEMA, user_input)
         return self.async_show_form(
             step_id="user", data_schema=data_schema, errors=errors
+        )
+
+    async def async_step_reconfigure(self, user_input=None):
+        """Change the IP address or heater power of an existing heater.
+
+        The API type is kept: the old API reports the MAC in another format,
+        so the heater could not be matched to the entry.
+        """
+        entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
+        errors = {}
+
+        if user_input is not None:
+            data = {**entry.data, **user_input}
+            try:
+                info = await validate_input(self.hass, data)
+            except ConnectionError:
+                errors["base"] = "cannot_connect"
+            except Exception as exception_error:  # pylint: disable=broad-except
+                _LOGGER.exception(f"Unexpected exception {exception_error}")
+                errors["base"] = "unknown"
+            else:
+                # Another heater answers at this address: keep the entry as is
+                if entry.unique_id and info["unique_id"] != entry.unique_id:
+                    errors["base"] = "wrong_device"
+                else:
+                    # A loaded entry is reloaded by its update listener (which
+                    # starts at once); one that is not, e.g. retrying at the
+                    # old address, has no listener.
+                    loaded = entry.state is ConfigEntryState.LOADED
+                    self.hass.config_entries.async_update_entry(entry, data=data)
+                    if not loaded and entry.disabled_by is None:
+                        self.hass.config_entries.async_schedule_reload(entry.entry_id)
+                    return self.async_abort(reason="reconfigure_successful")
+
+        data_schema = self.add_suggested_values_to_schema(
+            RECONFIGURE_SCHEMA,
+            user_input or {key: entry.data.get(key) for key in RECONFIGURE_FIELDS},
+        )
+        return self.async_show_form(
+            step_id="reconfigure", data_schema=data_schema, errors=errors
         )
 
 

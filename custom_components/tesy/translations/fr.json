@@ -7,13 +7,25 @@
           "heater_power": "Puissance du chauffe-eau pour le calcul de l\u0027énergie",
           "use_old_api": "Utiliser l\u0027ancienne API pour les appareils avec puce Atheros"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigurer",
+        "description": "Modifiez l\u0027adresse IP de l\u0027appareil, par exemple si votre routeur lui en a attribué une nouvelle, ou la puissance utilisée pour le calcul de l\u0027énergie.",
+        "data": {
+          "ip_address": "Adresse IP",
+          "heater_power": "Puissance du chauffe-eau pour le calcul de l\u0027énergie"
+        }
       }
     },
     "error": {
       "already_configured": "L\u0027appareil est déjà configuré",
       "already_in_progress": "La configuration de l\u0027appareil est en cours",
       "cannot_connect": "Échec de la connexion",
-      "unknown": "Erreur inconnue"
+      "unknown": "Erreur inconnue",
+      "wrong_device": "Un autre appareil répond à cette adresse"
+    },
+    "abort": {
+      "reconfigure_successful": "L\u0027appareil a été reconfiguré"
     }
   },
   "entity": {

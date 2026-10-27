@@ -7,13 +7,25 @@
           "heater_power": "Vermogen van de waterverwarmer voor energieberekening",
           "use_old_api": "Oude API gebruiken voor apparaten met Atheros-chip"
         }
+      },
+      "reconfigure": {
+        "title": "Opnieuw configureren",
+        "description": "Wijzig het IP-adres van het apparaat, bijvoorbeeld als je router het een nieuw adres heeft gegeven, of het vermogen voor de energieberekening.",
+        "data": {
+          "ip_address": "IP-adres",
+          "heater_power": "Vermogen van de waterverwarmer voor energieberekening"
+        }
       }
     },
     "error": {
       "already_configured": "Apparaat is al geconfigureerd",
       "already_in_progress": "Apparaatconfiguratie is bezig",
       "cannot_connect": "Verbinding mislukt",
-      "unknown": "Onbekende fout"
+      "unknown": "Onbekende fout",
+      "wrong_device": "Op dit adres antwoordt een ander apparaat"
+    },
+    "abort": {
+      "reconfigure_successful": "Het apparaat is opnieuw geconfigureerd"
     }
   },
   "entity": {
