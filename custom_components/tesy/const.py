@@ -99,6 +99,11 @@ ATTR_CHILD_LOCK = "lck"
 ATTR_HARDWARE = "hsw"
 ATTR_ENERGY_RESETTABLE = "pwc_u"
 
+# Personal data left out of the diagnostics download: the configured and the
+# reported IP address, the MAC address, the MyTESY account email, the Wi-Fi
+# network name and the name set in the cloud (it can contain the MAC too).
+TO_REDACT = {IP_ADDRESS, ATTR_MAC, "wIP", "prfl", "wSSID", "extr"}
+
 """
 Some devices have additional parameters:
 "extr" - base64 and url encoded JSON, typically containing custom name if renamed from UI in the CLoud

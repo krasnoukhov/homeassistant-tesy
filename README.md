@@ -35,6 +35,10 @@ The heater is read every 30 seconds by default, so changes made on its panel or 
 
 On models where it was verified (the ModEco 2 so far, see *Weekly programs*) the heater is also read again ~2 s after any command from Home Assistant, so the heating state and target follow right away. Other models are read at the regular interval only.
 
+## Diagnostics
+
+When reporting a problem, attach the diagnostics file: open the integration, click the three dots next to the heater and choose **Download diagnostics**. It contains the integration settings and the heater's last reply, with the MAC and IP addresses, the MyTESY email, the Wi-Fi network name and the cloud device name removed.
+
 ## Installation
 
 ### Via HACS
