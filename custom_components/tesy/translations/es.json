@@ -7,13 +7,25 @@
           "heater_power": "Potencia del calentador para el cálculo de energía",
           "use_old_api": "Usar API anterior para dispositivos con chip Atheros"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigurar",
+        "description": "Cambie la dirección IP del dispositivo, por ejemplo si el router le ha asignado una nueva, o la potencia usada para el cálculo de la energía.",
+        "data": {
+          "ip_address": "Dirección IP",
+          "heater_power": "Potencia del calentador para el cálculo de energía"
+        }
       }
     },
     "error": {
       "already_configured": "El dispositivo ya está configurado",
       "already_in_progress": "La configuración del dispositivo está en progreso",
       "cannot_connect": "Error de conexión",
-      "unknown": "Error desconocido"
+      "unknown": "Error desconocido",
+      "wrong_device": "En esta dirección responde otro dispositivo"
+    },
+    "abort": {
+      "reconfigure_successful": "El dispositivo se ha reconfigurado"
     }
   },
   "entity": {
