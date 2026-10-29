@@ -27,7 +27,7 @@ class DeviceFeaturesTest(TestCase):
 
     def test_other_models_get_nothing(self):
         # Same fields, but the model is not verified: basic behaviour.
-        for model in ("2000", "2002", "2003", "2005", None):
+        for model in ("2000", "2003", "2005", None):
             data = {**PROGRAMS, "id": model}
             self.assertEqual(features.device_features(data), frozenset(), model)
 
@@ -44,6 +44,23 @@ class DeviceFeaturesTest(TestCase):
         self.assertEqual(
             features.device_features(partial), {features.FEATURE_TIMEZONE, readback}
         )
+
+    def test_bellislimo_gets_timezone_and_readback(self):
+        # Programs stay off on the BelliSlimo, even with the fields present.
+        self.assertEqual(
+            features.device_features({**PROGRAMS, "id": "2002"}),
+            {features.FEATURE_TIMEZONE, features.FEATURE_READBACK},
+        )
+
+    def test_numeric_tz_disables_timezone(self):
+        # BelliSlimo Wi-Fi 0.26 reports tz as a number, not a POSIX string.
+        readback = features.FEATURE_READBACK
+        for model in ("2002", "2004"):
+            for tz in ("180", "-120", " 0 "):
+                data = {"id": model, "tz": tz}
+                self.assertEqual(
+                    features.device_features(data), {readback}, (model, tz)
+                )
 
     def test_no_data(self):
         self.assertEqual(features.device_features(None), frozenset())
