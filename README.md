@@ -33,7 +33,7 @@ Temperature setpoint is only used in manual (Performance) mode. In any other mod
 
 The heater is read every 30 seconds by default, so changes made on its panel or in the MyTESY app show up in Home Assistant within that time. To make it faster, open the integration → **Configure** and set **Poll interval** (5-300 s); 10 s is a good value for a local device. Heaters on the old API (Atheros module) are not polled more often than every 30 s, since the module chokes on bursts of requests.
 
-On models where it was verified (the ModEco 2 so far, see *Weekly programs*) the heater is also read again ~2 s after any command from Home Assistant, so the heating state and target follow right away. Other models are read at the regular interval only.
+On models where it was verified (the ModEco 2 and the BelliSlimo so far, see *Supported Devices*) the heater is also read again ~2 s after any command from Home Assistant, so the heating state and target follow right away. Other models are read at the regular interval only.
 
 ## Changing the IP address or heater power
 
@@ -120,7 +120,7 @@ BelliSlimo (2002) and BelliSlimo Lite (2005) report hot water in showers, not de
 
 ### Weekly programs
 
-Weekly programs (and the time zone sync and read-back after commands) are enabled per model, for models where they were verified: so far the ModEco 2 (id 2004, firmware 200407 / Wi-Fi 0.29). Other models keep the previous behaviour; the list is in [`features.py`](custom_components/tesy/features.py), and a model is added there once it has been tested. A feature is enabled only if the heater also reports the fields it needs (`prgP1MO` … `prgP3SU`).
+Weekly programs (and the time zone sync and read-back after commands) are enabled per model, for models where they were verified: so far the ModEco 2 (id 2004, firmware 200407 / Wi-Fi 0.29). The BelliSlimo (id 2002, Wi-Fi 0.29) has the time zone sync and read-back, but not the programs yet. Other models keep the previous behaviour; the list is in [`features.py`](custom_components/tesy/features.py), and a model is added there once it has been tested. A feature is enabled only if the heater also reports the fields it needs (`prgP1MO` … `prgP3SU`).
 
 On those heaters the water heater entity gets extra attributes:
 
@@ -151,11 +151,13 @@ Each day is a 24-byte hex string on the device and is written with `/api?name=pr
 
 Weekly programs run on the heater's own clock. The module takes UTC from the network and converts it to local time with a POSIX TZ string in `tz` (e.g. `EET-2EEST,M3.5.0/3,M10.5.0/4`); the time itself cannot be set over the API, only `tz`.
 
-On models with time zone sync enabled (see *Weekly programs*) the integration keeps `tz` in step with Home Assistant's time zone: on start-up and whenever the HA time zone changes it writes the matching POSIX string (taken from the tz database) if the heater differs.
+On models with time zone sync enabled (see *Supported Devices*) the integration keeps `tz` in step with Home Assistant's time zone: on start-up and whenever the HA time zone changes it writes the matching POSIX string (taken from the tz database) if the heater differs.
 
 The sync is on by default and can be turned off in the integration → **Configure** → **Sync the heater time zone with Home Assistant**, for example if Home Assistant's time zone is not the heater's local time (left at UTC, say): the programs would otherwise shift by hours. The **Sync time zone** button still writes it on demand.
 
 Zones whose rules cannot be expressed in one POSIX string the heater understands are not synced; set the clock on the panel instead. That includes zones whose switch times are negative or past 24:00 (America/Nuuk, Asia/Jerusalem, Asia/Gaza), which the firmware is not known to handle.
+
+Older firmware that reports `tz` as a plain number instead of a POSIX string (BelliSlimo Wi-Fi 0.26 reports `180`) gets no time zone sync, clock problem sensor or button.
 
 | Entity | Description |
 |--------|-------------|
@@ -219,7 +221,7 @@ This returns a JSON object with all fields listed in the table above.
 | ID | Model | Range | Extended features |
 |----|-------|-------|-------------------|
 | 2000 | ModEco | 15-75°C | — |
-| 2002 | BelliSlimo | 0-4 showers | — |
+| 2002 | BelliSlimo | 0-4 showers | time zone sync, read-back after commands |
 | 2003 | BiLight Smart | 15-75°C | — |
 | 2004 | ModEco 2 | 15-75°C | weekly programs, time zone sync, read-back after commands |
 | 2005 | BelliSlimo Lite | 0-4 showers | — |
