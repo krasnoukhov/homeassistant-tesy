@@ -76,11 +76,17 @@ When reporting a problem, attach the diagnostics file: open the integration, cli
 | Program 1 | Schedule-based heating preset 1 |
 | Program 2 | Schedule-based heating preset 2 |
 | Program 3 | Schedule-based heating preset 3 |
-| Eco Smart | Energy-saving mode |
-| Eco Comfort | Balanced comfort and efficiency |
-| Eco Night | Overnight energy-saving mode |
+| Eco Smart | Learns when hot water is used and heats only for that (ECO on the panel) |
+| Eco Comfort | Eco Smart with more hot water in reserve, for changing habits; saves less (EC1) |
+| Eco Night | The third Eco level (EC2); what it does depends on the model, see below |
 
 Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core HA icons.
+
+The three Eco modes all learn the household's hot water use during the first week and keep adjusting after that. The heater picks its own target, so the setpoint doesn't apply; Active Target shows the target it chose. The modes differ per model, as the manuals describe them:
+
+- **BelliSlimo:** Eco Comfort keeps at least 2 showers ready; Eco Night prefers heating at night.
+- **BiLight:** Eco Comfort runs 5 °C above Eco Smart; Eco Night prefers heating at night.
+- **ModEco 2:** EC1 and EC2 are two steps of extra comfort, each keeping more hot water ready than the one before.
 
 ### Sensors
 
@@ -94,6 +100,10 @@ Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core
 | `sensor.wifi_signal` | WiFi signal strength | `signal_strength` | dBm |
 | `sensor.uptime` | Device uptime | `duration` | s |
 | `sensor.energy_consumed_resettable` | Energy consumed (since last reset from device) | `energy` | kWh |
+
+Error Status, WiFi Signal and Uptime are diagnostic entities, and Child Lock and Reset Consumed Energy are configuration entities. On the device page they're listed under *Diagnostic* and *Configuration*, and auto-generated dashboards leave them out. They're still enabled, so dashboards and automations that use them keep working.
+
+The device is also registered with the heater's MAC address, so integrations that know that address, a router integration for example, show the same device.
 
 ### Shower models (BelliSlimo)
 

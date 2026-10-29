@@ -43,7 +43,6 @@ async def async_setup_entry(
                     translation_key="clock_problem",
                     device_class=BinarySensorDeviceClass.PROBLEM,
                     entity_category=EntityCategory.DIAGNOSTIC,
-                    icon="mdi:clock-alert-outline",
                 ),
             )
         ]

@@ -33,7 +33,7 @@ async def async_setup_entry(
                 ButtonEntityDescription(
                     key="energy_reset",
                     translation_key="energy_reset",
-                    icon="mdi:restart",
+                    entity_category=EntityCategory.CONFIG,
                 ),
             )
         )
@@ -47,7 +47,6 @@ async def async_setup_entry(
                 ButtonEntityDescription(
                     key="sync_timezone",
                     translation_key="sync_timezone",
-                    icon="mdi:clock-check-outline",
                     entity_category=EntityCategory.CONFIG,
                 ),
             )

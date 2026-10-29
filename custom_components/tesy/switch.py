@@ -9,6 +9,7 @@ from homeassistant.components.switch import (
 )
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -34,7 +35,6 @@ async def async_setup_entry(
             SwitchEntityDescription(
                 key="boost",
                 translation_key="boost",
-                icon="mdi:rocket-launch-outline",
                 device_class=SwitchDeviceClass.SWITCH,
             ),
             lambda entity: entity.is_boost_mode_on,
@@ -52,7 +52,7 @@ async def async_setup_entry(
                 SwitchEntityDescription(
                     key="child_lock",
                     translation_key="child_lock",
-                    icon="mdi:lock-outline",
+                    entity_category=EntityCategory.CONFIG,
                     device_class=SwitchDeviceClass.SWITCH,
                 ),
                 lambda entity: entity.is_child_lock_on,

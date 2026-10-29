@@ -14,6 +14,7 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
+    EntityCategory,
     UnitOfEnergy,
     UnitOfTemperature,
     UnitOfTime,
@@ -68,7 +69,6 @@ async def async_setup_entry(
                         translation_key="hot_water",
                         state_class=SensorStateClass.MEASUREMENT,
                         native_unit_of_measurement=UNIT_SHOWERS,
-                        icon="mdi:shower-head",
                     ),
                     0,
                     None,
@@ -82,7 +82,6 @@ async def async_setup_entry(
                         translation_key="active_target",
                         state_class=SensorStateClass.MEASUREMENT,
                         native_unit_of_measurement=UNIT_SHOWERS,
-                        icon="mdi:shower-head",
                     ),
                     0,
                     None,
@@ -102,7 +101,6 @@ async def async_setup_entry(
                         device_class=SensorDeviceClass.TEMPERATURE,
                         state_class=SensorStateClass.MEASUREMENT,
                         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-                        icon="mdi:thermometer",
                     ),
                     1,
                     None,
@@ -117,7 +115,6 @@ async def async_setup_entry(
                         device_class=SensorDeviceClass.TEMPERATURE,
                         state_class=SensorStateClass.MEASUREMENT,
                         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-                        icon="mdi:thermometer",
                     ),
                     1,
                     None,
@@ -137,7 +134,6 @@ async def async_setup_entry(
                     device_class=SensorDeviceClass.ENERGY,
                     state_class=SensorStateClass.TOTAL_INCREASING,
                     native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-                    icon="mdi:lightning-bolt",
                 ),
                 2,
                 None,
@@ -152,7 +148,6 @@ async def async_setup_entry(
                     device_class=SensorDeviceClass.DURATION,
                     state_class=SensorStateClass.MEASUREMENT,
                     native_unit_of_measurement=UnitOfTime.MINUTES,
-                    icon="mdi:clock",
                 ),
                 None,
                 None,
@@ -164,7 +159,7 @@ async def async_setup_entry(
                 SensorEntityDescription(
                     key="error_status",
                     translation_key="error_status",
-                    icon="mdi:alert-circle-outline",
+                    entity_category=EntityCategory.DIAGNOSTIC,
                 ),
                 None,
                 None,
@@ -176,10 +171,10 @@ async def async_setup_entry(
                 SensorEntityDescription(
                     key="wifi_signal",
                     translation_key="wifi_signal",
+                    entity_category=EntityCategory.DIAGNOSTIC,
                     device_class=SensorDeviceClass.SIGNAL_STRENGTH,
                     state_class=SensorStateClass.MEASUREMENT,
                     native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
-                    icon="mdi:wifi",
                 ),
                 0,
                 None,
@@ -191,10 +186,10 @@ async def async_setup_entry(
                 SensorEntityDescription(
                     key="uptime",
                     translation_key="uptime",
+                    entity_category=EntityCategory.DIAGNOSTIC,
                     device_class=SensorDeviceClass.DURATION,
                     state_class=SensorStateClass.MEASUREMENT,
                     native_unit_of_measurement=UnitOfTime.SECONDS,
-                    icon="mdi:clock-outline",
                 ),
                 None,
                 None,
@@ -209,7 +204,6 @@ async def async_setup_entry(
                     device_class=SensorDeviceClass.ENERGY,
                     state_class=SensorStateClass.TOTAL_INCREASING,
                     native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-                    icon="mdi:lightning-bolt",
                 ),
                 2,
                 None,
@@ -259,9 +253,6 @@ class TesySensor(TesyEntity, SensorEntity):
             self._attr_native_unit_of_measurement = (
                 description.native_unit_of_measurement
             )
-
-        if description.icon is not None:
-            self._attr_icon = description.icon
 
         if suggested_display_precision is not None:
             self._attr_suggested_display_precision = suggested_display_precision

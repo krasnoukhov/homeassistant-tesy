@@ -41,7 +41,6 @@ async def async_setup_entry(
                 NumberEntityDescription(
                     key="target_showers",
                     translation_key="target_showers",
-                    icon="mdi:shower-head",
                 ),
             )
         ]
