@@ -6,6 +6,7 @@ from typing import Any
 
 from .const import (
     ATTR_MAX_SHOWERS,
+    TESY_DEVICE_TYPES,
     TESY_MODE_P1,
     TESY_MODE_P2,
     TESY_MODE_P3,
@@ -50,4 +51,19 @@ def to_float(value: Any) -> float | None:
 def max_showers(data: dict[str, Any], default: int) -> int:
     """Return the maximum showers reported by the device, or default."""
     value = str(data.get(ATTR_MAX_SHOWERS, ""))
-    return int(value) if value.isdecimal() else default
+    # A zero maximum would make the Eco modes set a target of zero showers
+    if not value.isdecimal() or int(value) == 0:
+        return default
+    return int(value)
+
+
+def uses_showers(device_id: Any, old_api: bool) -> bool:
+    """Return True if the device reports hot water in showers, not degrees.
+
+    Only the new API is covered: old API shower devices report different
+    fields (cur_shower, ref_shower, max_shower) that are not mapped yet.
+    """
+    if old_api:
+        return False
+    device_type = TESY_DEVICE_TYPES.get(str(device_id), {})
+    return bool(device_type.get("use_showers", False))

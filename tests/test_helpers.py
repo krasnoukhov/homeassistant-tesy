@@ -10,44 +10,42 @@ from unittest import TestCase
 def load_helpers_module():
     """Load the helpers module without requiring a Home Assistant installation."""
     module_names = (
+        "homeassistant",
+        "homeassistant.const",
         "custom_components",
         "custom_components.tesy",
         "custom_components.tesy.const",
+        "custom_components.tesy.helpers",
     )
     previous_modules = {name: sys.modules.get(name) for name in module_names}
 
+    homeassistant = ModuleType("homeassistant")
+    homeassistant.__path__ = []
+    homeassistant_const = ModuleType("homeassistant.const")
+    homeassistant_const.CONF_IP_ADDRESS = "ip_address"
     package = ModuleType("custom_components")
     package.__path__ = []
     integration_package = ModuleType("custom_components.tesy")
     integration_package.__path__ = []
-    constants = ModuleType("custom_components.tesy.const")
+    integration_path = Path(__file__).parents[1] / "custom_components" / "tesy"
 
-    values = {
-        "ATTR_MAX_SHOWERS": "tmpMX",
-        "TESY_MODE_P1": "p1",
-        "TESY_MODE_P2": "p2",
-        "TESY_MODE_P3": "p3",
-        "TESY_MODE_EC2": "ec2",
-        "TESY_MODE_EC3": "ec3",
-    }
-    for name, value in values.items():
-        setattr(constants, name, value)
-
-    try:
-        sys.modules["custom_components"] = package
-        sys.modules["custom_components.tesy"] = integration_package
-        sys.modules["custom_components.tesy.const"] = constants
-
-        module_path = (
-            Path(__file__).parents[1] / "custom_components" / "tesy" / "helpers.py"
-        )
+    def load(name):
         spec = spec_from_file_location(
-            "custom_components.tesy.helpers",
-            module_path,
+            f"custom_components.tesy.{name}", integration_path / f"{name}.py"
         )
         module = module_from_spec(spec)
+        sys.modules[spec.name] = module
         spec.loader.exec_module(module)
         return module
+
+    try:
+        sys.modules["homeassistant"] = homeassistant
+        sys.modules["homeassistant.const"] = homeassistant_const
+        sys.modules["custom_components"] = package
+        sys.modules["custom_components.tesy"] = integration_package
+        # The real constants, so the shower flags of each model are tested
+        load("const")
+        return load("helpers")
     finally:
         for name, previous_module in previous_modules.items():
             if previous_module is None:
@@ -94,6 +92,30 @@ class MaxShowersTest(TestCase):
         self.assertEqual(HELPERS.max_showers({"tmpMX": "x"}, 4), 4)
         self.assertEqual(HELPERS.max_showers({"tmpMX": None}, 4), 4)
         self.assertEqual(HELPERS.max_showers({"tmpMX": "-1"}, 4), 4)
+
+    def test_falls_back_when_zero(self):
+        """Fall back to the default when tmpMX is zero (Eco would target 0)."""
+        self.assertEqual(HELPERS.max_showers({"tmpMX": "0"}, 4), 4)
+        self.assertEqual(HELPERS.max_showers({"tmpMX": 0}, 4), 4)
+
+
+class UsesShowersTest(TestCase):
+    """Test which devices report hot water in showers."""
+
+    def test_shower_models_on_new_api(self):
+        """BelliSlimo and BelliSlimo Lite report showers."""
+        self.assertTrue(HELPERS.uses_showers("2002", old_api=False))
+        self.assertTrue(HELPERS.uses_showers("2005", old_api=False))
+
+    def test_shower_models_on_old_api(self):
+        """Old API shower devices keep the temperature entities for now."""
+        self.assertFalse(HELPERS.uses_showers("2002", old_api=True))
+        self.assertFalse(HELPERS.uses_showers("2005", old_api=True))
+
+    def test_other_models(self):
+        """Temperature models and unknown ids do not use showers."""
+        for device_id in ("2000", "2003", "2004", "9999", "", None):
+            self.assertFalse(HELPERS.uses_showers(device_id, old_api=False))
 
 
 # Values sent before the mode map was introduced

@@ -86,7 +86,7 @@ Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core
 
 | Entity | Description | Device Class | Unit |
 |--------|-------------|-------------|------|
-| `sensor.temperature` | Current temperature / showers | `temperature` | °C |
+| `sensor.temperature` | Current temperature | `temperature` | °C |
 | `sensor.energy_consumed` | Total energy consumed | `energy` | kWh |
 | `sensor.ready_in` | Minutes until target is reached | `duration` | min |
 | `sensor.target_temperature` | Active target temperature | `temperature` | °C |
@@ -94,6 +94,22 @@ Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core
 | `sensor.wifi_signal` | WiFi signal strength | `signal_strength` | dBm |
 | `sensor.uptime` | Device uptime | `duration` | s |
 | `sensor.energy_consumed_resettable` | Energy consumed (since last reset from device) | `energy` | kWh |
+
+### Shower models (BelliSlimo)
+
+BelliSlimo (2002) and BelliSlimo Lite (2005) report hot water in showers, not degrees. With the new API they get these entities instead of the temperature ones:
+
+| Entity | Description | Unit |
+|--------|-------------|------|
+| `number.target_showers` | Showers to heat in manual mode, 0 up to the maximum the heater reports (`tmpMX`) | showers |
+| `sensor.hot_water` | Hot water available | showers |
+| `sensor.active_target` | Target the heater is working towards in the current mode | showers |
+
+- The water heater entity keeps operation modes and on/off, but has no temperature.
+- Setting Target Showers switches the heater to manual mode if it is on, like the temperature setpoint on other models.
+- The old `sensor.temperature` and `sensor.target_temperature` entities are removed. Automations that called `water_heater.set_temperature` on these models need to use `number.set_value` on `number.target_showers` instead.
+- Devices set up with the old API keep the temperature entities.
+- Downgrading to an earlier version brings back the temperature entities and leaves Hot Water, Active Target and Target Showers as orphaned entities; remove them from **Settings > Devices & services > Entities**.
 
 ### Switches
 
@@ -166,9 +182,9 @@ If the clock is off with the right time zone, the module has no internet; set th
 |-------|-------------|---------|
 | `pwr` | Power state | Water heater |
 | `mode` | Operation mode | Water heater |
-| `tmpC` | Current temperature / showers | Temperature sensor |
-| `tmpT` | Target temperature setpoint | Water heater |
-| `tmpR` | Active target temperature (in a program it can be the next hour's value; placeholder `9` while idle) | Target Temperature sensor |
+| `tmpC` | Current temperature / showers | Temperature / Hot Water sensor |
+| `tmpT` | Target temperature / showers setpoint | Water heater / Target Showers |
+| `tmpR` | Active target temperature / showers (in a program it can be the next hour's value; placeholder `9` while idle) | Target Temperature / Active Target sensor |
 | `date` | Device local time (read-only, only in `_all`) | Program target lookup, clock check |
 | `tz` | POSIX time zone used for local time (writable) | Time zone sync |
 | `prgP{1-3}{MO..SU}` | Weekly programs, 24 bytes hex per day, °C per hour, `FF` = empty | Schedule attributes, `tesy.set_schedule` |
@@ -184,7 +200,7 @@ If the clock is off with the right time zone, the module has no internet; set th
 | `parNF` | Additional parameters | Dual-tank energy calculation |
 | `id` | Device type ID | Device detection |
 | `MAC` | MAC address | Unique ID |
-| `tmpMX` | Maximum showers | Max setpoint |
+| `tmpMX` | Maximum showers | Target Showers maximum, Eco target |
 | `wsw` | Software version | Device info |
 | `hsw` | Hardware version | Device info |
 

@@ -20,13 +20,18 @@ from homeassistant.const import (
     SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity import TesyEntity
 from .const import (
+    ATTR_DEVICE_ID,
     ATTR_IS_HEATING,
+    ATTR_MAC,
     ATTR_PARAMETERS,
     ATTR_CDT,
+    ATTR_CURRENT_TARGET_TEMP,
+    UNIT_SHOWERS,
     ATTR_ENERGY_RESETTABLE,
     ATTR_ERROR,
     ATTR_RSSI,
@@ -36,6 +41,7 @@ from .const import (
     ATTR_CURRENT_TEMP,
 )
 from .coordinator import TesyCoordinator
+from .helpers import to_float, uses_showers
 from .schedule import active_target
 
 
@@ -47,23 +53,80 @@ async def async_setup_entry(
     """Initialize Tesy devices from config entry."""
 
     coordinator = hass.data[DOMAIN][entry.entry_id]
+
+    if uses_showers(coordinator.data.get(ATTR_DEVICE_ID), coordinator.is_old_api):
+        # Shower models report showers in tmpC/tmpR, not degrees
+        _remove_temperature_sensors(hass, coordinator)
+        async_add_entities(
+            [
+                TesyHotWaterSensor(
+                    hass,
+                    coordinator,
+                    entry,
+                    SensorEntityDescription(
+                        key="hot_water",
+                        translation_key="hot_water",
+                        state_class=SensorStateClass.MEASUREMENT,
+                        native_unit_of_measurement=UNIT_SHOWERS,
+                        icon="mdi:shower-head",
+                    ),
+                    0,
+                    None,
+                ),
+                TesyActiveTargetSensor(
+                    hass,
+                    coordinator,
+                    entry,
+                    SensorEntityDescription(
+                        key="active_target",
+                        translation_key="active_target",
+                        state_class=SensorStateClass.MEASUREMENT,
+                        native_unit_of_measurement=UNIT_SHOWERS,
+                        icon="mdi:shower-head",
+                    ),
+                    0,
+                    None,
+                ),
+            ]
+        )
+    else:
+        async_add_entities(
+            [
+                TesyTemperatureSensor(
+                    hass,
+                    coordinator,
+                    entry,
+                    SensorEntityDescription(
+                        key="temperature",
+                        translation_key="temperature",
+                        device_class=SensorDeviceClass.TEMPERATURE,
+                        state_class=SensorStateClass.MEASUREMENT,
+                        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+                        icon="mdi:thermometer",
+                    ),
+                    1,
+                    None,
+                ),
+                TesyTargetTempSensor(
+                    hass,
+                    coordinator,
+                    entry,
+                    SensorEntityDescription(
+                        key="target_temperature",
+                        translation_key="target_temperature",
+                        device_class=SensorDeviceClass.TEMPERATURE,
+                        state_class=SensorStateClass.MEASUREMENT,
+                        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+                        icon="mdi:thermometer",
+                    ),
+                    1,
+                    None,
+                ),
+            ]
+        )
+
     async_add_entities(
         [
-            TesyTemperatureSensor(
-                hass,
-                coordinator,
-                entry,
-                SensorEntityDescription(
-                    key="temperature",
-                    translation_key="temperature",
-                    device_class=SensorDeviceClass.TEMPERATURE,
-                    state_class=SensorStateClass.MEASUREMENT,
-                    native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-                    icon="mdi:thermometer",
-                ),
-                1,
-                None,
-            ),
             TesyEnergySensor(
                 hass,
                 coordinator,
@@ -92,21 +155,6 @@ async def async_setup_entry(
                     icon="mdi:clock",
                 ),
                 None,
-                None,
-            ),
-            TesyTargetTempSensor(
-                hass,
-                coordinator,
-                entry,
-                SensorEntityDescription(
-                    key="target_temperature",
-                    translation_key="target_temperature",
-                    device_class=SensorDeviceClass.TEMPERATURE,
-                    state_class=SensorStateClass.MEASUREMENT,
-                    native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-                    icon="mdi:thermometer",
-                ),
-                1,
                 None,
             ),
             TesyErrorSensor(
@@ -168,6 +216,18 @@ async def async_setup_entry(
             ),
         ]
     )
+
+
+@callback
+def _remove_temperature_sensors(
+    hass: HomeAssistant, coordinator: TesyCoordinator
+) -> None:
+    """Remove the temperature sensors a shower model had before it got its own."""
+    registry = er.async_get(hass)
+    for key in ("temperature", "target_temperature"):
+        unique_id = "-".join([coordinator.data[ATTR_MAC], key])
+        if entity_id := registry.async_get_entity_id("sensor", DOMAIN, unique_id):
+            registry.async_remove(entity_id)
 
 
 class TesySensor(TesyEntity, SensorEntity):
@@ -322,6 +382,20 @@ class TesyTargetTempSensor(TesySensor):
         return active_target(
             self.coordinator.data, use_schedule=self.coordinator.supports_schedule
         )
+
+
+class TesyHotWaterSensor(TesySensor):
+    @property
+    def native_value(self):
+        """Return the hot water available, in showers."""
+        return to_float(self.coordinator.data.get(ATTR_CURRENT_TEMP))
+
+
+class TesyActiveTargetSensor(TesySensor):
+    @property
+    def native_value(self):
+        """Return the target in showers the heater is working towards."""
+        return to_float(self.coordinator.data.get(ATTR_CURRENT_TARGET_TEMP))
 
 
 class TesyErrorSensor(TesySensor):

@@ -43,7 +43,13 @@ from .const import (
 )
 
 from .entity import TesyEntity
-from .helpers import TESY_MODE_TO_OPERATION, max_showers, tesy_mode, to_float
+from .helpers import (
+    TESY_MODE_TO_OPERATION,
+    max_showers,
+    tesy_mode,
+    to_float,
+    uses_showers,
+)
 from .schedule import (
     DAYS,
     HOURS_PER_DAY,
@@ -127,9 +133,12 @@ async def async_setup_entry(
         "async_set_schedule",
     )
 
+    heater_class = TesyWaterHeater
+    if uses_showers(coordinator.data.get(ATTR_DEVICE_ID), coordinator.is_old_api):
+        heater_class = TesyShowerWaterHeater
     async_add_entities(
         [
-            TesyWaterHeater(
+            heater_class(
                 hass,
                 coordinator,
                 entry,
@@ -372,3 +381,26 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
                 )
             await self.partially_update_data_from_api(response, key)
             written.append(day.upper())
+
+
+class TesyShowerWaterHeater(TesyWaterHeater):
+    """Water heater of a shower model: modes and on/off only.
+
+    tmpC/tmpT/tmpR are showers, not degrees. The Target Showers number and the
+    Hot Water/Active Target sensors show them instead. max_temp is still the
+    maximum showers, which the Eco modes write as the target.
+    """
+
+    _attr_supported_features = (
+        WaterHeaterEntityFeature.OPERATION_MODE | WaterHeaterEntityFeature.ON_OFF
+    )
+
+    @property
+    def current_temperature(self):
+        """Return None: the device reports showers, not a temperature."""
+        return None
+
+    @property
+    def target_temperature(self):
+        """Return None: the device reports showers, not a temperature."""
+        return None
