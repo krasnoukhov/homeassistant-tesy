@@ -97,11 +97,13 @@ The three Eco modes all learn the household's hot water use during the first wee
 | `sensor.ready_in` | Minutes until the target is reached; `0` while the heater isn't heating (BelliSlimo only, see below) | `duration` | min |
 | `sensor.target_temperature` | Active target temperature | `temperature` | °C |
 | `sensor.error_status` | Error code (`00` = no error) | - | - |
-| `sensor.wifi_signal` | WiFi signal strength | `signal_strength` | dBm |
-| `sensor.uptime` | Device uptime | `duration` | s |
+| `sensor.wifi_signal` | WiFi signal strength (new API) | `signal_strength` | dBm |
+| `sensor.uptime` | Wi-Fi module uptime (new API) | `duration` | s |
 | `sensor.energy_consumed_resettable` | Energy consumed (since last reset from device) | `energy` | kWh |
 
 Ready In is an extended feature (see *Supported Devices*), enabled for the BelliSlimo, where the countdown was verified: the heater reports `cdt` and counts it down about a minute per minute while heating, and recalculates it when hot water is used. While it isn't heating, `cdt` keeps a leftover of a minute or two, so Ready In shows `0` (the water is ready); while the heater is off, it's unknown. Other models don't get Ready In: the ModEco 2 doesn't report `cdt`, and on the rest it hasn't been verified. Earlier versions added Ready In to every model, where it never had a value; it's removed on the first start. If your model reports a `cdt` that counts down like this, open an issue with two diagnostics files, one while heating and one while idle (see *Diagnostics*).
+
+The old API doesn't report the Wi-Fi signal or uptime, so heaters set up with it don't get WiFi Signal and Uptime; earlier versions added them there without a value, and they're removed on the first start.
 
 ### Binary sensors
 
@@ -137,7 +139,7 @@ BelliSlimo (2002) and BelliSlimo Lite (2005) report hot water in showers, not de
 | Entity | Description |
 |--------|-------------|
 | `switch.boost` | Boost mode |
-| `switch.child_lock` | Child lock (if supported) |
+| `switch.child_lock` | Child lock (if the heater reports it). On the old API it shows the panel's lock but can't be changed from Home Assistant |
 
 ### Weekly programs
 
