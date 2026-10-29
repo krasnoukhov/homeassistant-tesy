@@ -40,6 +40,8 @@ from .const import (
     TESY_MODE_P3,
     TESY_MODE_EC2,
     TESY_MODE_EC3,
+    TESY_MODE_VACATION,
+    ATTR_VACATION,
 )
 
 from .entity import TesyEntity
@@ -230,6 +232,10 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         # if powered off
         if self.coordinator.data[ATTR_POWER] != "1":
             return STATE_OFF
+
+        # Like the MyTESY app, a holiday is shown as Vacation
+        if self.coordinator.data.get(ATTR_VACATION) == "1":
+            return TESY_MODE_VACATION
 
         # Unknown modes are reported as off
         return TESY_MODE_TO_OPERATION.get(self.coordinator.data[ATTR_MODE], STATE_OFF)

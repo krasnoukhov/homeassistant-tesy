@@ -79,14 +79,15 @@ When reporting a problem, attach the diagnostics file: open the integration, cli
 | Eco Smart | Learns when hot water is used and heats only for that (ECO on the panel) |
 | Eco Comfort | Eco Smart with more hot water in reserve, for changing habits; saves less (EC1) |
 | Eco Night | The third Eco level (EC2); what it does depends on the model, see below |
+| Vacation | Shown while a holiday is set on the heater (panel or MyTESY app); not selectable here. On the panel, picking another mode ends the holiday; from Home Assistant that's only certain on the old API, where the holiday is a mode |
 
-Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core HA icons.
+Custom icons are provided for Program 1-3, the Eco modes and Vacation. Standard modes use core HA icons.
 
 The three Eco modes all learn the household's hot water use during the first week and keep adjusting after that. The heater picks its own target, so the setpoint doesn't apply; Active Target shows the target it chose. The modes differ per model, as the manuals describe them:
 
 - **BelliSlimo:** Eco Comfort keeps at least 2 showers ready; Eco Night prefers heating at night.
-- **BiLight:** Eco Comfort runs 5 °C above Eco Smart; Eco Night prefers heating at night.
 - **ModEco 2:** EC1 and EC2 are two steps of extra comfort, each keeping more hot water ready than the one before.
+- **BiLight Smart:** no manual is available, so its Eco modes aren't described here.
 
 ### Sensors
 

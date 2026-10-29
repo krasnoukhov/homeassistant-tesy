@@ -9,7 +9,8 @@
               "p2": "mdi:numeric-2-circle-outline",
               "p3": "mdi:numeric-3-circle-outline",
               "ec2": "mdi:flower-outline",
-              "ec3": "mdi:weather-night"
+              "ec3": "mdi:weather-night",
+              "vacation": "mdi:beach"
             }
           }
         }

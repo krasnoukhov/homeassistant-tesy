@@ -72,6 +72,8 @@ TESY_MODE_P2 = "p2"
 TESY_MODE_P3 = "p3"
 TESY_MODE_EC2 = "ec2"
 TESY_MODE_EC3 = "ec3"
+# Shown, not selectable: a holiday is left by picking another mode
+TESY_MODE_VACATION = "vacation"
 
 ATTR_MODE = "mode"
 
@@ -97,6 +99,8 @@ ATTR_PARAMETERS = "parNF"
 
 ATTR_CDT = "cdt"
 ATTR_ERROR = "err"
+# 1 while a holiday (vacation) is set; the mode underneath is kept
+ATTR_VACATION = "vac"
 ATTR_UPTIME = "wup"
 ATTR_CHILD_LOCK = "lck"
 ATTR_HARDWARE = "hsw"
