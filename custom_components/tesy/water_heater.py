@@ -329,8 +329,9 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
 
         if self.coordinator.supports_schedule:
             # Setpoint used in manual mode, kept while another mode is active.
+            # Shower models show it in the Target Showers number instead.
             manual = to_float(data.get(ATTR_TARGET_TEMP))
-            if manual is not None:
+            if manual is not None and not self._showers:
                 attributes["manual_temperature"] = manual
             attributes["active_program"] = active_program(data)
             for program in PROGRAMS:

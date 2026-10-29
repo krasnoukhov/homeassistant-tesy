@@ -128,7 +128,7 @@ On those heaters the water heater entity gets extra attributes:
 |-----------|-------------|
 | `schedule_p1` … `schedule_p3` | `{"mo": [24 values], …, "su": [...]}`, °C per hour from 00:00; `14` = heating off for that hour (snowflake in MyTESY), `null` = no program entry (not stored in history). On the BelliSlimo the values are showers, and `null` is an hour the panel shows as anti-freeze (`*`) |
 | `active_program` | `1`-`3` while a program runs, otherwise `null` |
-| `manual_temperature` | Setpoint kept for manual mode (`tmpT`), in showers on the BelliSlimo |
+| `manual_temperature` | Setpoint kept for manual mode (`tmpT`); not on the BelliSlimo, whose Target Showers number shows it |
 | `tesy_features` | Extended features enabled for this heater, e.g. `["schedule", "timezone"]` (not stored in history) |
 
 While a program runs, the target temperature (entity and `Target Temperature` sensor) is the one the heater reports in `tmpR`; it can already be the next hour's value while the heater warms up ahead of it. When the heater is idle in a program, the firmware reports a placeholder (`9`) there instead, and the target is taken from the program for the current hour of the device clock. On the BelliSlimo, the `Active Target` sensor shows `tmpR` as the heater reports it; in an hour with no program entry that is `0` (anti-freeze only).
