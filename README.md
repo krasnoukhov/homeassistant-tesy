@@ -101,7 +101,16 @@ The three Eco modes all learn the household's hot water use during the first wee
 | `sensor.uptime` | Device uptime | `duration` | s |
 | `sensor.energy_consumed_resettable` | Energy consumed (since last reset from device) | `energy` | kWh |
 
-Error Status, WiFi Signal and Uptime are diagnostic entities, and Child Lock and Reset Consumed Energy are configuration entities. On the device page they're listed under *Diagnostic* and *Configuration*, and auto-generated dashboards leave them out. They're still enabled, so dashboards and automations that use them keep working.
+### Binary sensors
+
+| Entity | Description | Device Class |
+|--------|-------------|-------------|
+| `binary_sensor.heating` | On while a heating element is on (`ht`); off while the heater is switched off | `running` |
+| `binary_sensor.problem` | On while the heater reports an error code (`err` other than `0` / `00`) | `problem` |
+
+Problem follows the MyTESY app, which reports an error for any code other than `0` / `00`. The code itself is in Error Status; the heater's manual lists what it means. The codes differ per model (5 is dry heating on the ModEco 2 but a sensor error on the BelliSlimo), so they aren't named here. Each sensor is added only if the heater reports its field.
+
+Error Status, Problem, WiFi Signal and Uptime are diagnostic entities, and Child Lock and Reset Consumed Energy are configuration entities. On the device page they're listed under *Diagnostic* and *Configuration*, and auto-generated dashboards leave them out. They're still enabled, so dashboards and automations that use them keep working.
 
 The device is also registered with the heater's MAC address, so integrations that know that address, a router integration for example, show the same device.
 
@@ -212,10 +221,10 @@ If the clock is off with the right time zone, the module has no internet; set th
 | `date` | Device local time (read-only, only in `_all`) | Program target lookup, clock check |
 | `tz` | POSIX time zone used for local time (writable) | Time zone sync |
 | `prgP{1-3}{MO..SU}` | Weekly programs, 24 bytes hex per day, °C per hour, `FF` = empty | Schedule attributes, `tesy.set_schedule` |
-| `ht` | Heating element active | `is_heating` attr |
+| `ht` | Heating element active | Heating binary sensor, `is_heating` attr |
 | `bst` | Boost flag | Boost switch |
 | `cdt` | Countdown timer (minutes) | Ready In sensor |
-| `err` | Error code | Error Status sensor |
+| `err` | Error code | Error Status sensor, Problem binary sensor |
 | `wdBm` | WiFi RSSI | WiFi Signal sensor |
 | `wup` | Uptime (seconds) | Uptime sensor |
 | `lck` | Child lock | Child Lock switch |

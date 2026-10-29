@@ -72,6 +72,18 @@
     "binary_sensor": {
       "clock_problem": {
         "default": "mdi:clock-alert-outline"
+      },
+      "heating": {
+        "default": "mdi:fire-off",
+        "state": {
+          "on": "mdi:fire"
+        }
+      },
+      "problem": {
+        "default": "mdi:check-circle-outline",
+        "state": {
+          "on": "mdi:alert-circle"
+        }
       }
     },
     "number": {

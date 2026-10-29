@@ -29,6 +29,10 @@
     }
   },
   "entity": {
+    "binary_sensor": {
+      "heating": { "name": "Нагрівання" },
+      "problem": { "name": "Проблема" }
+    },
     "sensor": {
       "temperature": { "name": "Температура" },
       "energy_consumed": { "name": "Спожита енергія" },

@@ -118,6 +118,48 @@ class UsesShowersTest(TestCase):
             self.assertFalse(HELPERS.uses_showers(device_id, old_api=False))
 
 
+class IsHeatingTest(TestCase):
+    """Test the heating state."""
+
+    def test_heating_and_idle(self):
+        """ht 1 is heating, 0 is not."""
+        self.assertTrue(HELPERS.is_heating({"ht": "1", "pwr": "1"}))
+        self.assertFalse(HELPERS.is_heating({"ht": "0", "pwr": "1"}))
+
+    def test_switched_off_is_not_heating(self):
+        """A heater that is off is not heating, whatever ht says."""
+        self.assertFalse(HELPERS.is_heating({"ht": "1", "pwr": "0"}))
+
+    def test_without_power_field(self):
+        """ht alone decides when pwr is missing."""
+        self.assertTrue(HELPERS.is_heating({"ht": "1"}))
+        self.assertFalse(HELPERS.is_heating({"ht": "0"}))
+
+    def test_unknown(self):
+        """A missing or unexpected ht value is unknown."""
+        for data in ({}, {"ht": ""}, {"ht": "2"}, {"ht": None}, {"ht": "yes"}):
+            self.assertIsNone(HELPERS.is_heating(data), data)
+
+
+class HasErrorTest(TestCase):
+    """Test the error state, which follows the MyTESY app."""
+
+    def test_no_error(self):
+        """00 (new API) and 0 (old API) mean no error."""
+        for value in ("00", "0", 0, " 00 "):
+            self.assertFalse(HELPERS.has_error({"err": value}), value)
+
+    def test_error(self):
+        """Any other code is an error, without decoding it."""
+        for value in ("01", "05", "6", "10", "0A", "11", "000", 3):
+            self.assertTrue(HELPERS.has_error({"err": value}), value)
+
+    def test_unknown(self):
+        """A missing or empty code is unknown, not an error."""
+        for data in ({}, {"err": ""}, {"err": None}, {"err": "  "}):
+            self.assertIsNone(HELPERS.has_error(data), data)
+
+
 # Values sent before the mode map was introduced
 EXPECTED_MODES = {
     "performance": "0",
