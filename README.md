@@ -79,7 +79,7 @@ When reporting a problem, attach the diagnostics file: open the integration, cli
 | Eco Smart | Learns when hot water is used and heats only for that (ECO on the panel) |
 | Eco Comfort | Eco Smart with more hot water in reserve, for changing habits; saves less (EC1) |
 | Eco Night | The third Eco level (EC2); what it does depends on the model, see below |
-| Vacation | Shown while a holiday is set on the heater (panel or MyTESY app); not selectable here. On the panel, picking another mode ends the holiday; from Home Assistant that's only certain on the old API, where the holiday is a mode |
+| Vacation | Old API only: shown while a holiday is set on the heater, which the old API reports as its own mode; not selectable here. Picking another mode ends the holiday. On the new API the mode underneath stays and is shown |
 
 Custom icons are provided for Program 1-3, the Eco modes and Vacation. Standard modes use core HA icons.
 

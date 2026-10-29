@@ -99,7 +99,7 @@ ATTR_PARAMETERS = "parNF"
 
 ATTR_CDT = "cdt"
 ATTR_ERROR = "err"
-# 1 while a holiday (vacation) is set; the mode underneath is kept
+# 1 while a holiday (vacation) is set
 ATTR_VACATION = "vac"
 ATTR_UPTIME = "wup"
 ATTR_CHILD_LOCK = "lck"

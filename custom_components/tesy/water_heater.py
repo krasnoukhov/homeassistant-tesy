@@ -233,8 +233,12 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         if self.coordinator.data[ATTR_POWER] != "1":
             return STATE_OFF
 
-        # Like the MyTESY app, a holiday is shown as Vacation
-        if self.coordinator.data.get(ATTR_VACATION) == "1":
+        # The old API reports a holiday as its own mode, which would otherwise
+        # show as off. On the new API the mode underneath is kept and shown.
+        if (
+            self.coordinator.is_old_api
+            and self.coordinator.data.get(ATTR_VACATION) == "1"
+        ):
             return TESY_MODE_VACATION
 
         # Unknown modes are reported as off
