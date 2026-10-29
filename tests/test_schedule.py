@@ -79,6 +79,51 @@ class ScheduleCodecTest(TestCase):
             schedule.schedule_key(4, "MO")
 
 
+# Read from a BelliSlimo (id 2002, wsw 0.29), checked hour by hour in MyTESY:
+# P1 Monday is 1 shower at 00:00, 2 at 08:00 and 3 at 16:00.
+SHOWERS_MO = "FEFFFFFFFFFFFFFFFDFFFFFFFFFFFFFFFCFFFFFFFFFFFFFF"
+SHOWERS_MO_HOURS = [1] + [None] * 7 + [2] + [None] * 7 + [3] + [None] * 7
+
+
+class ShowerCodecTest(TestCase):
+    """Shower models store FF minus the showers; FF is an empty hour."""
+
+    def test_decode_real_program(self):
+        self.assertEqual(
+            schedule.decode_day(SHOWERS_MO, showers=True), SHOWERS_MO_HOURS
+        )
+
+    def test_encode_real_program(self):
+        self.assertEqual(
+            schedule.encode_day(SHOWERS_MO_HOURS, max_showers=4), SHOWERS_MO
+        )
+
+    def test_empty_day(self):
+        self.assertEqual(schedule.decode_day(EMPTY, showers=True), [None] * 24)
+        self.assertEqual(schedule.encode_day([None] * 24, max_showers=4), EMPTY)
+
+    def test_range_is_one_to_max(self):
+        self.assertEqual(schedule.encode_day([4] * 24, max_showers=4), "FB" * 24)
+        for bad in (0, 5, 14, 60):
+            with self.assertRaises(ValueError):
+                schedule.encode_day([bad] + [None] * 23, max_showers=4)
+        # The maximum is the heater's own (tmpMX)
+        self.assertEqual(schedule.encode_day([5] * 24, max_showers=5), "FA" * 24)
+
+    def test_temperatures_unchanged(self):
+        # Without a maximum the values are still °C.
+        self.assertEqual(schedule.decode_day(P1), schedule.decode_day(P1, False))
+        with self.assertRaises(ValueError):
+            schedule.encode_day([2] * 24)
+
+    def test_get_program_in_showers(self):
+        data = {f"prgP1{day}": EMPTY for day in schedule.DAYS}
+        data["prgP1MO"] = SHOWERS_MO
+        program = schedule.get_program(data, 1, showers=True)
+        self.assertEqual(program["mo"], SHOWERS_MO_HOURS)
+        self.assertEqual(program["tu"], [None] * 24)
+
+
 class ActiveTargetTest(TestCase):
     """Work out the target the heater is heading for."""
 

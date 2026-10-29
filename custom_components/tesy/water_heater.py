@@ -54,7 +54,7 @@ from .schedule import (
     DAYS,
     HOURS_PER_DAY,
     MAX_SLOT_TEMP,
-    MIN_SLOT_TEMP,
+    MIN_SLOT_SHOWERS,
     PROGRAMS,
     active_program,
     ALL_DAYS,
@@ -97,7 +97,8 @@ SET_SCHEDULE_SCHEMA = {
                 None,
                 vol.All(
                     _whole_number,
-                    vol.Range(min=MIN_SLOT_TEMP, max=MAX_SLOT_TEMP),
+                    # Temperatures or showers; encode_day checks the model's range
+                    vol.Range(min=MIN_SLOT_SHOWERS, max=MAX_SLOT_TEMP),
                 ),
             )
         ],
@@ -160,6 +161,8 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         {f"schedule_p{program}" for program in PROGRAMS} | {"tesy_features"}
     )
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
+    # Program hours are showers, not temperatures
+    _showers = False
     _attr_supported_features = (
         WaterHeaterEntityFeature.TARGET_TEMPERATURE
         | WaterHeaterEntityFeature.OPERATION_MODE
@@ -326,12 +329,15 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
 
         if self.coordinator.supports_schedule:
             # Setpoint used in manual mode, kept while another mode is active.
+            # Shower models show it in the Target Showers number instead.
             manual = to_float(data.get(ATTR_TARGET_TEMP))
-            if manual is not None:
+            if manual is not None and not self._showers:
                 attributes["manual_temperature"] = manual
             attributes["active_program"] = active_program(data)
             for program in PROGRAMS:
-                attributes[f"schedule_p{program}"] = get_program(data, program)
+                attributes[f"schedule_p{program}"] = get_program(
+                    data, program, self._showers
+                )
 
         return attributes
 
@@ -344,8 +350,11 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             raise ServiceValidationError(
                 f"Weekly programs are not supported on {self.entity_id}"
             )
+        limit = None
+        if self._showers:
+            limit = max_showers(self.coordinator.data, self._attr_max_temp)
         try:
-            value = encode_day(temperatures)
+            value = encode_day(temperatures, limit)
         except ValueError as err:
             raise ServiceValidationError(str(err)) from err
 
@@ -390,6 +399,8 @@ class TesyShowerWaterHeater(TesyWaterHeater):
     Hot Water/Active Target sensors show them instead. max_temp is still the
     maximum showers, which the Eco modes write as the target.
     """
+
+    _showers = True
 
     _attr_supported_features = (
         WaterHeaterEntityFeature.OPERATION_MODE | WaterHeaterEntityFeature.ON_OFF

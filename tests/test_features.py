@@ -45,12 +45,8 @@ class DeviceFeaturesTest(TestCase):
             features.device_features(partial), {features.FEATURE_TIMEZONE, readback}
         )
 
-    def test_bellislimo_gets_timezone_and_readback(self):
-        # Programs stay off on the BelliSlimo, even with the fields present.
-        self.assertEqual(
-            features.device_features({**PROGRAMS, "id": "2002"}),
-            {features.FEATURE_TIMEZONE, features.FEATURE_READBACK},
-        )
+    def test_bellislimo_gets_everything(self):
+        self.assertEqual(features.device_features({**PROGRAMS, "id": "2002"}), ALL)
 
     def test_numeric_tz_disables_timezone(self):
         # BelliSlimo Wi-Fi 0.26 reports tz as a number, not a POSIX string.
