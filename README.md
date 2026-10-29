@@ -120,18 +120,18 @@ BelliSlimo (2002) and BelliSlimo Lite (2005) report hot water in showers, not de
 
 ### Weekly programs
 
-Weekly programs (and the time zone sync and read-back after commands) are enabled per model, for models where they were verified: so far the ModEco 2 (id 2004, firmware 200407 / Wi-Fi 0.29). The BelliSlimo (id 2002, Wi-Fi 0.29) has the time zone sync and read-back, but not the programs yet. Other models keep the previous behaviour; the list is in [`features.py`](custom_components/tesy/features.py), and a model is added there once it has been tested. A feature is enabled only if the heater also reports the fields it needs (`prgP1MO` … `prgP3SU`).
+Weekly programs (and the time zone sync and read-back after commands) are enabled per model, for models where they were verified: so far the ModEco 2 (id 2004, firmware 200407 / Wi-Fi 0.29) and the BelliSlimo (id 2002, Wi-Fi 0.29), whose programs are in showers. Other models keep the previous behaviour; the list is in [`features.py`](custom_components/tesy/features.py), and a model is added there once it has been tested. A feature is enabled only if the heater also reports the fields it needs (`prgP1MO` … `prgP3SU`).
 
 On those heaters the water heater entity gets extra attributes:
 
 | Attribute | Description |
 |-----------|-------------|
-| `schedule_p1` … `schedule_p3` | `{"mo": [24 values], …, "su": [...]}`, °C per hour from 00:00; `14` = heating off for that hour (snowflake in MyTESY), `null` = no program entry (not stored in history) |
+| `schedule_p1` … `schedule_p3` | `{"mo": [24 values], …, "su": [...]}`, °C per hour from 00:00; `14` = heating off for that hour (snowflake in MyTESY), `null` = no program entry (not stored in history). On the BelliSlimo the values are showers, and `null` is an hour the panel shows as anti-freeze (`*`) |
 | `active_program` | `1`-`3` while a program runs, otherwise `null` |
-| `manual_temperature` | Setpoint kept for manual mode (`tmpT`) |
+| `manual_temperature` | Setpoint kept for manual mode (`tmpT`), in showers on the BelliSlimo |
 | `tesy_features` | Extended features enabled for this heater, e.g. `["schedule", "timezone"]` (not stored in history) |
 
-While a program runs, the target temperature (entity and `Target Temperature` sensor) is the one the heater reports in `tmpR`; it can already be the next hour's value while the heater warms up ahead of it. When the heater is idle in a program, the firmware reports a placeholder (`9`) there instead, and the target is taken from the program for the current hour of the device clock.
+While a program runs, the target temperature (entity and `Target Temperature` sensor) is the one the heater reports in `tmpR`; it can already be the next hour's value while the heater warms up ahead of it. When the heater is idle in a program, the firmware reports a placeholder (`9`) there instead, and the target is taken from the program for the current hour of the device clock. On the BelliSlimo, the `Active Target` sensor shows `tmpR` as the heater reports it.
 
 Programs can be written with the `tesy.set_schedule` action. Use 15-75 °C for a setpoint and `14` to switch heating off for an hour:
 
@@ -145,7 +145,19 @@ data:
   temperatures: [14, 14, 14, 14, 14, 14, 60, 60, 60, 14, 14, 14, 14, 14, 14, 14, 14, 14, 60, 60, 60, 60, 14, 14]
 ```
 
-Each day is a 24-byte hex string on the device and is written with `/api?name=prgP3MO&set=<48 hex chars>`.
+On the BelliSlimo the values are showers, from 1 up to the heater's maximum, and `null` leaves the hour empty (anti-freeze). For example, 1 shower at 00:00, 2 at 08:00 and 3 at 16:00 on Mondays of P1:
+
+```yaml
+action: tesy.set_schedule
+target:
+  entity_id: water_heater.heater
+data:
+  program: 1
+  days: [mo]
+  temperatures: [1, null, null, null, null, null, null, null, 2, null, null, null, null, null, null, null, 3, null, null, null, null, null, null, null]
+```
+
+Each day is a 24-byte hex string on the device and is written with `/api?name=prgP3MO&set=<48 hex chars>`. On the BelliSlimo each hour is `FF` minus the showers (`FE` = 1 shower), and `FF` is an empty hour.
 
 ### Clock and time zone
 
@@ -221,7 +233,7 @@ This returns a JSON object with all fields listed in the table above.
 | ID | Model | Range | Extended features |
 |----|-------|-------|-------------------|
 | 2000 | ModEco | 15-75°C | — |
-| 2002 | BelliSlimo | 0-4 showers | time zone sync, read-back after commands |
+| 2002 | BelliSlimo | 0-4 showers | weekly programs (in showers), time zone sync, read-back after commands |
 | 2003 | BiLight Smart | 15-75°C | — |
 | 2004 | ModEco 2 | 15-75°C | weekly programs, time zone sync, read-back after commands |
 | 2005 | BelliSlimo Lite | 0-4 showers | — |

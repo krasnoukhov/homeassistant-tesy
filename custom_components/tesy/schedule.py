@@ -5,6 +5,10 @@ Devices on the ESP32 module expose three weekly programs as 21 fields,
 per hour of the day, where every byte is the target temperature for that hour
 (``0x32`` = 50 °C). ``FF`` marks an hour that has no program entry.
 
+Shower models (BelliSlimo) store showers instead, counted down from ``FF``:
+``0xFE`` = 1 shower, ``0xFD`` = 2. ``FF`` is still an hour with no entry, which
+the panel shows as anti-freeze (``*``).
+
 The fields can be written one day at a time with
 ``/api?name=prgP3MO&set=<48 hex chars>``.
 
@@ -27,6 +31,10 @@ EMPTY_SLOT = 0xFF
 HEATING_OFF_TEMP = 14
 MIN_SLOT_TEMP = HEATING_OFF_TEMP
 MAX_SLOT_TEMP = 75
+
+# Lowest showers for a scheduled hour on shower models; the highest is the
+# heater's maximum (tmpMX). 0 showers would be FF, an empty hour.
+MIN_SLOT_SHOWERS = 1
 
 # Mode values ("mode" field) that run a weekly program, mapped to the program.
 PROGRAM_MODES = {"1": 1, "2": 2, "3": 3}
@@ -76,34 +84,47 @@ def write_failure_message(
     return f"P{program}: {done}failed at {day.upper()}: {reason}"
 
 
-def decode_day(value: str) -> list[int | None]:
-    """Decode a 48-char hex day into 24 hourly temperatures (None = empty)."""
+def decode_day(value: str, showers: bool = False) -> list[int | None]:
+    """Decode a 48-char hex day into 24 hourly values (None = empty).
+
+    The values are temperatures, or showers on shower models (showers True).
+    """
     if not isinstance(value, str) or len(value) != HOURS_PER_DAY * 2:
         raise ValueError(f"Invalid schedule value: {value!r}")
     raw = bytes.fromhex(value)  # ValueError on bad hex
     if len(raw) != HOURS_PER_DAY:  # fromhex skips whitespace
         raise ValueError(f"Invalid schedule value: {value!r}")
+    if showers:
+        return [None if byte == EMPTY_SLOT else EMPTY_SLOT - byte for byte in raw]
     return [None if byte == EMPTY_SLOT else byte for byte in raw]
 
 
-def encode_day(temperatures: list[int | None]) -> str:
-    """Encode 24 hourly temperatures (None = empty) into the device format."""
-    if len(temperatures) != HOURS_PER_DAY:
-        raise ValueError(
-            f"Expected {HOURS_PER_DAY} hourly values, got {len(temperatures)}"
-        )
+def encode_day(values: list[int | None], max_showers: int | None = None) -> str:
+    """Encode 24 hourly values (None = empty) into the device format.
+
+    The values are temperatures, or showers (1 to max_showers) when the
+    heater's maximum showers is given.
+    """
+    if len(values) != HOURS_PER_DAY:
+        raise ValueError(f"Expected {HOURS_PER_DAY} hourly values, got {len(values)}")
     result = bytearray()
-    for temperature in temperatures:
-        if temperature is None:
+    for value in values:
+        if value is None:
             result.append(EMPTY_SLOT)
             continue
-        temperature = int(temperature)
-        if not MIN_SLOT_TEMP <= temperature <= MAX_SLOT_TEMP:
+        value = int(value)
+        if max_showers is not None:
+            if not MIN_SLOT_SHOWERS <= value <= max_showers:
+                raise ValueError(
+                    f"Showers {value} outside {MIN_SLOT_SHOWERS}-{max_showers}"
+                )
+            result.append(EMPTY_SLOT - value)
+            continue
+        if not MIN_SLOT_TEMP <= value <= MAX_SLOT_TEMP:
             raise ValueError(
-                f"Temperature {temperature} outside "
-                f"{MIN_SLOT_TEMP}-{MAX_SLOT_TEMP} °C"
+                f"Temperature {value} outside {MIN_SLOT_TEMP}-{MAX_SLOT_TEMP} °C"
             )
-        result.append(temperature)
+        result.append(value)
     return result.hex().upper()
 
 
@@ -112,15 +133,20 @@ def has_schedules(data: dict[str, Any]) -> bool:
     return schedule_key(1, DAYS[0]) in data
 
 
-def get_program(data: dict[str, Any], program: int) -> dict[str, list] | None:
-    """Return one program as ``{"mo": [24 values], ...}``, or None if missing."""
+def get_program(
+    data: dict[str, Any], program: int, showers: bool = False
+) -> dict[str, list] | None:
+    """Return one program as ``{"mo": [24 values], ...}``, or None if missing.
+
+    The values are showers on shower models (showers True).
+    """
     result: dict[str, list[int | None]] = {}
     for day in DAYS:
         value = data.get(schedule_key(program, day))
         if value is None:
             return None
         try:
-            result[day.lower()] = decode_day(value)
+            result[day.lower()] = decode_day(value, showers)
         except ValueError:
             return None
     return result

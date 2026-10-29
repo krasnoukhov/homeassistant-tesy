@@ -106,7 +106,7 @@
   "services": {
     "set_schedule": {
       "name": "Set weekly program",
-      "description": "Writes 24 hourly temperatures to days of a weekly program.",
+      "description": "Writes 24 hourly temperatures (or showers) to days of a weekly program.",
       "fields": {
         "program": {
           "name": "Program",
@@ -118,7 +118,7 @@
         },
         "temperatures": {
           "name": "Temperatures",
-          "description": "24 values, one per hour starting at 00:00: 15-75 °C, or 14 to switch heating off for that hour. Use null for an hour with no program entry."
+          "description": "24 values, one per hour starting at 00:00: 15-75 °C, or 14 to switch heating off for that hour. On shower models (BelliSlimo): showers, 1 up to the heater's maximum. Use null for an hour with no program entry."
         }
       }
     }

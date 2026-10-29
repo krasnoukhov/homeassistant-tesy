@@ -1,8 +1,8 @@
 """Extended features, enabled per heater model.
 
 Weekly programs, time zone sync and the read-back after commands were
-developed and tested on the ModEco 2 (id 2004); time zone sync and the
-read-back were later verified on the BelliSlimo (id 2002). Other models keep
+developed and tested on the ModEco 2 (id 2004), and later verified on the
+BelliSlimo (id 2002), whose programs are in showers. Other models keep
 the basic behaviour of the integration until they are verified: add their id
 here once they are.
 
@@ -24,7 +24,9 @@ EXTENDED_MODELS: dict[str, frozenset[str]] = {
     "2004": frozenset(
         {FEATURE_SCHEDULE, FEATURE_TIMEZONE, FEATURE_READBACK}
     ),  # ModEco 2
-    "2002": frozenset({FEATURE_TIMEZONE, FEATURE_READBACK}),  # BelliSlimo
+    "2002": frozenset(
+        {FEATURE_SCHEDULE, FEATURE_TIMEZONE, FEATURE_READBACK}
+    ),  # BelliSlimo
 }
 
 _DAYS = ("MO", "TU", "WE", "TH", "FR", "SA", "SU")
