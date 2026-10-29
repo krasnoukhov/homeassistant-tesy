@@ -5,7 +5,11 @@ from __future__ import annotations
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.device_registry import (
+    CONNECTION_NETWORK_MAC,
+    DeviceInfo,
+    format_mac,
+)
 from homeassistant.helpers.entity import EntityDescription
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -77,6 +81,11 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
                     DOMAIN,
                     self.coordinator.data[ATTR_MAC],
                 )
+            },
+            # Links the device to others that know the heater's MAC (a router
+            # integration, for example); both APIs' formats are normalised.
+            connections={
+                (CONNECTION_NETWORK_MAC, format_mac(self.coordinator.data[ATTR_MAC]))
             },
             manufacturer="Tesy",
             model=device_model,

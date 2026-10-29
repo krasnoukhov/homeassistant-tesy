@@ -14,6 +14,70 @@
           }
         }
       }
+    },
+    "sensor": {
+      "hot_water": {
+        "default": "mdi:shower-head"
+      },
+      "active_target": {
+        "default": "mdi:shower-head"
+      },
+      "temperature": {
+        "default": "mdi:thermometer"
+      },
+      "target_temperature": {
+        "default": "mdi:thermometer"
+      },
+      "energy_consumed": {
+        "default": "mdi:lightning-bolt"
+      },
+      "ready_in": {
+        "default": "mdi:clock"
+      },
+      "error_status": {
+        "default": "mdi:alert-circle-outline"
+      },
+      "wifi_signal": {
+        "default": "mdi:wifi"
+      },
+      "uptime": {
+        "default": "mdi:clock-outline"
+      },
+      "energy_consumed_resettable": {
+        "default": "mdi:lightning-bolt"
+      }
+    },
+    "switch": {
+      "boost": {
+        "default": "mdi:rocket-launch-outline",
+        "state": {
+          "on": "mdi:rocket-launch"
+        }
+      },
+      "child_lock": {
+        "default": "mdi:lock-open-variant-outline",
+        "state": {
+          "on": "mdi:lock-outline"
+        }
+      }
+    },
+    "button": {
+      "energy_reset": {
+        "default": "mdi:restart"
+      },
+      "sync_timezone": {
+        "default": "mdi:clock-check-outline"
+      }
+    },
+    "binary_sensor": {
+      "clock_problem": {
+        "default": "mdi:clock-alert-outline"
+      }
+    },
+    "number": {
+      "target_showers": {
+        "default": "mdi:shower-head"
+      }
     }
   }
 }
