@@ -131,7 +131,7 @@ On those heaters the water heater entity gets extra attributes:
 | `manual_temperature` | Setpoint kept for manual mode (`tmpT`), in showers on the BelliSlimo |
 | `tesy_features` | Extended features enabled for this heater, e.g. `["schedule", "timezone"]` (not stored in history) |
 
-While a program runs, the target temperature (entity and `Target Temperature` sensor) is the one the heater reports in `tmpR`; it can already be the next hour's value while the heater warms up ahead of it. When the heater is idle in a program, the firmware reports a placeholder (`9`) there instead, and the target is taken from the program for the current hour of the device clock. On the BelliSlimo, the `Active Target` sensor shows `tmpR` as the heater reports it.
+While a program runs, the target temperature (entity and `Target Temperature` sensor) is the one the heater reports in `tmpR`; it can already be the next hour's value while the heater warms up ahead of it. When the heater is idle in a program, the firmware reports a placeholder (`9`) there instead, and the target is taken from the program for the current hour of the device clock. On the BelliSlimo, the `Active Target` sensor shows `tmpR` as the heater reports it; in an hour with no program entry that is `0` (anti-freeze only).
 
 Programs can be written with the `tesy.set_schedule` action. Use 15-75 °C for a setpoint and `14` to switch heating off for an hour:
 
