@@ -18,13 +18,13 @@
       }
     },
     "error": {
-      "already_configured": "Apparaat is al geconfigureerd",
-      "already_in_progress": "Apparaatconfiguratie is bezig",
       "cannot_connect": "Verbinding mislukt",
       "unknown": "Onbekende fout",
       "wrong_device": "Op dit adres antwoordt een ander apparaat"
     },
     "abort": {
+      "already_configured": "Apparaat is al geconfigureerd",
+      "already_in_progress": "Apparaatconfiguratie is bezig",
       "reconfigure_successful": "Het apparaat is opnieuw geconfigureerd"
     }
   },
@@ -35,6 +35,9 @@
       },
       "problem": {
         "name": "Probleem"
+      },
+      "clock_problem": {
+        "name": "Klokprobleem"
       }
     },
     "sensor": {
@@ -85,6 +88,9 @@
     "button": {
       "energy_reset": {
         "name": "Verbruikte energie resetten"
+      },
+      "sync_timezone": {
+        "name": "Tijdzone synchroniseren"
       }
     },
     "water_heater": {
@@ -99,6 +105,54 @@
           "eco": "Eco Smart",
           "ec2": "Eco Comfort",
           "ec3": "Eco Nacht"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_schedule": {
+      "name": "Weekprogramma instellen",
+      "description": "Schrijft 24 temperaturen per uur (of douchebeurten) naar dagen van een weekprogramma.",
+      "fields": {
+        "program": {
+          "name": "Programma",
+          "description": "Weekprogramma om te wijzigen (1-3)."
+        },
+        "days": {
+          "name": "Dagen",
+          "description": "Dagen om te schrijven. Alle dagen als niets is opgegeven of geselecteerd."
+        },
+        "temperatures": {
+          "name": "Temperaturen",
+          "description": "24 waarden, één per uur vanaf 00:00: 15-75 °C, of 14 om het verwarmen voor dat uur uit te zetten. Bij douchemodellen (BelliSlimo): douchebeurten, van 1 tot het maximum van de boiler. Gebruik null voor een uur zonder programma-item."
+        }
+      }
+    }
+  },
+  "selector": {
+    "days": {
+      "options": {
+        "mo": "Maandag",
+        "tu": "Dinsdag",
+        "we": "Woensdag",
+        "th": "Donderdag",
+        "fr": "Vrijdag",
+        "sa": "Zaterdag",
+        "su": "Zondag"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opties",
+        "data": {
+          "scan_interval": "Uitleesinterval, seconden",
+          "sync_timezone": "Tijdzone van de boiler synchroniseren met Home Assistant"
+        },
+        "data_description": {
+          "scan_interval": "Hoe vaak de boiler wordt uitgelezen (5-300; 30-300 bij de oude API). Wijzigingen op het bedieningspaneel of in MyTESY verschijnen binnen deze tijd.",
+          "sync_timezone": "Schrijft de tijdzone van Home Assistant naar de boiler bij het opstarten en wanneer deze verandert. De weekprogramma's lopen op de klok van de boiler. Zet dit uit als de tijdzone van Home Assistant niet de lokale tijd van de boiler is."
         }
       }
     }

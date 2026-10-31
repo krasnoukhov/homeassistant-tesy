@@ -18,13 +18,13 @@
       }
     },
     "error": {
-      "already_configured": "Cihaz zaten yapılandırılmış",
-      "already_in_progress": "Cihaz yapılandırması devam ediyor",
       "cannot_connect": "Bağlantı kurulamadı",
       "unknown": "Bilinmeyen hata",
       "wrong_device": "Bu adreste başka bir cihaz yanıt veriyor"
     },
     "abort": {
+      "already_configured": "Cihaz zaten yapılandırılmış",
+      "already_in_progress": "Cihaz yapılandırması devam ediyor",
       "reconfigure_successful": "Cihaz yeniden yapılandırıldı"
     }
   },
@@ -35,6 +35,9 @@
       },
       "problem": {
         "name": "Sorun"
+      },
+      "clock_problem": {
+        "name": "Saat sorunu"
       }
     },
     "sensor": {
@@ -85,6 +88,9 @@
     "button": {
       "energy_reset": {
         "name": "Tüketilen enerjiyi sıfırla"
+      },
+      "sync_timezone": {
+        "name": "Saat dilimini eşitle"
       }
     },
     "water_heater": {
@@ -99,6 +105,54 @@
           "eco": "Eco Smart",
           "ec2": "Eco Konfor",
           "ec3": "Eco Gece"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_schedule": {
+      "name": "Haftalık programı ayarla",
+      "description": "Haftalık bir programın günlerine saatlik 24 sıcaklık (veya duş) yazar.",
+      "fields": {
+        "program": {
+          "name": "Program",
+          "description": "Değiştirilecek haftalık program (1-3)."
+        },
+        "days": {
+          "name": "Günler",
+          "description": "Yazılacak günler. Belirtilmezse veya hiçbiri seçilmezse tüm günler."
+        },
+        "temperatures": {
+          "name": "Sıcaklıklar",
+          "description": "Saat başına bir tane olmak üzere 00:00'dan başlayan 24 değer: 15-75 °C veya o saat için ısıtmayı kapatmak üzere 14. Duşlu modellerde (BelliSlimo): duş sayısı, 1'den ısıtıcının azamisine kadar. Program girişi olmayan bir saat için null kullanın."
+        }
+      }
+    }
+  },
+  "selector": {
+    "days": {
+      "options": {
+        "mo": "Pazartesi",
+        "tu": "Salı",
+        "we": "Çarşamba",
+        "th": "Perşembe",
+        "fr": "Cuma",
+        "sa": "Cumartesi",
+        "su": "Pazar"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Seçenekler",
+        "data": {
+          "scan_interval": "Sorgulama aralığı, saniye",
+          "sync_timezone": "Isıtıcının saat dilimini Home Assistant ile eşitle"
+        },
+        "data_description": {
+          "scan_interval": "Isıtıcının ne sıklıkla okunacağı (5-300; eski API'de 30-300). Panelinden veya MyTESY'den yapılan değişiklikler bu süre içinde görünür.",
+          "sync_timezone": "Home Assistant'ın saat dilimini başlangıçta ve değiştiğinde ısıtıcıya yazar. Haftalık programlar ısıtıcının saatine göre çalışır. Home Assistant'ın saat dilimi ısıtıcının yerel saati değilse kapatın."
         }
       }
     }

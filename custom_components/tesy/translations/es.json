@@ -18,13 +18,13 @@
       }
     },
     "error": {
-      "already_configured": "El dispositivo ya está configurado",
-      "already_in_progress": "La configuración del dispositivo está en progreso",
       "cannot_connect": "Error de conexión",
       "unknown": "Error desconocido",
       "wrong_device": "En esta dirección responde otro dispositivo"
     },
     "abort": {
+      "already_configured": "El dispositivo ya está configurado",
+      "already_in_progress": "La configuración del dispositivo está en progreso",
       "reconfigure_successful": "El dispositivo se ha reconfigurado"
     }
   },
@@ -35,6 +35,9 @@
       },
       "problem": {
         "name": "Problema"
+      },
+      "clock_problem": {
+        "name": "Problema de reloj"
       }
     },
     "sensor": {
@@ -85,6 +88,9 @@
     "button": {
       "energy_reset": {
         "name": "Restablecer energía consumida"
+      },
+      "sync_timezone": {
+        "name": "Sincronizar zona horaria"
       }
     },
     "water_heater": {
@@ -99,6 +105,54 @@
           "eco": "Eco Smart",
           "ec2": "Eco Confort",
           "ec3": "Eco Noche"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_schedule": {
+      "name": "Establecer programa semanal",
+      "description": "Escribe 24 temperaturas horarias (o duchas) en días de un programa semanal.",
+      "fields": {
+        "program": {
+          "name": "Programa",
+          "description": "Programa semanal que se cambia (1-3)."
+        },
+        "days": {
+          "name": "Días",
+          "description": "Días que se escriben. Todos los días si se omite o no se selecciona ninguno."
+        },
+        "temperatures": {
+          "name": "Temperaturas",
+          "description": "24 valores, uno por hora desde las 00:00: 15-75 °C, o 14 para apagar la calefacción en esa hora. En los modelos con duchas (BelliSlimo): duchas, de 1 al máximo del calentador. Use null para una hora sin entrada de programa."
+        }
+      }
+    }
+  },
+  "selector": {
+    "days": {
+      "options": {
+        "mo": "Lunes",
+        "tu": "Martes",
+        "we": "Miércoles",
+        "th": "Jueves",
+        "fr": "Viernes",
+        "sa": "Sábado",
+        "su": "Domingo"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opciones",
+        "data": {
+          "scan_interval": "Intervalo de consulta, segundos",
+          "sync_timezone": "Sincronizar la zona horaria del calentador con Home Assistant"
+        },
+        "data_description": {
+          "scan_interval": "Con qué frecuencia se lee el calentador (5-300; 30-300 con la API anterior). Los cambios hechos en su panel o en MyTESY aparecen dentro de este tiempo.",
+          "sync_timezone": "Escribe la zona horaria de Home Assistant en el calentador al iniciar y cuando cambia. Los programas semanales funcionan con el reloj del calentador. Desactívelo si la zona horaria de Home Assistant no es la hora local del calentador."
         }
       }
     }

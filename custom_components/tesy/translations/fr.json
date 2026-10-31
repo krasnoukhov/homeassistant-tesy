@@ -18,13 +18,13 @@
       }
     },
     "error": {
-      "already_configured": "L\u0027appareil est déjà configuré",
-      "already_in_progress": "La configuration de l\u0027appareil est en cours",
       "cannot_connect": "Échec de la connexion",
       "unknown": "Erreur inconnue",
       "wrong_device": "Un autre appareil répond à cette adresse"
     },
     "abort": {
+      "already_configured": "L\u0027appareil est déjà configuré",
+      "already_in_progress": "La configuration de l\u0027appareil est en cours",
       "reconfigure_successful": "L\u0027appareil a été reconfiguré"
     }
   },
@@ -35,6 +35,9 @@
       },
       "problem": {
         "name": "Problème"
+      },
+      "clock_problem": {
+        "name": "Problème d\u0027horloge"
       }
     },
     "sensor": {
@@ -84,7 +87,10 @@
     },
     "button": {
       "energy_reset": {
-        "name": "Réinitialiser l'énergie consommée"
+        "name": "Réinitialiser l\u0027énergie consommée"
+      },
+      "sync_timezone": {
+        "name": "Synchroniser le fuseau horaire"
       }
     },
     "water_heater": {
@@ -99,6 +105,54 @@
           "eco": "Eco Smart",
           "ec2": "Eco Confort",
           "ec3": "Eco Nuit"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_schedule": {
+      "name": "Définir le programme hebdomadaire",
+      "description": "Écrit 24 températures horaires (ou douches) dans des jours d\u0027un programme hebdomadaire.",
+      "fields": {
+        "program": {
+          "name": "Programme",
+          "description": "Programme hebdomadaire à modifier (1-3)."
+        },
+        "days": {
+          "name": "Jours",
+          "description": "Jours à écrire. Tous les jours si rien n\u0027est indiqué ou sélectionné."
+        },
+        "temperatures": {
+          "name": "Températures",
+          "description": "24 valeurs, une par heure à partir de 00:00 : 15-75 °C, ou 14 pour couper le chauffage pendant cette heure. Sur les modèles à douches (BelliSlimo) : douches, de 1 au maximum du chauffe-eau. Utilisez null pour une heure sans entrée de programme."
+        }
+      }
+    }
+  },
+  "selector": {
+    "days": {
+      "options": {
+        "mo": "Lundi",
+        "tu": "Mardi",
+        "we": "Mercredi",
+        "th": "Jeudi",
+        "fr": "Vendredi",
+        "sa": "Samedi",
+        "su": "Dimanche"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "scan_interval": "Intervalle d\u0027interrogation, secondes",
+          "sync_timezone": "Synchroniser le fuseau horaire du chauffe-eau avec Home Assistant"
+        },
+        "data_description": {
+          "scan_interval": "Fréquence de lecture du chauffe-eau (5-300 ; 30-300 avec l\u0027ancienne API). Les modifications faites sur son panneau ou dans MyTESY apparaissent dans ce délai.",
+          "sync_timezone": "Écrit le fuseau horaire de Home Assistant dans le chauffe-eau au démarrage et à chaque changement. Les programmes hebdomadaires suivent l\u0027horloge du chauffe-eau. Désactivez cette option si le fuseau horaire de Home Assistant n\u0027est pas l\u0027heure locale du chauffe-eau."
         }
       }
     }

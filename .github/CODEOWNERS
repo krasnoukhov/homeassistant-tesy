@@ -1,7 +1,7 @@
 # Reviewers by the hardware they have. The last matching line wins.
 
-# New API (ESP32 module): ModEco 2 (krasnoukhov, pollstar), BelliSlimo (artin961, TheDjRider), BiLight Smart (artin961)
-*                                       @krasnoukhov @artin961 @TheDjRider @pollstar
+# New API (ESP32 module): ModEco 2 (krasnoukhov, pollstar), BelliSlimo (artin961, TheDjRider, RoastSlav), BiLight Smart (artin961)
+*                                       @krasnoukhov @artin961 @TheDjRider @pollstar @RoastSlav
 
 # Old API (Atheros module): ModEco (d-sergienko)
 custom_components/tesy/tesy_oldapi.py   @krasnoukhov @d-sergienko

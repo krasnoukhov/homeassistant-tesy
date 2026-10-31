@@ -18,13 +18,13 @@
       }
     },
     "error": {
-      "already_configured": "Dispositivo già configurato",
-      "already_in_progress": "Configurazione del dispositivo in corso",
       "cannot_connect": "Connessione non riuscita",
       "unknown": "Errore sconosciuto",
       "wrong_device": "A questo indirizzo risponde un altro dispositivo"
     },
     "abort": {
+      "already_configured": "Dispositivo già configurato",
+      "already_in_progress": "Configurazione del dispositivo in corso",
       "reconfigure_successful": "Il dispositivo è stato riconfigurato"
     }
   },
@@ -35,6 +35,9 @@
       },
       "problem": {
         "name": "Problema"
+      },
+      "clock_problem": {
+        "name": "Problema orologio"
       }
     },
     "sensor": {
@@ -85,6 +88,9 @@
     "button": {
       "energy_reset": {
         "name": "Azzera energia consumata"
+      },
+      "sync_timezone": {
+        "name": "Sincronizza fuso orario"
       }
     },
     "water_heater": {
@@ -99,6 +105,54 @@
           "eco": "Eco Smart",
           "ec2": "Eco Comfort",
           "ec3": "Eco Notte"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_schedule": {
+      "name": "Imposta programma settimanale",
+      "description": "Scrive 24 temperature orarie (o docce) nei giorni di un programma settimanale.",
+      "fields": {
+        "program": {
+          "name": "Programma",
+          "description": "Programma settimanale da modificare (1-3)."
+        },
+        "days": {
+          "name": "Giorni",
+          "description": "Giorni da scrivere. Tutti i giorni se non indicati o se nessuno è selezionato."
+        },
+        "temperatures": {
+          "name": "Temperature",
+          "description": "24 valori, uno per ora a partire dalle 00:00: 15-75 °C, oppure 14 per spegnere il riscaldamento in quell\u0027ora. Sui modelli a docce (BelliSlimo): docce, da 1 al massimo dello scaldacqua. Usa null per un\u0027ora senza voce di programma."
+        }
+      }
+    }
+  },
+  "selector": {
+    "days": {
+      "options": {
+        "mo": "Lunedì",
+        "tu": "Martedì",
+        "we": "Mercoledì",
+        "th": "Giovedì",
+        "fr": "Venerdì",
+        "sa": "Sabato",
+        "su": "Domenica"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opzioni",
+        "data": {
+          "scan_interval": "Intervallo di lettura, secondi",
+          "sync_timezone": "Sincronizza il fuso orario dello scaldacqua con Home Assistant"
+        },
+        "data_description": {
+          "scan_interval": "Ogni quanto viene letto lo scaldacqua (5-300; 30-300 con la vecchia API). Le modifiche fatte dal suo pannello o in MyTESY compaiono entro questo tempo.",
+          "sync_timezone": "Scrive il fuso orario di Home Assistant nello scaldacqua all\u0027avvio e quando cambia. I programmi settimanali seguono l\u0027orologio dello scaldacqua. Disattiva se il fuso orario di Home Assistant non corrisponde all\u0027ora locale dello scaldacqua."
         }
       }
     }
