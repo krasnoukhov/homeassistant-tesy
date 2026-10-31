@@ -49,7 +49,9 @@
       "child_lock": { "name": "Дитячий замок" }
     },
     "binary_sensor": {
-      "clock_problem": { "name": "Проблема з годинником" }
+      "clock_problem": { "name": "Проблема з годинником" },
+      "heating": { "name": "Нагрівання" },
+      "problem": { "name": "Проблема" }
     },
     "button": {
       "sync_timezone": { "name": "Синхронізувати часовий пояс" },

@@ -15,9 +15,10 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import dt as dt_util
 
-from .const import DOMAIN
+from .const import ATTR_ERROR, ATTR_IS_HEATING, DOMAIN
 from .coordinator import TesyCoordinator
 from .entity import TesyEntity
+from .helpers import has_error, is_heating
 from .timezone import TZ_FIELD, clock_offset, clock_problems, device_time
 
 
@@ -28,12 +29,39 @@ async def async_setup_entry(
 ) -> None:
     """Initialize Tesy binary sensors from config entry."""
     coordinator: TesyCoordinator = hass.data[DOMAIN][entry.entry_id]
+    data = coordinator.data
+    entities: list[BinarySensorEntity] = []
 
-    if not coordinator.supports_timezone:
-        return
-
-    async_add_entities(
-        [
+    # Only for heaters that report the field
+    if ATTR_IS_HEATING in data:
+        entities.append(
+            TesyHeatingSensor(
+                hass,
+                coordinator,
+                entry,
+                BinarySensorEntityDescription(
+                    key="heating",
+                    translation_key="heating",
+                    device_class=BinarySensorDeviceClass.RUNNING,
+                ),
+            )
+        )
+    if ATTR_ERROR in data:
+        entities.append(
+            TesyProblemSensor(
+                hass,
+                coordinator,
+                entry,
+                BinarySensorEntityDescription(
+                    key="problem",
+                    translation_key="problem",
+                    device_class=BinarySensorDeviceClass.PROBLEM,
+                    entity_category=EntityCategory.DIAGNOSTIC,
+                ),
+            )
+        )
+    if coordinator.supports_timezone:
+        entities.append(
             TesyClockProblemSensor(
                 hass,
                 coordinator,
@@ -45,8 +73,31 @@ async def async_setup_entry(
                     entity_category=EntityCategory.DIAGNOSTIC,
                 ),
             )
-        ]
-    )
+        )
+
+    async_add_entities(entities)
+
+
+class TesyHeatingSensor(TesyEntity, BinarySensorEntity):
+    """On while a heating element is on."""
+
+    @property
+    def is_on(self) -> bool | None:
+        """Return True while heating."""
+        return is_heating(self.coordinator.data)
+
+
+class TesyProblemSensor(TesyEntity, BinarySensorEntity):
+    """On while the heater reports an error code.
+
+    The code itself is in the Error Status sensor; what it means is listed in
+    the heater's manual.
+    """
+
+    @property
+    def is_on(self) -> bool | None:
+        """Return True if the heater reports an error."""
+        return has_error(self.coordinator.data)
 
 
 class TesyClockProblemSensor(TesyEntity, BinarySensorEntity):

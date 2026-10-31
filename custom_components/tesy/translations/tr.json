@@ -29,6 +29,14 @@
     }
   },
   "entity": {
+    "binary_sensor": {
+      "heating": {
+        "name": "Isıtma"
+      },
+      "problem": {
+        "name": "Sorun"
+      }
+    },
     "sensor": {
       "temperature": {
         "name": "Sıcaklık"

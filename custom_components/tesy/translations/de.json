@@ -29,6 +29,14 @@
     }
   },
   "entity": {
+    "binary_sensor": {
+      "heating": {
+        "name": "Heizen"
+      },
+      "problem": {
+        "name": "Problem"
+      }
+    },
     "sensor": {
       "temperature": {
         "name": "Temperatur"

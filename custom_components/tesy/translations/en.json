@@ -77,6 +77,12 @@
     "binary_sensor": {
       "clock_problem": {
         "name": "Clock problem"
+      },
+      "heating": {
+        "name": "Heating"
+      },
+      "problem": {
+        "name": "Problem"
       }
     },
     "button": {

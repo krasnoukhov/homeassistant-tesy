@@ -6,6 +6,7 @@ from typing import Any
 
 from .const import (
     ATTR_CDT,
+    ATTR_ERROR,
     ATTR_IS_HEATING,
     ATTR_MAX_SHOWERS,
     ATTR_POWER,
@@ -16,6 +17,10 @@ from .const import (
     TESY_MODE_EC2,
     TESY_MODE_EC3,
 )
+
+# Error codes that mean "no error", as in the MyTESY app ("00" on the new
+# API, "0" on the old one)
+NO_ERROR = ("0", "00")
 
 # Same values as homeassistant.components.water_heater STATE_PERFORMANCE/STATE_ECO
 STATE_PERFORMANCE = "performance"
@@ -70,6 +75,30 @@ def uses_showers(device_id: Any, old_api: bool) -> bool:
         return False
     device_type = TESY_DEVICE_TYPES.get(str(device_id), {})
     return bool(device_type.get("use_showers", False))
+
+
+def is_heating(data: dict[str, Any]) -> bool | None:
+    """Return True while a heating element is on, or None if unknown."""
+    value = str(data.get(ATTR_IS_HEATING, "")).strip()
+    if value not in ("0", "1"):
+        return None
+    # Like the MyTESY app, a heater that is switched off is not heating
+    if str(data.get(ATTR_POWER, "1")) == "0":
+        return False
+    return value == "1"
+
+
+def has_error(data: dict[str, Any]) -> bool | None:
+    """Return True if the heater reports an error, or None if unknown.
+
+    Same rule as the MyTESY app: any code other than 0 / 00. The code is not
+    decoded, since its numbering differs per model and isn't documented.
+    """
+    value = data.get(ATTR_ERROR)
+    value = "" if value is None else str(value).strip()
+    if not value:
+        return None
+    return value not in NO_ERROR
 
 
 def ready_in(data: dict[str, Any]) -> int | None:
