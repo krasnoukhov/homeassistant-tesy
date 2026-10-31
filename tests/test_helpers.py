@@ -160,6 +160,33 @@ class HasErrorTest(TestCase):
             self.assertIsNone(HELPERS.has_error(data), data)
 
 
+class ReadyInTest(TestCase):
+    """Test the Ready In countdown."""
+
+    def test_counts_down_while_heating(self):
+        """While heating, cdt is shown as reported."""
+        self.assertEqual(HELPERS.ready_in({"cdt": "81", "ht": "1", "pwr": "1"}), 81)
+
+    def test_idle_is_ready_now(self):
+        """The idle leftover in cdt is not shown: the water is ready."""
+        for cdt in ("0", "1", "2"):
+            self.assertEqual(HELPERS.ready_in({"cdt": cdt, "ht": "0", "pwr": "1"}), 0)
+
+    def test_without_ht(self):
+        """ht isn't required: without it cdt is shown as reported."""
+        self.assertEqual(HELPERS.ready_in({"cdt": "2"}), 2)
+        self.assertEqual(HELPERS.ready_in({"cdt": "2", "ht": ""}), 2)
+
+    def test_switched_off_is_unknown(self):
+        """A heater that is off isn't heating towards anything."""
+        self.assertIsNone(HELPERS.ready_in({"cdt": "5", "ht": "0", "pwr": "0"}))
+
+    def test_invalid_is_unknown(self):
+        """A missing or non-numeric cdt is unknown."""
+        for data in ({}, {"cdt": ""}, {"cdt": None}, {"cdt": "-1"}, {"cdt": "x"}):
+            self.assertIsNone(HELPERS.ready_in(data), data)
+
+
 # Values sent before the mode map was introduced
 EXPECTED_MODES = {
     "performance": "0",

@@ -46,7 +46,24 @@ class DeviceFeaturesTest(TestCase):
         )
 
     def test_bellislimo_gets_everything(self):
-        self.assertEqual(features.device_features({**PROGRAMS, "id": "2002"}), ALL)
+        data = {**PROGRAMS, "id": "2002", "cdt": "0"}
+        self.assertEqual(
+            features.device_features(data), ALL | {features.FEATURE_COUNTDOWN}
+        )
+
+    def test_countdown_needs_cdt(self):
+        # Only cdt is required; ht just makes Ready In more accurate.
+        countdown = features.FEATURE_COUNTDOWN
+        self.assertIn(countdown, features.device_features({"id": "2002", "cdt": "5"}))
+        self.assertNotIn(countdown, features.device_features({"id": "2002"}))
+
+    def test_countdown_is_bellislimo_only(self):
+        # The ModEco 2 doesn't report cdt; other models are unverified.
+        for model in ("2000", "2003", "2004", "2005"):
+            data = {**PROGRAMS, "id": model, "cdt": "5"}
+            self.assertNotIn(
+                features.FEATURE_COUNTDOWN, features.device_features(data), model
+            )
 
     def test_numeric_tz_disables_timezone(self):
         # BelliSlimo Wi-Fi 0.26 reports tz as a number, not a POSIX string.

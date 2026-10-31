@@ -2,7 +2,9 @@
 
 Weekly programs, time zone sync and the read-back after commands were
 developed and tested on the ModEco 2 (id 2004), and later verified on the
-BelliSlimo (id 2002), whose programs are in showers. Other models keep
+BelliSlimo (id 2002), whose programs are in showers. The Ready In countdown
+was verified on the BelliSlimo only (its manual is the only one that
+describes it; the ModEco 2 doesn't report it). Other models keep
 the basic behaviour of the integration until they are verified: add their id
 here once they are.
 
@@ -18,6 +20,7 @@ from typing import Any, Callable
 FEATURE_SCHEDULE = "schedule"  # weekly programs P1-P3, tesy.set_schedule
 FEATURE_TIMEZONE = "timezone"  # time zone sync, clock problem sensor
 FEATURE_READBACK = "readback"  # poll ~2 s after a command
+FEATURE_COUNTDOWN = "countdown"  # Ready In sensor (cdt)
 
 # Device type id (``id`` in /api?name=_all) -> features verified on it.
 EXTENDED_MODELS: dict[str, frozenset[str]] = {
@@ -25,7 +28,7 @@ EXTENDED_MODELS: dict[str, frozenset[str]] = {
         {FEATURE_SCHEDULE, FEATURE_TIMEZONE, FEATURE_READBACK}
     ),  # ModEco 2
     "2002": frozenset(
-        {FEATURE_SCHEDULE, FEATURE_TIMEZONE, FEATURE_READBACK}
+        {FEATURE_SCHEDULE, FEATURE_TIMEZONE, FEATURE_READBACK, FEATURE_COUNTDOWN}
     ),  # BelliSlimo
 }
 
@@ -35,6 +38,7 @@ _DAYS = ("MO", "TU", "WE", "TH", "FR", "SA", "SU")
 _REQUIRED_FIELDS: dict[str, tuple[str, ...]] = {
     FEATURE_SCHEDULE: tuple(f"prgP{p}{d}" for p in (1, 2, 3) for d in _DAYS),
     FEATURE_TIMEZONE: ("tz",),
+    FEATURE_COUNTDOWN: ("cdt",),
 }
 
 # Older firmware (BelliSlimo Wi-Fi 0.26) reports ``tz`` as a number ("180"),

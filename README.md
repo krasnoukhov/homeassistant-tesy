@@ -94,12 +94,14 @@ The three Eco modes all learn the household's hot water use during the first wee
 |--------|-------------|-------------|------|
 | `sensor.temperature` | Current temperature | `temperature` | °C |
 | `sensor.energy_consumed` | Total energy consumed | `energy` | kWh |
-| `sensor.ready_in` | Minutes until target is reached | `duration` | min |
+| `sensor.ready_in` | Minutes until the target is reached; `0` while the heater isn't heating (BelliSlimo only, see below) | `duration` | min |
 | `sensor.target_temperature` | Active target temperature | `temperature` | °C |
 | `sensor.error_status` | Error code (`00` = no error) | - | - |
 | `sensor.wifi_signal` | WiFi signal strength | `signal_strength` | dBm |
 | `sensor.uptime` | Device uptime | `duration` | s |
 | `sensor.energy_consumed_resettable` | Energy consumed (since last reset from device) | `energy` | kWh |
+
+Ready In is an extended feature (see *Supported Devices*), enabled for the BelliSlimo, where the countdown was verified: the heater reports `cdt` and counts it down about a minute per minute while heating, and recalculates it when hot water is used. While it isn't heating, `cdt` keeps a leftover of a minute or two, so Ready In shows `0` (the water is ready); while the heater is off, it's unknown. Other models don't get Ready In: the ModEco 2 doesn't report `cdt`, and on the rest it hasn't been verified. Earlier versions added Ready In to every model, where it never had a value; it's removed on the first start. If your model reports a `cdt` that counts down like this, open an issue with two diagnostics files, one while heating and one while idle (see *Diagnostics*).
 
 ### Binary sensors
 
@@ -223,7 +225,7 @@ If the clock is off with the right time zone, the module has no internet; set th
 | `prgP{1-3}{MO..SU}` | Weekly programs, 24 bytes hex per day, °C per hour, `FF` = empty | Schedule attributes, `tesy.set_schedule` |
 | `ht` | Heating element active | Heating binary sensor, `is_heating` attr |
 | `bst` | Boost flag | Boost switch |
-| `cdt` | Countdown timer (minutes) | Ready In sensor |
+| `cdt` | Countdown timer (minutes; BelliSlimo) | Ready In sensor |
 | `err` | Error code | Error Status sensor, Problem binary sensor |
 | `wdBm` | WiFi RSSI | WiFi Signal sensor |
 | `wup` | Uptime (seconds) | Uptime sensor |
@@ -252,7 +254,7 @@ This returns a JSON object with all fields listed in the table above.
 | ID | Model | Range | Extended features |
 |----|-------|-------|-------------------|
 | 2000 | ModEco | 15-75°C | — |
-| 2002 | BelliSlimo | 0-4 showers | weekly programs (in showers), time zone sync, read-back after commands |
+| 2002 | BelliSlimo | 0-4 showers | weekly programs (in showers), time zone sync, read-back after commands, Ready In |
 | 2003 | BiLight Smart | 15-75°C | — |
 | 2004 | ModEco 2 | 15-75°C | weekly programs, time zone sync, read-back after commands |
 | 2005 | BelliSlimo Lite | 0-4 showers | — |

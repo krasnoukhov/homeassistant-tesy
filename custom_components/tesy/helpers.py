@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from .const import (
+    ATTR_CDT,
     ATTR_ERROR,
     ATTR_IS_HEATING,
     ATTR_MAX_SHOWERS,
@@ -98,3 +99,20 @@ def has_error(data: dict[str, Any]) -> bool | None:
     if not value:
         return None
     return value not in NO_ERROR
+
+
+def ready_in(data: dict[str, Any]) -> int | None:
+    """Return the minutes until the heater reaches its target, or None.
+
+    ``cdt`` counts down while heating. While idle the BelliSlimo leaves a
+    minute or two in it, so a heater that reports it isn't heating (``ht``
+    0) is ready now. Without ``ht`` the countdown is shown as reported.
+    """
+    value = str(data.get(ATTR_CDT, "")).strip()
+    if not value.isdecimal():
+        return None
+    if str(data.get(ATTR_POWER, "1")) == "0":
+        return None  # switched off: not heating towards anything
+    if str(data.get(ATTR_IS_HEATING, "")).strip() == "0":
+        return 0
+    return int(value)
