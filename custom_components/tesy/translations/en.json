@@ -18,13 +18,13 @@
       }
     },
     "error": {
-      "already_configured": "Device is already configured",
-      "already_in_progress": "Device configuration is in progress",
       "cannot_connect": "Failed to connect",
       "unknown": "Unknown error",
       "wrong_device": "A different heater answers at this address"
     },
     "abort": {
+      "already_configured": "Device is already configured",
+      "already_in_progress": "Device configuration is in progress",
       "reconfigure_successful": "The heater has been reconfigured"
     }
   },
