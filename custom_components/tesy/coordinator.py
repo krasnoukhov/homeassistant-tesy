@@ -12,6 +12,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from homeassistant.util import dt as dt_util
 
 from .features import (
+    FEATURE_COUNTDOWN,
     FEATURE_READBACK,
     FEATURE_SCHEDULE,
     FEATURE_TIMEZONE,
@@ -213,6 +214,11 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     def supports_timezone(self) -> bool:
         """Return True if time zone sync is enabled for this heater."""
         return FEATURE_TIMEZONE in self.features
+
+    @property
+    def supports_countdown(self) -> bool:
+        """Return True if the Ready In countdown is enabled for this heater."""
+        return FEATURE_COUNTDOWN in self.features
 
     @property
     def expected_timezone(self) -> str | None:

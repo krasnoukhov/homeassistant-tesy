@@ -30,7 +30,6 @@ from .const import (
     ATTR_IS_HEATING,
     ATTR_MAC,
     ATTR_PARAMETERS,
-    ATTR_CDT,
     ATTR_CURRENT_TARGET_TEMP,
     UNIT_SHOWERS,
     ATTR_ENERGY_RESETTABLE,
@@ -42,7 +41,7 @@ from .const import (
     ATTR_CURRENT_TEMP,
 )
 from .coordinator import TesyCoordinator
-from .helpers import to_float, uses_showers
+from .helpers import ready_in, to_float, uses_showers
 from .schedule import active_target
 
 
@@ -57,7 +56,7 @@ async def async_setup_entry(
 
     if uses_showers(coordinator.data.get(ATTR_DEVICE_ID), coordinator.is_old_api):
         # Shower models report showers in tmpC/tmpR, not degrees
-        _remove_temperature_sensors(hass, coordinator)
+        _remove_sensors(hass, coordinator, ("temperature", "target_temperature"))
         async_add_entities(
             [
                 TesyHotWaterSensor(
@@ -138,20 +137,6 @@ async def async_setup_entry(
                 2,
                 None,
             ),
-            TesyCdtSensor(
-                hass,
-                coordinator,
-                entry,
-                SensorEntityDescription(
-                    key="cdt",
-                    translation_key="ready_in",
-                    device_class=SensorDeviceClass.DURATION,
-                    state_class=SensorStateClass.MEASUREMENT,
-                    native_unit_of_measurement=UnitOfTime.MINUTES,
-                ),
-                None,
-                None,
-            ),
             TesyErrorSensor(
                 hass,
                 coordinator,
@@ -211,14 +196,38 @@ async def async_setup_entry(
         ]
     )
 
+    if coordinator.supports_countdown:
+        async_add_entities(
+            [
+                TesyCdtSensor(
+                    hass,
+                    coordinator,
+                    entry,
+                    SensorEntityDescription(
+                        key="cdt",
+                        translation_key="ready_in",
+                        device_class=SensorDeviceClass.DURATION,
+                        state_class=SensorStateClass.MEASUREMENT,
+                        native_unit_of_measurement=UnitOfTime.MINUTES,
+                    ),
+                    None,
+                    None,
+                )
+            ]
+        )
+    else:
+        # Earlier versions added Ready In for every model; on models without
+        # the verified countdown it never had a value.
+        _remove_sensors(hass, coordinator, ("cdt",))
+
 
 @callback
-def _remove_temperature_sensors(
-    hass: HomeAssistant, coordinator: TesyCoordinator
+def _remove_sensors(
+    hass: HomeAssistant, coordinator: TesyCoordinator, keys: tuple[str, ...]
 ) -> None:
-    """Remove the temperature sensors a shower model had before it got its own."""
+    """Remove sensors an earlier version created that no longer apply."""
     registry = er.async_get(hass)
-    for key in ("temperature", "target_temperature"):
+    for key in keys:
         unique_id = "-".join([coordinator.data[ATTR_MAC], key])
         if entity_id := registry.async_get_entity_id("sensor", DOMAIN, unique_id):
             registry.async_remove(entity_id)
@@ -361,9 +370,7 @@ class TesyCdtSensor(TesySensor):
     @property
     def native_value(self):
         """Return the countdown in minutes until the heater will be ready."""
-        if ATTR_CDT not in self.coordinator.data:
-            return None
-        return int(self.coordinator.data[ATTR_CDT])
+        return ready_in(self.coordinator.data)
 
 
 class TesyTargetTempSensor(TesySensor):

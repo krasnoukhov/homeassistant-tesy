@@ -5,7 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 from .const import (
+    ATTR_CDT,
+    ATTR_IS_HEATING,
     ATTR_MAX_SHOWERS,
+    ATTR_POWER,
     TESY_DEVICE_TYPES,
     TESY_MODE_P1,
     TESY_MODE_P2,
@@ -67,3 +70,20 @@ def uses_showers(device_id: Any, old_api: bool) -> bool:
         return False
     device_type = TESY_DEVICE_TYPES.get(str(device_id), {})
     return bool(device_type.get("use_showers", False))
+
+
+def ready_in(data: dict[str, Any]) -> int | None:
+    """Return the minutes until the heater reaches its target, or None.
+
+    ``cdt`` counts down while heating. While idle the BelliSlimo leaves a
+    minute or two in it, so a heater that reports it isn't heating (``ht``
+    0) is ready now. Without ``ht`` the countdown is shown as reported.
+    """
+    value = str(data.get(ATTR_CDT, "")).strip()
+    if not value.isdecimal():
+        return None
+    if str(data.get(ATTR_POWER, "1")) == "0":
+        return None  # switched off: not heating towards anything
+    if str(data.get(ATTR_IS_HEATING, "")).strip() == "0":
+        return 0
+    return int(value)
