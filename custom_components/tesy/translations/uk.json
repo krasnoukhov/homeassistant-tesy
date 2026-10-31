@@ -18,13 +18,13 @@
       }
     },
     "error": {
-      "already_configured": "Пристрій уже налаштовано",
-      "already_in_progress": "Налаштування пристрою триває",
       "cannot_connect": "Не вдалося підключитися",
       "unknown": "Невідома помилка",
       "wrong_device": "За цією адресою відповідає інший пристрій"
     },
     "abort": {
+      "already_configured": "Пристрій уже налаштовано",
+      "already_in_progress": "Налаштування пристрою триває",
       "reconfigure_successful": "Налаштування пристрою змінено"
     }
   },

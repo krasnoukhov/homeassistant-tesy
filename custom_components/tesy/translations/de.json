@@ -18,13 +18,13 @@
       }
     },
     "error": {
-      "already_configured": "Gerät ist bereits konfiguriert",
-      "already_in_progress": "Gerätekonfiguration wird durchgeführt",
       "cannot_connect": "Verbindung fehlgeschlagen",
       "unknown": "Unbekannter Fehler",
       "wrong_device": "Unter dieser Adresse antwortet ein anderes Gerät"
     },
     "abort": {
+      "already_configured": "Gerät ist bereits konfiguriert",
+      "already_in_progress": "Gerätekonfiguration wird durchgeführt",
       "reconfigure_successful": "Das Gerät wurde neu konfiguriert"
     }
   },
@@ -35,6 +35,9 @@
       },
       "problem": {
         "name": "Problem"
+      },
+      "clock_problem": {
+        "name": "Uhrzeitproblem"
       }
     },
     "sensor": {
@@ -85,6 +88,9 @@
     "button": {
       "energy_reset": {
         "name": "Verbrauchte Energie zurücksetzen"
+      },
+      "sync_timezone": {
+        "name": "Zeitzone synchronisieren"
       }
     },
     "water_heater": {
@@ -99,6 +105,54 @@
           "eco": "Eco Smart",
           "ec2": "Eco Komfort",
           "ec3": "Eco Nacht"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_schedule": {
+      "name": "Wochenprogramm festlegen",
+      "description": "Schreibt 24 stündliche Temperaturen (oder Duschen) in Tage eines Wochenprogramms.",
+      "fields": {
+        "program": {
+          "name": "Programm",
+          "description": "Zu änderndes Wochenprogramm (1-3)."
+        },
+        "days": {
+          "name": "Tage",
+          "description": "Zu schreibende Tage. Alle Tage, wenn nichts angegeben oder ausgewählt ist."
+        },
+        "temperatures": {
+          "name": "Temperaturen",
+          "description": "24 Werte, einer pro Stunde ab 00:00: 15-75 °C oder 14, um das Heizen für diese Stunde auszuschalten. Bei Modellen mit Duschen (BelliSlimo): Duschen, 1 bis zum Maximum des Boilers. null für eine Stunde ohne Programmeintrag."
+        }
+      }
+    }
+  },
+  "selector": {
+    "days": {
+      "options": {
+        "mo": "Montag",
+        "tu": "Dienstag",
+        "we": "Mittwoch",
+        "th": "Donnerstag",
+        "fr": "Freitag",
+        "sa": "Samstag",
+        "su": "Sonntag"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Optionen",
+        "data": {
+          "scan_interval": "Abfrageintervall, Sekunden",
+          "sync_timezone": "Zeitzone des Boilers mit Home Assistant synchronisieren"
+        },
+        "data_description": {
+          "scan_interval": "Wie oft der Boiler abgefragt wird (5-300; 30-300 beim alten API). Änderungen am Bedienfeld oder in MyTESY erscheinen innerhalb dieser Zeit.",
+          "sync_timezone": "Schreibt die Zeitzone von Home Assistant beim Start und bei jeder Änderung in den Boiler. Die Wochenprogramme laufen nach der Uhr des Boilers. Deaktivieren, wenn die Zeitzone von Home Assistant nicht der Ortszeit des Boilers entspricht."
         }
       }
     }
