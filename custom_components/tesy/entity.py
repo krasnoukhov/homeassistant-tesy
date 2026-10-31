@@ -125,11 +125,23 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
             and self.coordinator.data[ATTR_CHILD_LOCK] == "1"
         )
 
+    def _check_child_lock_writable(self) -> None:
+        """Raise if the child lock can't be changed from Home Assistant.
+
+        The old API reports the lock (lockB) but has no known command to set
+        it; without this the switch would seem to change and flip back.
+        """
+        if self.coordinator.is_old_api:
+            raise HomeAssistantError(
+                "The child lock can't be changed on the old API; use the heater's panel"
+            )
+
     async def async_turn_child_lock_on(self, **kwargs):
         """Turn on child lock."""
 
         if ATTR_CHILD_LOCK not in self.coordinator.data:
             return
+        self._check_child_lock_writable()
         if self.coordinator.data[ATTR_CHILD_LOCK] == "0":
             response = await self.coordinator.async_set_child_lock("1")
             await self.partially_update_data_from_api(response, ATTR_CHILD_LOCK)
@@ -139,6 +151,7 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
 
         if ATTR_CHILD_LOCK not in self.coordinator.data:
             return
+        self._check_child_lock_writable()
         if self.coordinator.data[ATTR_CHILD_LOCK] == "1":
             response = await self.coordinator.async_set_child_lock("0")
             await self.partially_update_data_from_api(response, ATTR_CHILD_LOCK)

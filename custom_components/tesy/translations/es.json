@@ -98,7 +98,8 @@
           "p3": "Programa 3",
           "eco": "Eco Smart",
           "ec2": "Eco Confort",
-          "ec3": "Eco Noche"
+          "ec3": "Eco Noche",
+          "vacation": "Vacaciones"
         }
       }
     }

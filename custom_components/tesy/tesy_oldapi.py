@@ -13,6 +13,9 @@ from .const import *
 
 _LOGGER = logging.getLogger(__name__)
 
+# Old API mode number for a holiday (Vacation in the MyTESY app's mode table)
+OLD_API_VACATION_MODE = "9"
+
 
 class TesyOldApi:
     """Tesy Old API instance."""
@@ -73,6 +76,12 @@ class TesyOldApi:
                 ATTR_MAC: data["devstat"]["macaddr"],
                 ATTR_DEVICE_ID: data["devstat"]["devid"].split("-")[0],
                 ATTR_MODE: mode,
+                # The old API reports a holiday as its own mode
+                ATTR_VACATION: (
+                    "1"
+                    if str(status.get("mode", "")).strip() == OLD_API_VACATION_MODE
+                    else "0"
+                ),
                 ATTR_ERROR: status.get("err_flag", "0"),
                 ATTR_CURRENT_TEMP: status.get("gradus", "0"),
                 ATTR_TARGET_TEMP: status.get("ref_gradus", "0"),
