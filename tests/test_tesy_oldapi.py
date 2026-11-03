@@ -41,6 +41,7 @@ def load_old_api_module():
         "ATTR_CHILD_LOCK": "lck",
         "ATTR_IS_HEATING": "ht",
         "ATTR_ERROR": "err",
+        "ATTR_VACATION": "vac",
         "ATTR_ENERGY_RESETTABLE": "pwc_u",
     }
     for name, value in values.items():
@@ -122,6 +123,20 @@ class TesyOldApiTest(TestCase):
         self.assertEqual(data["pwc_u"], {"utc": "8211003"})
         self.assertEqual(data["ht"], "1")
         self.assertEqual(self.client._heater_power, 2400)
+
+    def test_maps_vacation_mode(self):
+        """Mode 9 is a holiday: vac 1; other modes vac 0."""
+        for mode, vacation in (("9", "1"), ("1", "0"), ("5", "0")):
+            self.status["mode"] = mode
+            self.client._calc_res_cache = None
+            self.client._get_request = Mock(
+                side_effect=[
+                    response(self.status),
+                    response(self.devstat),
+                    ConnectionError(),
+                ]
+            )
+            self.assertEqual(self.client.get_data()["vac"], vacation, mode)
 
     def test_keeps_device_available_without_energy_endpoint(self):
         """Keep core device data available when calcRes is unsupported."""

@@ -79,14 +79,15 @@ When reporting a problem, attach the diagnostics file: open the integration, cli
 | Eco Smart | Learns when hot water is used and heats only for that (ECO on the panel) |
 | Eco Comfort | Eco Smart with more hot water in reserve, for changing habits; saves less (EC1) |
 | Eco Night | The third Eco level (EC2); what it does depends on the model, see below |
+| Vacation | Old API only: shown while a holiday is set on the heater, which the old API reports as its own mode; not selectable here. Picking another mode ends the holiday. On the new API the mode underneath stays and is shown |
 
-Custom icons are provided for Program 1-3 and Eco modes. Standard modes use core HA icons.
+Custom icons are provided for Program 1-3, the Eco modes and Vacation. Standard modes use core HA icons.
 
 The three Eco modes all learn the household's hot water use during the first week and keep adjusting after that. The heater picks its own target, so the setpoint doesn't apply; Active Target shows the target it chose. The modes differ per model, as the manuals describe them:
 
 - **BelliSlimo:** Eco Comfort keeps at least 2 showers ready; Eco Night prefers heating at night.
-- **BiLight:** Eco Comfort runs 5 °C above Eco Smart; Eco Night prefers heating at night.
 - **ModEco 2:** EC1 and EC2 are two steps of extra comfort, each keeping more hot water ready than the one before.
+- **BiLight Smart:** no manual is available, so its Eco modes aren't described here.
 
 ### Sensors
 
@@ -97,11 +98,13 @@ The three Eco modes all learn the household's hot water use during the first wee
 | `sensor.ready_in` | Minutes until the target is reached; `0` while the heater isn't heating (BelliSlimo only, see below) | `duration` | min |
 | `sensor.target_temperature` | Active target temperature | `temperature` | °C |
 | `sensor.error_status` | Error code (`00` = no error) | - | - |
-| `sensor.wifi_signal` | WiFi signal strength | `signal_strength` | dBm |
-| `sensor.uptime` | Device uptime | `duration` | s |
+| `sensor.wifi_signal` | WiFi signal strength (new API) | `signal_strength` | dBm |
+| `sensor.uptime` | Wi-Fi module uptime (new API) | `duration` | s |
 | `sensor.energy_consumed_resettable` | Energy consumed (since last reset from device) | `energy` | kWh |
 
 Ready In is an extended feature (see *Supported Devices*), enabled for the BelliSlimo, where the countdown was verified: the heater reports `cdt` and counts it down about a minute per minute while heating, and recalculates it when hot water is used. While it isn't heating, `cdt` keeps a leftover of a minute or two, so Ready In shows `0` (the water is ready); while the heater is off, it's unknown. Other models don't get Ready In: the ModEco 2 doesn't report `cdt`, and on the rest it hasn't been verified. Earlier versions added Ready In to every model, where it never had a value; it's removed on the first start. If your model reports a `cdt` that counts down like this, open an issue with two diagnostics files, one while heating and one while idle (see *Diagnostics*).
+
+The old API doesn't report the Wi-Fi signal or uptime, so heaters set up with it don't get WiFi Signal and Uptime; earlier versions added them there without a value, and they're removed on the first start.
 
 ### Binary sensors
 
@@ -137,7 +140,7 @@ BelliSlimo (2002) and BelliSlimo Lite (2005) report hot water in showers, not de
 | Entity | Description |
 |--------|-------------|
 | `switch.boost` | Boost mode |
-| `switch.child_lock` | Child lock (if supported) |
+| `switch.child_lock` | Child lock (if the heater reports it). On the old API it shows the panel's lock but can't be changed from Home Assistant |
 
 ### Weekly programs
 

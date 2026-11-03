@@ -149,36 +149,6 @@ async def async_setup_entry(
                 None,
                 None,
             ),
-            TesyRssiSensor(
-                hass,
-                coordinator,
-                entry,
-                SensorEntityDescription(
-                    key="wifi_signal",
-                    translation_key="wifi_signal",
-                    entity_category=EntityCategory.DIAGNOSTIC,
-                    device_class=SensorDeviceClass.SIGNAL_STRENGTH,
-                    state_class=SensorStateClass.MEASUREMENT,
-                    native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
-                ),
-                0,
-                None,
-            ),
-            TesyUptimeSensor(
-                hass,
-                coordinator,
-                entry,
-                SensorEntityDescription(
-                    key="uptime",
-                    translation_key="uptime",
-                    entity_category=EntityCategory.DIAGNOSTIC,
-                    device_class=SensorDeviceClass.DURATION,
-                    state_class=SensorStateClass.MEASUREMENT,
-                    native_unit_of_measurement=UnitOfTime.SECONDS,
-                ),
-                None,
-                None,
-            ),
             TesyResettableEnergySensor(
                 hass,
                 coordinator,
@@ -195,6 +165,51 @@ async def async_setup_entry(
             ),
         ]
     )
+
+    # The Wi-Fi module's signal and uptime: the old API reports neither, so
+    # there they would never have a value
+    module_sensors: list[SensorEntity] = []
+    if ATTR_RSSI in coordinator.data:
+        module_sensors.append(
+            TesyRssiSensor(
+                hass,
+                coordinator,
+                entry,
+                SensorEntityDescription(
+                    key="wifi_signal",
+                    translation_key="wifi_signal",
+                    entity_category=EntityCategory.DIAGNOSTIC,
+                    device_class=SensorDeviceClass.SIGNAL_STRENGTH,
+                    state_class=SensorStateClass.MEASUREMENT,
+                    native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+                ),
+                0,
+                None,
+            )
+        )
+    else:
+        _remove_sensors(hass, coordinator, ("wifi_signal",))
+    if ATTR_UPTIME in coordinator.data:
+        module_sensors.append(
+            TesyUptimeSensor(
+                hass,
+                coordinator,
+                entry,
+                SensorEntityDescription(
+                    key="uptime",
+                    translation_key="uptime",
+                    entity_category=EntityCategory.DIAGNOSTIC,
+                    device_class=SensorDeviceClass.DURATION,
+                    state_class=SensorStateClass.MEASUREMENT,
+                    native_unit_of_measurement=UnitOfTime.SECONDS,
+                ),
+                None,
+                None,
+            )
+        )
+    else:
+        _remove_sensors(hass, coordinator, ("uptime",))
+    async_add_entities(module_sensors)
 
     if coordinator.supports_countdown:
         async_add_entities(
