@@ -107,12 +107,14 @@ def ready_in(data: dict[str, Any]) -> int | None:
     ``cdt`` counts down while heating. While idle the BelliSlimo leaves a
     minute or two in it, so a heater that reports it isn't heating (``ht``
     0) is ready now. Without ``ht`` the countdown is shown as reported.
+
+    While the heater is switched off the BelliSlimo keeps calculating ``cdt``
+    (and reports ``ht`` 1): the time it would need to reach the target once
+    switched on, which moves as the water cools or is used. It's shown as is.
     """
     value = str(data.get(ATTR_CDT, "")).strip()
     if not value.isdecimal():
         return None
-    if str(data.get(ATTR_POWER, "1")) == "0":
-        return None  # switched off: not heating towards anything
     if str(data.get(ATTR_IS_HEATING, "")).strip() == "0":
         return 0
     return int(value)

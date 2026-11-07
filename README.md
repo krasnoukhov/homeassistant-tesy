@@ -102,7 +102,7 @@ The three Eco modes all learn the household's hot water use during the first wee
 | `sensor.uptime` | Wi-Fi module uptime (new API) | `duration` | s |
 | `sensor.energy_consumed_resettable` | Energy consumed (since last reset from device) | `energy` | kWh |
 
-Ready In is an extended feature (see *Supported Devices*), enabled for the BelliSlimo, where the countdown was verified: the heater reports `cdt` and counts it down about a minute per minute while heating, and recalculates it when hot water is used. While it isn't heating, `cdt` keeps a leftover of a minute or two, so Ready In shows `0` (the water is ready); while the heater is off, it's unknown. Other models don't get Ready In: the ModEco 2 doesn't report `cdt`, and on the rest it hasn't been verified. Earlier versions added Ready In to every model, where it never had a value; it's removed on the first start. If your model reports a `cdt` that counts down like this, open an issue with two diagnostics files, one while heating and one while idle (see *Diagnostics*).
+Ready In is an extended feature (see *Supported Devices*), enabled for the BelliSlimo, where the countdown was verified: the heater reports `cdt` and counts it down about a minute per minute while heating, and recalculates it when hot water is used. While it isn't heating, `cdt` keeps a leftover of a minute or two, so Ready In shows `0` (the water is ready). While the heater is switched off, the BelliSlimo keeps calculating `cdt` (it reports `ht` 1 then), and Ready In shows it as the time the heater would need to reach its target once switched on. Other models don't get Ready In: the ModEco 2 doesn't report `cdt`, and on the rest it hasn't been verified. Earlier versions added Ready In to every model, where it never had a value; it's removed on the first start. If your model reports a `cdt` that counts down like this, open an issue with two diagnostics files, one while heating and one while idle (see *Diagnostics*).
 
 The old API doesn't report the Wi-Fi signal or uptime, so heaters set up with it don't get WiFi Signal and Uptime; earlier versions added them there without a value, and they're removed on the first start.
 
@@ -125,7 +125,7 @@ BelliSlimo (2002) and BelliSlimo Lite (2005) report hot water in showers, not de
 
 | Entity | Description | Unit |
 |--------|-------------|------|
-| `number.target_showers` | Showers to heat in manual mode, 0 up to the maximum the heater reports (`tmpMX`) | showers |
+| `number.target_showers` | Showers to heat in manual mode, 0 up to the maximum the heater reports (`tmpMX`) | none (the name says showers; a unit overlapped the slider in the entities card) |
 | `sensor.hot_water` | Hot water available | showers |
 | `sensor.active_target` | Target the heater is working towards in the current mode | showers |
 

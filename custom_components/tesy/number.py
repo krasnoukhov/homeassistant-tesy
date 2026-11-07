@@ -12,7 +12,6 @@ from .const import (
     ATTR_TARGET_TEMP,
     DOMAIN,
     TESY_DEVICE_TYPES,
-    UNIT_SHOWERS,
 )
 from .coordinator import TesyCoordinator
 from .entity import TesyEntity
@@ -51,7 +50,7 @@ class TesyTargetShowersNumber(TesyEntity, NumberEntity):
     """Target showers (tmpT) of a shower model."""
 
     _attr_native_step = 1
-    _attr_native_unit_of_measurement = UNIT_SHOWERS
+    # No unit: the entities card draws "4 showers" over the slider. The name says it.
 
     def __init__(
         self,
