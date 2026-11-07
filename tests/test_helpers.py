@@ -177,9 +177,15 @@ class ReadyInTest(TestCase):
         self.assertEqual(HELPERS.ready_in({"cdt": "2"}), 2)
         self.assertEqual(HELPERS.ready_in({"cdt": "2", "ht": ""}), 2)
 
-    def test_switched_off_is_unknown(self):
-        """A heater that is off isn't heating towards anything."""
-        self.assertIsNone(HELPERS.ready_in({"cdt": "5", "ht": "0", "pwr": "0"}))
+    def test_switched_off_shows_cdt(self):
+        """Off, the BelliSlimo reports ht 1 and a live cdt (from a real device)."""
+        data = {"cdt": "36", "ht": "1", "pwr": "0"}
+        self.assertEqual(HELPERS.ready_in(data), 36)
+        self.assertEqual(HELPERS.ready_in({**data, "cdt": "34"}), 34)
+
+    def test_switched_off_not_heating_is_ready(self):
+        """Off with ht 0 follows the same rule as on."""
+        self.assertEqual(HELPERS.ready_in({"cdt": "2", "ht": "0", "pwr": "0"}), 0)
 
     def test_invalid_is_unknown(self):
         """A missing or non-numeric cdt is unknown."""
