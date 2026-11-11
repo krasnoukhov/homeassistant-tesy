@@ -1,4 +1,7 @@
 {
+  "common": {
+    "shower_unit": "douche(s)"
+  },
   "config": {
     "step": {
       "user": {
@@ -31,7 +34,11 @@
   "entity": {
     "binary_sensor": {
       "heating": {
-        "name": "Verwarmen"
+        "name": "Verwarmen",
+        "state": {
+          "on": "Verwarmt",
+          "off": "Verwarmt niet"
+        }
       },
       "problem": {
         "name": "Probleem"
@@ -67,6 +74,9 @@
       },
       "hot_water": {
         "name": "Warm water"
+      },
+      "hot_water_available": {
+        "name": "Beschikbaar"
       },
       "active_target": {
         "name": "Actief doel"

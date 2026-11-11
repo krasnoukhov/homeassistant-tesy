@@ -130,6 +130,16 @@ class IsHeatingTest(TestCase):
         """A heater that is off is not heating, whatever ht says."""
         self.assertFalse(HELPERS.is_heating({"ht": "1", "pwr": "0"}))
 
+    def test_old_flag_right_after_power_on_is_ignored(self):
+        """The heater reports the previous ht for about a second after power-on."""
+        data = {"ht": "1", "pwr": "1"}
+        self.assertFalse(HELPERS.is_heating(data, power_just_on=True))
+        self.assertTrue(HELPERS.is_heating(data, power_just_on=False))
+
+    def test_unknown_stays_unknown_right_after_power_on(self):
+        """Without a usable ht there is nothing to ignore."""
+        self.assertIsNone(HELPERS.is_heating({"pwr": "1"}, power_just_on=True))
+
     def test_without_power_field(self):
         """ht alone decides when pwr is missing."""
         self.assertTrue(HELPERS.is_heating({"ht": "1"}))
@@ -238,3 +248,25 @@ class ModeMapTest(TestCase):
             self.skipTest("Home Assistant is not installed")
         self.assertEqual(HELPERS.STATE_PERFORMANCE, water_heater.STATE_PERFORMANCE)
         self.assertEqual(HELPERS.STATE_ECO, water_heater.STATE_ECO)
+
+
+class ShowerUnitTest(TestCase):
+    def test_uses_the_translated_word(self):
+        translations = {"component.tesy.common.shower_unit": "душ(а)"}
+        self.assertEqual(HELPERS.shower_unit(translations), "душ(а)")
+
+    def test_falls_back_to_english_without_a_translation(self):
+        self.assertEqual(HELPERS.shower_unit({}), "showers")
+
+
+class TolerateFailedPollTest(TestCase):
+    """Test which failed polls keep the last data."""
+
+    def test_the_first_failure_keeps_the_data(self):
+        self.assertTrue(HELPERS.tolerate_failed_poll(1, True))
+
+    def test_a_second_failure_in_a_row_does_not(self):
+        self.assertFalse(HELPERS.tolerate_failed_poll(2, True))
+
+    def test_without_data_there_is_nothing_to_keep(self):
+        self.assertFalse(HELPERS.tolerate_failed_poll(1, False))

@@ -18,6 +18,7 @@ from .features import (
     FEATURE_TIMEZONE,
     device_features,
 )
+from .helpers import tolerate_failed_poll
 from .tesy import Tesy
 from .timezone import TZ_FIELD, posix_tz_for
 from .tesy_oldapi import TesyOldApi
@@ -31,6 +32,8 @@ from .const import (
 import logging
 
 _LOGGER = logging.getLogger(__name__)
+
+RETRY_AFTER_FAILED_POLL = 5.0
 
 
 class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -57,6 +60,10 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._io_lock = asyncio.Lock()
         # When the last _all reply arrived: its date is the heater clock then.
         self.data_received_at: datetime | None = None
+        # The heater reports the previous heating flag for about a second after
+        # power-on; Heating ignores it until the read-back poll.
+        self.power_just_on = False
+        self._failed_polls = 0
 
         super().__init__(
             hass,
@@ -82,10 +89,23 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         async with self._io_lock:
             if self._closed:  # unloading: no new request to the heater
                 return self.data
-            data = await self.hass.async_add_executor_job(self._get_data)
+            try:
+                data = await self.hass.async_add_executor_job(self._get_data)
+            except UpdateFailed as err:
+                self._failed_polls += 1
+                if not tolerate_failed_poll(self._failed_polls, self.data is not None):
+                    raise
+                # A busy heater misses a request now and then; keep the last
+                # data instead of making every entity unavailable.
+                _LOGGER.debug("Poll failed, keeping the last data: %s", err)
+                if not self.is_old_api:  # that module chokes on extra requests
+                    self.async_refresh_soon(RETRY_AFTER_FAILED_POLL)
+                return self.data
+            self._failed_polls = 0
             if self._closed:  # unloaded while waiting for the reply: drop it
                 return self.data
             self.data_received_at = dt_util.utcnow()
+            self.power_just_on = False
         return data
 
     async def _async_command(self, func, *args) -> Any:
@@ -148,7 +168,9 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     # Turn power ON/OFF
     async def async_set_power(self, val: str) -> None:
         """Set power for Tesy component."""
-        return await self._async_command(self._client.set_power, val)
+        response = await self._async_command(self._client.set_power, val)
+        self.power_just_on = val == "1" and self.supports_readback
+        return response
 
     # Turn boost ON/OFF
     async def async_set_boost(self, val: str) -> None:

@@ -1,4 +1,7 @@
 {
+  "common": {
+    "shower_unit": "душ(і)"
+  },
   "config": {
     "step": {
       "user": {
@@ -39,6 +42,7 @@
       "uptime": { "name": "Час роботи" },
       "energy_consumed_resettable": { "name": "Спожита енергія (скидається)" },
       "hot_water": { "name": "Гаряча вода" },
+      "hot_water_available": { "name": "Доступно" },
       "active_target": { "name": "Активна ціль" }
     },
     "number": {
@@ -50,7 +54,7 @@
     },
     "binary_sensor": {
       "clock_problem": { "name": "Проблема з годинником" },
-      "heating": { "name": "Нагрівання" },
+      "heating": { "name": "Нагрівання", "state": { "on": "Нагріває", "off": "Не нагріває" } },
       "problem": { "name": "Проблема" }
     },
     "button": {

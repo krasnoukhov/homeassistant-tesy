@@ -1,4 +1,7 @@
 {
+  "common": {
+    "shower_unit": "duş"
+  },
   "config": {
     "step": {
       "user": {
@@ -31,7 +34,11 @@
   "entity": {
     "binary_sensor": {
       "heating": {
-        "name": "Isıtma"
+        "name": "Isıtma",
+        "state": {
+          "on": "Isıtıyor",
+          "off": "Isıtmıyor"
+        }
       },
       "problem": {
         "name": "Sorun"
@@ -67,6 +74,9 @@
       },
       "hot_water": {
         "name": "Sıcak su"
+      },
+      "hot_water_available": {
+        "name": "Mevcut"
       },
       "active_target": {
         "name": "Etkin hedef"

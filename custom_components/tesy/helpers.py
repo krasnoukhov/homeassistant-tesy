@@ -10,17 +10,23 @@ from .const import (
     ATTR_IS_HEATING,
     ATTR_MAX_SHOWERS,
     ATTR_POWER,
+    DOMAIN,
     TESY_DEVICE_TYPES,
     TESY_MODE_P1,
     TESY_MODE_P2,
     TESY_MODE_P3,
     TESY_MODE_EC2,
     TESY_MODE_EC3,
+    UNIT_SHOWERS,
 )
 
 # Error codes that mean "no error", as in the MyTESY app ("00" on the new
 # API, "0" on the old one)
 NO_ERROR = ("0", "00")
+
+# Failed polls in a row that keep the last data instead of making the device
+# unavailable
+MAX_TOLERATED_FAILED_POLLS = 1
 
 # Same values as homeassistant.components.water_heater STATE_PERFORMANCE/STATE_ECO
 STATE_PERFORMANCE = "performance"
@@ -77,11 +83,17 @@ def uses_showers(device_id: Any, old_api: bool) -> bool:
     return bool(device_type.get("use_showers", False))
 
 
-def is_heating(data: dict[str, Any]) -> bool | None:
-    """Return True while a heating element is on, or None if unknown."""
+def is_heating(data: dict[str, Any], power_just_on: bool = False) -> bool | None:
+    """Return True while a heating element is on, or None if unknown.
+
+    Right after power-on the heater still reports the previous flag for about
+    a second, so it isn't trusted until the next poll.
+    """
     value = str(data.get(ATTR_IS_HEATING, "")).strip()
     if value not in ("0", "1"):
         return None
+    if power_just_on:
+        return False
     # Like the MyTESY app, a heater that is switched off is not heating
     if str(data.get(ATTR_POWER, "1")) == "0":
         return False
@@ -118,3 +130,20 @@ def ready_in(data: dict[str, Any]) -> int | None:
     if str(data.get(ATTR_IS_HEATING, "")).strip() == "0":
         return 0
     return int(value)
+
+
+def shower_unit(translations: dict[str, str]) -> str:
+    """Return the shower unit word from the "common" translations.
+
+    Falls back to the English unit if the language has none.
+    """
+    return translations.get(f"component.{DOMAIN}.common.shower_unit", UNIT_SHOWERS)
+
+
+def tolerate_failed_poll(failed_polls: int, has_data: bool) -> bool:
+    """Return True if a failed poll keeps the last data.
+
+    `failed_polls` counts the failed polls in a row, including this one. Without
+    data (the first poll) there is nothing to keep.
+    """
+    return has_data and failed_polls <= MAX_TOLERATED_FAILED_POLLS
