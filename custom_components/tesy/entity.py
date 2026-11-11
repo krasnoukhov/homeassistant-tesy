@@ -11,6 +11,7 @@ from homeassistant.helpers.device_registry import (
     format_mac,
 )
 from homeassistant.helpers.entity import EntityDescription
+from homeassistant.helpers.translation import async_get_translations
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
@@ -29,6 +30,7 @@ from .const import (
     ATTR_API,
 )
 from .coordinator import TesyCoordinator
+from .helpers import shower_unit
 
 import logging
 
@@ -38,6 +40,17 @@ _LOGGER = logging.getLogger(__name__)
 def _is_ok(response) -> bool:
     """Return True if a setter reply reports success."""
     return isinstance(response, dict) and response.get(ATTR_API) == "OK"
+
+
+async def async_shower_unit(hass: HomeAssistant) -> str:
+    """Return the unit word for showers in Home Assistant's language.
+
+    Units aren't translated per user, so it's looked up once at setup.
+    """
+    translations = await async_get_translations(
+        hass, hass.config.language, "common", [DOMAIN]
+    )
+    return shower_unit(translations)
 
 
 class TesyEntity(CoordinatorEntity[TesyCoordinator]):

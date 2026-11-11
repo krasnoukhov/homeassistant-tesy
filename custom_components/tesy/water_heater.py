@@ -327,7 +327,9 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         """Return the state attributes."""
         data = self.coordinator.data
         attributes: dict[str, Any] = {
-            "is_heating": ATTR_IS_HEATING in data and data[ATTR_IS_HEATING] == "1",
+            "is_heating": ATTR_IS_HEATING in data
+            and data[ATTR_IS_HEATING] == "1"
+            and not self.coordinator.power_just_on,
             "target_temp_step": 1,
         }
 

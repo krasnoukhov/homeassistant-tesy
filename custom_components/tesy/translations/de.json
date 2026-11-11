@@ -1,4 +1,7 @@
 {
+  "common": {
+    "shower_unit": "Dusche(n)"
+  },
   "config": {
     "step": {
       "user": {
@@ -31,7 +34,11 @@
   "entity": {
     "binary_sensor": {
       "heating": {
-        "name": "Heizen"
+        "name": "Heizen",
+        "state": {
+          "on": "Heizt",
+          "off": "Heizt nicht"
+        }
       },
       "problem": {
         "name": "Problem"
@@ -67,6 +74,9 @@
       },
       "hot_water": {
         "name": "Warmwasser"
+      },
+      "hot_water_available": {
+        "name": "Verfügbar"
       },
       "active_target": {
         "name": "Aktives Ziel"

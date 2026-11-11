@@ -1,4 +1,7 @@
 {
+  "common": {
+    "shower_unit": "shower(s)"
+  },
   "config": {
     "step": {
       "user": {
@@ -57,6 +60,9 @@
       "hot_water": {
         "name": "Hot Water"
       },
+      "hot_water_available": {
+        "name": "Available"
+      },
       "active_target": {
         "name": "Active Target"
       }
@@ -79,7 +85,11 @@
         "name": "Clock problem"
       },
       "heating": {
-        "name": "Heating"
+        "name": "Heating",
+        "state": {
+          "on": "Heating",
+          "off": "Not heating"
+        }
       },
       "problem": {
         "name": "Problem"

@@ -1,4 +1,7 @@
 {
+  "common": {
+    "shower_unit": "doccia/e"
+  },
   "config": {
     "step": {
       "user": {
@@ -31,7 +34,11 @@
   "entity": {
     "binary_sensor": {
       "heating": {
-        "name": "Riscaldamento"
+        "name": "Riscaldamento",
+        "state": {
+          "on": "In riscaldamento",
+          "off": "Non in riscaldamento"
+        }
       },
       "problem": {
         "name": "Problema"
@@ -67,6 +74,9 @@
       },
       "hot_water": {
         "name": "Acqua calda"
+      },
+      "hot_water_available": {
+        "name": "Disponibile"
       },
       "active_target": {
         "name": "Obiettivo attivo"

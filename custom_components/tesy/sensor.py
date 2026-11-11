@@ -24,14 +24,13 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .entity import TesyEntity
+from .entity import TesyEntity, async_shower_unit
 from .const import (
     ATTR_DEVICE_ID,
     ATTR_IS_HEATING,
     ATTR_MAC,
     ATTR_PARAMETERS,
     ATTR_CURRENT_TARGET_TEMP,
-    UNIT_SHOWERS,
     ATTR_ENERGY_RESETTABLE,
     ATTR_ERROR,
     ATTR_RSSI,
@@ -56,6 +55,7 @@ async def async_setup_entry(
 
     if uses_showers(coordinator.data.get(ATTR_DEVICE_ID), coordinator.is_old_api):
         # Shower models report showers in tmpC/tmpR, not degrees
+        shower_unit = await async_shower_unit(hass)
         _remove_sensors(hass, coordinator, ("temperature", "target_temperature"))
         async_add_entities(
             [
@@ -65,9 +65,9 @@ async def async_setup_entry(
                     entry,
                     SensorEntityDescription(
                         key="hot_water",
-                        translation_key="hot_water",
+                        translation_key="hot_water_available",
                         state_class=SensorStateClass.MEASUREMENT,
-                        native_unit_of_measurement=UNIT_SHOWERS,
+                        native_unit_of_measurement=shower_unit,
                     ),
                     0,
                     None,
@@ -80,7 +80,7 @@ async def async_setup_entry(
                         key="active_target",
                         translation_key="active_target",
                         state_class=SensorStateClass.MEASUREMENT,
-                        native_unit_of_measurement=UNIT_SHOWERS,
+                        native_unit_of_measurement=shower_unit,
                     ),
                     0,
                     None,
