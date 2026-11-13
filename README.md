@@ -37,7 +37,7 @@ On models where it was verified (the ModEco 2 and the BelliSlimo so far, see *Su
 
 ## Changing the IP address or heater power
 
-If the heater gets a new IP address (for example after a router change), open the integration, click the three dots next to the heater and choose **Reconfigure** (Home Assistant 2024.4 or newer). Enter the new address and, if needed, the heater power. The integration checks that the same heater (same MAC address) answers there, then reloads; entities and their history are kept. A static DHCP lease for the heater on your router avoids the problem altogether.
+If the heater gets a new IP address (for example after a router change), open the integration, click the three dots next to the heater and choose **Reconfigure**. Enter the new address and, if needed, the heater power. The integration checks that the same heater (same MAC address) answers there, then reloads; entities and their history are kept. A static DHCP lease for the heater on your router avoids the problem altogether.
 
 ## Diagnostics
 
