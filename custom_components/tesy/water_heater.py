@@ -162,6 +162,9 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
     _unrecorded_attributes = frozenset(
         {f"schedule_p{program}" for program in PROGRAMS} | {"tesy_features"}
     )
+    _attr_native_temperature_unit = UnitOfTemperature.CELSIUS
+    # Read by HA before 2026.11. HA ignores a deprecated name when the same class
+    # also has the native one, so this doesn't log a deprecation warning.
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
     # Program hours are showers, not temperatures
     _showers = False
@@ -215,9 +218,14 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         return PRECISION_WHOLE if device.get("use_showers") else PRECISION_TENTHS
 
     @property
-    def current_temperature(self):
+    def native_current_temperature(self):
         """Return the current temperature."""
         return to_float(self.coordinator.data.get(ATTR_CURRENT_TEMP))
+
+    @property
+    def current_temperature(self):
+        """HA before 2026.11 reads this name (see _attr_temperature_unit)."""
+        return self.native_current_temperature
 
     @property
     def current_operation(self):
@@ -316,11 +324,16 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         await self.partially_update_data_from_api(response, ATTR_POWER)
 
     @property
-    def target_temperature(self):
+    def native_target_temperature(self):
         """Return the target the heater is currently working towards."""
         return active_target(
             self.coordinator.data, use_schedule=self.coordinator.supports_schedule
         )
+
+    @property
+    def target_temperature(self):
+        """HA before 2026.11 reads this name (see _attr_temperature_unit)."""
+        return self.native_target_temperature
 
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
@@ -417,11 +430,11 @@ class TesyShowerWaterHeater(TesyWaterHeater):
     )
 
     @property
-    def current_temperature(self):
+    def native_current_temperature(self):
         """Return None: the device reports showers, not a temperature."""
         return None
 
     @property
-    def target_temperature(self):
+    def native_target_temperature(self):
         """Return None: the device reports showers, not a temperature."""
         return None
