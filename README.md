@@ -128,7 +128,7 @@ BelliSlimo (2002) and BelliSlimo Lite (2005) report hot water in showers, not de
 | Entity | Description | Unit |
 |--------|-------------|------|
 | `number.target_showers` | Showers to heat in manual mode, 0 up to the maximum the heater reports (`tmpMX`) | none (the name says showers; a unit overlapped the slider in the entities card) |
-| `sensor.hot_water` | Hot water available (named Available hot water) | showers |
+| `sensor.available_hot_water` | Hot water available. One set up before 1.7.0-beta.7, when it was named Hot Water, keeps the id `sensor.hot_water` | showers |
 | `sensor.active_target` | Target the heater is working towards in the current mode | showers |
 
 The unit of Available hot water and Active Target is translated by Home Assistant, so each user sees the word for shower in their own language (for example `душ(а)` in Bulgarian). The stored unit is the English `showers`, so changing the language doesn't change the statistics.
@@ -137,7 +137,7 @@ The unit of Available hot water and Active Target is translated by Home Assistan
 - Setting Target Showers switches the heater to manual mode if it is on, like the temperature setpoint on other models.
 - The old `sensor.temperature` and `sensor.target_temperature` entities are removed. Automations that called `water_heater.set_temperature` on these models need to use `number.set_value` on `number.target_showers` instead.
 - Devices set up with the old API keep the temperature entities.
-- Downgrading to an earlier version brings back the temperature entities and leaves Hot Water, Active Target and Target Showers as orphaned entities; remove them from **Settings > Devices & services > Entities**.
+- Downgrading to an earlier version brings back the temperature entities and leaves Available hot water, Active Target and Target Showers as orphaned entities; remove them from **Settings > Devices & services > Entities**.
 
 ### Switches
 
@@ -224,7 +224,7 @@ If the clock is off with the right time zone, the module has no internet; set th
 |-------|-------------|---------|
 | `pwr` | Power state | Water heater |
 | `mode` | Operation mode | Water heater |
-| `tmpC` | Current temperature / showers | Temperature / Hot Water sensor |
+| `tmpC` | Current temperature / showers | Temperature / Available hot water sensor |
 | `tmpT` | Target temperature / showers setpoint | Water heater / Target Showers |
 | `tmpR` | Active target temperature / showers (in a program it can be the next hour's value; placeholder `9` while idle) | Target Temperature / Active Target sensor |
 | `date` | Device local time (read-only, only in `_all`) | Program target lookup, clock check |
