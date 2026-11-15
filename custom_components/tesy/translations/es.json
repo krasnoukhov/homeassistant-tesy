@@ -31,7 +31,11 @@
   "entity": {
     "binary_sensor": {
       "heating": {
-        "name": "Calentando"
+        "name": "Calentando",
+        "state": {
+          "on": "Calentando",
+          "off": "No calienta"
+        }
       },
       "problem": {
         "name": "Problema"
@@ -68,8 +72,13 @@
       "hot_water": {
         "name": "Agua caliente"
       },
+      "hot_water_available": {
+        "name": "Agua caliente disponible",
+        "unit_of_measurement": "ducha(s)"
+      },
       "active_target": {
-        "name": "Objetivo activo"
+        "name": "Objetivo activo",
+        "unit_of_measurement": "ducha(s)"
       }
     },
     "number": {

@@ -33,6 +33,8 @@ Temperature setpoint is only used in manual (Performance) mode. In any other mod
 
 The heater is read every 30 seconds by default, so changes made on its panel or in the MyTESY app show up in Home Assistant within that time. To make it faster, open the integration → **Configure** and set **Poll interval** (5-300 s); 10 s is a good value for a local device. Heaters on the old API (Atheros module) are not polled more often than every 30 s, since the module chokes on bursts of requests.
 
+A busy heater sometimes misses a request. One failed poll keeps the last values and retries after 5 seconds (on the old API, at the next regular poll); a second failure in a row makes the entities unavailable until the heater answers again.
+
 On models where it was verified (the ModEco 2 and the BelliSlimo so far, see *Supported Devices*) the heater is also read again ~2 s after any command from Home Assistant, so the heating state and target follow right away. Other models are read at the regular interval only.
 
 ## Changing the IP address or heater power
@@ -126,8 +128,10 @@ BelliSlimo (2002) and BelliSlimo Lite (2005) report hot water in showers, not de
 | Entity | Description | Unit |
 |--------|-------------|------|
 | `number.target_showers` | Showers to heat in manual mode, 0 up to the maximum the heater reports (`tmpMX`) | none (the name says showers; a unit overlapped the slider in the entities card) |
-| `sensor.hot_water` | Hot water available | showers |
+| `sensor.hot_water` | Hot water available (named Available hot water) | showers |
 | `sensor.active_target` | Target the heater is working towards in the current mode | showers |
+
+The unit of Available hot water and Active Target is translated by Home Assistant, so each user sees the word for shower in their own language (for example `душ(а)` in Bulgarian). The stored unit is the English `showers`, so changing the language doesn't change the statistics.
 
 - The water heater entity keeps operation modes and on/off, but has no temperature.
 - Setting Target Showers switches the heater to manual mode if it is on, like the temperature setpoint on other models.

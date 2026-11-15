@@ -31,7 +31,11 @@
   "entity": {
     "binary_sensor": {
       "heating": {
-        "name": "Verwarmen"
+        "name": "Verwarmen",
+        "state": {
+          "on": "Verwarmt",
+          "off": "Verwarmt niet"
+        }
       },
       "problem": {
         "name": "Probleem"
@@ -68,8 +72,13 @@
       "hot_water": {
         "name": "Warm water"
       },
+      "hot_water_available": {
+        "name": "Beschikbaar warm water",
+        "unit_of_measurement": "douche(s)"
+      },
       "active_target": {
-        "name": "Actief doel"
+        "name": "Actief doel",
+        "unit_of_measurement": "douche(s)"
       }
     },
     "number": {

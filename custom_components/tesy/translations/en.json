@@ -57,8 +57,13 @@
       "hot_water": {
         "name": "Hot Water"
       },
+      "hot_water_available": {
+        "name": "Available hot water",
+        "unit_of_measurement": "showers"
+      },
       "active_target": {
-        "name": "Active Target"
+        "name": "Active Target",
+        "unit_of_measurement": "showers"
       }
     },
     "number": {
@@ -79,7 +84,11 @@
         "name": "Clock problem"
       },
       "heating": {
-        "name": "Heating"
+        "name": "Heating",
+        "state": {
+          "on": "Heating",
+          "off": "Not heating"
+        }
       },
       "problem": {
         "name": "Problem"

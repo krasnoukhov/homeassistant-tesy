@@ -31,7 +31,11 @@
   "entity": {
     "binary_sensor": {
       "heating": {
-        "name": "Нагряване"
+        "name": "Нагряване",
+        "state": {
+          "on": "Нагрява",
+          "off": "Не нагрява"
+        }
       },
       "problem": {
         "name": "Проблем"
@@ -68,8 +72,13 @@
       "hot_water": {
         "name": "Топла вода"
       },
+      "hot_water_available": {
+        "name": "Налична топла вода",
+        "unit_of_measurement": "душ(а)"
+      },
       "active_target": {
-        "name": "Активна цел"
+        "name": "Активна цел",
+        "unit_of_measurement": "душ(а)"
       }
     },
     "number": {

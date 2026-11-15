@@ -31,7 +31,11 @@
   "entity": {
     "binary_sensor": {
       "heating": {
-        "name": "Heizen"
+        "name": "Heizen",
+        "state": {
+          "on": "Heizt",
+          "off": "Heizt nicht"
+        }
       },
       "problem": {
         "name": "Problem"
@@ -68,8 +72,13 @@
       "hot_water": {
         "name": "Warmwasser"
       },
+      "hot_water_available": {
+        "name": "Verfügbares Warmwasser",
+        "unit_of_measurement": "Dusche(n)"
+      },
       "active_target": {
-        "name": "Aktives Ziel"
+        "name": "Aktives Ziel",
+        "unit_of_measurement": "Dusche(n)"
       }
     },
     "number": {

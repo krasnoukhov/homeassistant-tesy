@@ -84,7 +84,7 @@ class TesyHeatingSensor(TesyEntity, BinarySensorEntity):
     @property
     def is_on(self) -> bool | None:
         """Return True while heating."""
-        return is_heating(self.coordinator.data)
+        return is_heating(self.coordinator.data, self.coordinator.power_just_on)
 
 
 class TesyProblemSensor(TesyEntity, BinarySensorEntity):

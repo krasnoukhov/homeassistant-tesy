@@ -130,6 +130,16 @@ class IsHeatingTest(TestCase):
         """A heater that is off is not heating, whatever ht says."""
         self.assertFalse(HELPERS.is_heating({"ht": "1", "pwr": "0"}))
 
+    def test_old_flag_right_after_power_on_is_ignored(self):
+        """The heater reports the previous ht for about a second after power-on."""
+        data = {"ht": "1", "pwr": "1"}
+        self.assertFalse(HELPERS.is_heating(data, power_just_on=True))
+        self.assertTrue(HELPERS.is_heating(data, power_just_on=False))
+
+    def test_unknown_stays_unknown_right_after_power_on(self):
+        """Without a usable ht there is nothing to ignore."""
+        self.assertIsNone(HELPERS.is_heating({"pwr": "1"}, power_just_on=True))
+
     def test_without_power_field(self):
         """ht alone decides when pwr is missing."""
         self.assertTrue(HELPERS.is_heating({"ht": "1"}))
@@ -238,3 +248,31 @@ class ModeMapTest(TestCase):
             self.skipTest("Home Assistant is not installed")
         self.assertEqual(HELPERS.STATE_PERFORMANCE, water_heater.STATE_PERFORMANCE)
         self.assertEqual(HELPERS.STATE_ECO, water_heater.STATE_ECO)
+
+
+class PollSettledTest(TestCase):
+    """Test which polls may clear the power-on flag."""
+
+    def test_without_a_power_on_time_any_poll_settles(self):
+        self.assertTrue(HELPERS.poll_settled(100.0, None))
+
+    def test_a_poll_started_before_or_just_after_the_command_does_not(self):
+        self.assertFalse(HELPERS.poll_settled(99.0, 100.0))
+        self.assertFalse(HELPERS.poll_settled(100.5, 100.0))
+
+    def test_a_poll_started_later_does(self):
+        self.assertTrue(HELPERS.poll_settled(100.0 + HELPERS.POWER_ON_SETTLE, 100.0))
+        self.assertTrue(HELPERS.poll_settled(102.0, 100.0))
+
+
+class TolerateFailedPollTest(TestCase):
+    """Test which failed polls keep the last data."""
+
+    def test_the_first_failure_keeps_the_data(self):
+        self.assertTrue(HELPERS.tolerate_failed_poll(1, True))
+
+    def test_a_second_failure_in_a_row_does_not(self):
+        self.assertFalse(HELPERS.tolerate_failed_poll(2, True))
+
+    def test_without_data_there_is_nothing_to_keep(self):
+        self.assertFalse(HELPERS.tolerate_failed_poll(1, False))
