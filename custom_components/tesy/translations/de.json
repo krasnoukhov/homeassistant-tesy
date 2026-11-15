@@ -1,7 +1,4 @@
 {
-  "common": {
-    "shower_unit": "Dusche(n)"
-  },
   "config": {
     "step": {
       "user": {
@@ -76,10 +73,12 @@
         "name": "Warmwasser"
       },
       "hot_water_available": {
-        "name": "Verfügbar"
+        "name": "Verfügbares Warmwasser",
+        "unit_of_measurement": "Dusche(n)"
       },
       "active_target": {
-        "name": "Aktives Ziel"
+        "name": "Aktives Ziel",
+        "unit_of_measurement": "Dusche(n)"
       }
     },
     "number": {

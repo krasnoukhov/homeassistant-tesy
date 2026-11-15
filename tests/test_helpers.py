@@ -250,13 +250,19 @@ class ModeMapTest(TestCase):
         self.assertEqual(HELPERS.STATE_ECO, water_heater.STATE_ECO)
 
 
-class ShowerUnitTest(TestCase):
-    def test_uses_the_translated_word(self):
-        translations = {"component.tesy.common.shower_unit": "душ(а)"}
-        self.assertEqual(HELPERS.shower_unit(translations), "душ(а)")
+class PollSettledTest(TestCase):
+    """Test which polls may clear the power-on flag."""
 
-    def test_falls_back_to_english_without_a_translation(self):
-        self.assertEqual(HELPERS.shower_unit({}), "showers")
+    def test_without_a_power_on_time_any_poll_settles(self):
+        self.assertTrue(HELPERS.poll_settled(100.0, None))
+
+    def test_a_poll_started_before_or_just_after_the_command_does_not(self):
+        self.assertFalse(HELPERS.poll_settled(99.0, 100.0))
+        self.assertFalse(HELPERS.poll_settled(100.5, 100.0))
+
+    def test_a_poll_started_later_does(self):
+        self.assertTrue(HELPERS.poll_settled(100.0 + HELPERS.POWER_ON_SETTLE, 100.0))
+        self.assertTrue(HELPERS.poll_settled(102.0, 100.0))
 
 
 class TolerateFailedPollTest(TestCase):

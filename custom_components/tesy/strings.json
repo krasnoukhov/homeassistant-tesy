@@ -1,7 +1,4 @@
 {
-  "common": {
-    "shower_unit": "shower(s)"
-  },
   "config": {
     "step": {
       "user": {
@@ -61,10 +58,12 @@
         "name": "Hot Water"
       },
       "hot_water_available": {
-        "name": "Available"
+        "name": "Available hot water",
+        "unit_of_measurement": "showers"
       },
       "active_target": {
-        "name": "Active Target"
+        "name": "Active Target",
+        "unit_of_measurement": "showers"
       }
     },
     "number": {

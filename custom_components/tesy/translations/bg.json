@@ -1,7 +1,4 @@
 {
-  "common": {
-    "shower_unit": "душ(а)"
-  },
   "config": {
     "step": {
       "user": {
@@ -76,10 +73,12 @@
         "name": "Топла вода"
       },
       "hot_water_available": {
-        "name": "Налично"
+        "name": "Налична топла вода",
+        "unit_of_measurement": "душ(а)"
       },
       "active_target": {
-        "name": "Активна цел"
+        "name": "Активна цел",
+        "unit_of_measurement": "душ(а)"
       }
     },
     "number": {

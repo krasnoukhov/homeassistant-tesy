@@ -1,7 +1,4 @@
 {
-  "common": {
-    "shower_unit": "doccia/e"
-  },
   "config": {
     "step": {
       "user": {
@@ -76,10 +73,12 @@
         "name": "Acqua calda"
       },
       "hot_water_available": {
-        "name": "Disponibile"
+        "name": "Acqua calda disponibile",
+        "unit_of_measurement": "doccia/e"
       },
       "active_target": {
-        "name": "Obiettivo attivo"
+        "name": "Obiettivo attivo",
+        "unit_of_measurement": "doccia/e"
       }
     },
     "number": {

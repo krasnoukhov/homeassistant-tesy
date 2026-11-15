@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import time
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -18,13 +19,14 @@ from .features import (
     FEATURE_TIMEZONE,
     device_features,
 )
-from .helpers import tolerate_failed_poll
+from .helpers import poll_settled, tolerate_failed_poll
 from .tesy import Tesy
 from .timezone import TZ_FIELD, posix_tz_for
 from .tesy_oldapi import TesyOldApi
 from .const import (
     ATTR_API,
     ATTR_CHILD_LOCK,
+    ATTR_POWER,
     DOMAIN,
     UPDATE_INTERVAL,
     USE_OLD_API,
@@ -63,6 +65,7 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # The heater reports the previous heating flag for about a second after
         # power-on; Heating ignores it until the read-back poll.
         self.power_just_on = False
+        self._power_on_at: float | None = None
         self._failed_polls = 0
 
         super().__init__(
@@ -86,6 +89,7 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     # Async update Data
     async def _async_update_data(self) -> dict[str, Any]:
         """Get new sensor data for Tesy component."""
+        poll_started = time.monotonic()
         async with self._io_lock:
             if self._closed:  # unloading: no new request to the heater
                 return self.data
@@ -105,7 +109,8 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             if self._closed:  # unloaded while waiting for the reply: drop it
                 return self.data
             self.data_received_at = dt_util.utcnow()
-            self.power_just_on = False
+            if poll_settled(poll_started, self._power_on_at):
+                self.power_just_on = False
         return data
 
     async def _async_command(self, func, *args) -> Any:
@@ -168,8 +173,10 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     # Turn power ON/OFF
     async def async_set_power(self, val: str) -> None:
         """Set power for Tesy component."""
+        was_off = self.data.get(ATTR_POWER) == "0"
         response = await self._async_command(self._client.set_power, val)
-        self.power_just_on = val == "1" and self.supports_readback
+        self.power_just_on = val == "1" and was_off and self.supports_readback
+        self._power_on_at = time.monotonic() if self.power_just_on else None
         return response
 
     # Turn boost ON/OFF

@@ -30,7 +30,6 @@ from .const import (
     ATTR_CURRENT_TEMP,
     ATTR_CURRENT_TARGET_TEMP,
     ATTR_DEVICE_ID,
-    ATTR_IS_HEATING,
     ATTR_MODE,
     ATTR_POWER,
     ATTR_TARGET_TEMP,
@@ -47,6 +46,7 @@ from .const import (
 from .entity import TesyEntity
 from .helpers import (
     TESY_MODE_TO_OPERATION,
+    is_heating,
     max_showers,
     tesy_mode,
     to_float,
@@ -340,9 +340,7 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         """Return the state attributes."""
         data = self.coordinator.data
         attributes: dict[str, Any] = {
-            "is_heating": ATTR_IS_HEATING in data
-            and data[ATTR_IS_HEATING] == "1"
-            and not self.coordinator.power_just_on,
+            "is_heating": bool(is_heating(data, self.coordinator.power_just_on)),
             "target_temp_step": 1,
         }
 

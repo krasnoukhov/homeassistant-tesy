@@ -1,7 +1,4 @@
 {
-  "common": {
-    "shower_unit": "ducha(s)"
-  },
   "config": {
     "step": {
       "user": {
@@ -76,10 +73,12 @@
         "name": "Agua caliente"
       },
       "hot_water_available": {
-        "name": "Disponible"
+        "name": "Agua caliente disponible",
+        "unit_of_measurement": "ducha(s)"
       },
       "active_target": {
-        "name": "Objetivo activo"
+        "name": "Objetivo activo",
+        "unit_of_measurement": "ducha(s)"
       }
     },
     "number": {

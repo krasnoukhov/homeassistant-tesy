@@ -128,10 +128,10 @@ BelliSlimo (2002) and BelliSlimo Lite (2005) report hot water in showers, not de
 | Entity | Description | Unit |
 |--------|-------------|------|
 | `number.target_showers` | Showers to heat in manual mode, 0 up to the maximum the heater reports (`tmpMX`) | none (the name says showers; a unit overlapped the slider in the entities card) |
-| `sensor.hot_water` | Hot water available (named Available) | shower(s) |
-| `sensor.active_target` | Target the heater is working towards in the current mode | shower(s) |
+| `sensor.hot_water` | Hot water available (named Available hot water) | showers |
+| `sensor.active_target` | Target the heater is working towards in the current mode | showers |
 
-The unit of Available and Active Target is the word for shower in Home Assistant's language (for example `душ(а)` in Bulgarian), looked up when the integration starts; a language without it shows `showers`. Home Assistant has no per-user unit translation. Changing the language and restarting changes the unit, which Home Assistant reports once as a changed unit for the statistics.
+The unit of Available hot water and Active Target is translated by Home Assistant, so each user sees the word for shower in their own language (for example `душ(а)` in Bulgarian). The stored unit is the English `showers`, so changing the language doesn't change the statistics.
 
 - The water heater entity keeps operation modes and on/off, but has no temperature.
 - Setting Target Showers switches the heater to manual mode if it is on, like the temperature setpoint on other models.

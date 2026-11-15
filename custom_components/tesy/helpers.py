@@ -10,14 +10,12 @@ from .const import (
     ATTR_IS_HEATING,
     ATTR_MAX_SHOWERS,
     ATTR_POWER,
-    DOMAIN,
     TESY_DEVICE_TYPES,
     TESY_MODE_P1,
     TESY_MODE_P2,
     TESY_MODE_P3,
     TESY_MODE_EC2,
     TESY_MODE_EC3,
-    UNIT_SHOWERS,
 )
 
 # Error codes that mean "no error", as in the MyTESY app ("00" on the new
@@ -27,6 +25,10 @@ NO_ERROR = ("0", "00")
 # Failed polls in a row that keep the last data instead of making the device
 # unavailable
 MAX_TOLERATED_FAILED_POLLS = 1
+
+# Seconds after a power-on command during which a poll may still see the old
+# heating flag
+POWER_ON_SETTLE = 1.5
 
 # Same values as homeassistant.components.water_heater STATE_PERFORMANCE/STATE_ECO
 STATE_PERFORMANCE = "performance"
@@ -132,12 +134,13 @@ def ready_in(data: dict[str, Any]) -> int | None:
     return int(value)
 
 
-def shower_unit(translations: dict[str, str]) -> str:
-    """Return the shower unit word from the "common" translations.
+def poll_settled(poll_started: float, power_on_at: float | None) -> bool:
+    """Return True if a poll began late enough to see the state after power-on.
 
-    Falls back to the English unit if the language has none.
+    A poll that started within POWER_ON_SETTLE of the power-on command can
+    still read the old heating flag.
     """
-    return translations.get(f"component.{DOMAIN}.common.shower_unit", UNIT_SHOWERS)
+    return power_on_at is None or poll_started >= power_on_at + POWER_ON_SETTLE
 
 
 def tolerate_failed_poll(failed_polls: int, has_data: bool) -> bool:
