@@ -277,3 +277,11 @@ Available in 9 languages: English, Bulgarian, German, French, Dutch, Spanish, It
 <a href="https://github.com/krasnoukhov/homeassistant-tesy/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=krasnoukhov/homeassistant-tesy" alt="Contributors">
 </a>
+
+## Development
+
+```sh
+uv run python -m unittest discover -s tests
+uv run ruff format
+uv run ruff check --fix
+```
