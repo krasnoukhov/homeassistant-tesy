@@ -72,7 +72,9 @@ class RequestErrorsTest(TestCase):
             requests.exceptions.TooManyRedirects("loop"),
             TimeoutError("timeout"),
         ):
-            with self.subTest(error=type(error).__name__):
-                with patch.object(TESY.requests, "get", side_effect=error):
-                    with self.assertRaises(ConnectionError):
-                        client.set_timezone("EET-2EEST,M3.5.0/3,M10.5.0/4")
+            with (
+                self.subTest(error=type(error).__name__),
+                patch.object(TESY.requests, "get", side_effect=error),
+                self.assertRaises(ConnectionError),
+            ):
+                client.set_timezone("EET-2EEST,M3.5.0/3,M10.5.0/4")

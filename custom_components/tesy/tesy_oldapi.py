@@ -5,11 +5,30 @@ from __future__ import annotations
 import logging
 import time
 from typing import Any
+from urllib.parse import urlencode, urlparse
 
-from urllib.parse import urlparse, urlencode
 import requests
 
-from .const import *
+from .const import (
+    ATTR_API,
+    ATTR_BOOST,
+    ATTR_CHILD_LOCK,
+    ATTR_CURRENT_TARGET_TEMP,
+    ATTR_CURRENT_TEMP,
+    ATTR_DEVICE_ID,
+    ATTR_ENERGY_RESETTABLE,
+    ATTR_ERROR,
+    ATTR_IS_HEATING,
+    ATTR_MAC,
+    ATTR_MODE,
+    ATTR_POWER,
+    ATTR_SOFTWARE,
+    ATTR_TARGET_TEMP,
+    ATTR_VACATION,
+    HEATER_POWER,
+    HTTP_TIMEOUT,
+    IP_ADDRESS,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -113,7 +132,7 @@ class TesyOldApi:
         except (TypeError, ValueError):
             _LOGGER.debug("Invalid old API heater power: %r", reported_power)
 
-        _LOGGER.debug(f"converted API: {str(o)}")
+        _LOGGER.debug(f"converted API: {o!s}")
         return o
 
     def _convert_setter_api(self, ack: dict[str, Any]) -> dict[str, Any]:

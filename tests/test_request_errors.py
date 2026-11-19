@@ -97,9 +97,11 @@ class RequestErrorTest(TestCase):
         error = requests.Response()
         error.status_code = 500
         for client in (self.client, self.old_client):
-            with patch("requests.get", return_value=error):
-                with self.assertRaises(ConnectionError):
-                    client.get_data()
+            with (
+                patch("requests.get", return_value=error),
+                self.assertRaises(ConnectionError),
+            ):
+                client.get_data()
 
     def test_old_api_keeps_data_when_energy_counter_times_out(self):
         """Keep core device data when only calcRes times out."""

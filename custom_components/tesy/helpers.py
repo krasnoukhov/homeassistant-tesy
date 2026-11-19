@@ -11,11 +11,11 @@ from .const import (
     ATTR_MAX_SHOWERS,
     ATTR_POWER,
     TESY_DEVICE_TYPES,
+    TESY_MODE_EC2,
+    TESY_MODE_EC3,
     TESY_MODE_P1,
     TESY_MODE_P2,
     TESY_MODE_P3,
-    TESY_MODE_EC2,
-    TESY_MODE_EC3,
 )
 
 # Error codes that mean "no error", as in the MyTESY app ("00" on the new

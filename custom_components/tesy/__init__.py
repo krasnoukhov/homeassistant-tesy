@@ -8,7 +8,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EVENT_CORE_CONFIG_UPDATE, Platform
 from homeassistant.core import Event, HomeAssistant, callback
 
-from .coordinator import TesyCoordinator
 from .const import (
     DOMAIN,
     SCAN_INTERVAL,
@@ -17,6 +16,7 @@ from .const import (
     USE_OLD_API,
     min_scan_interval,
 )
+from .coordinator import TesyCoordinator
 
 PLATFORMS: list[Platform] = [
     Platform.WATER_HEATER,

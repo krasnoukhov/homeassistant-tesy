@@ -3,19 +3,18 @@
 from __future__ import annotations
 
 from homeassistant.components.switch import (
-    SwitchEntity,
     SwitchDeviceClass,
+    SwitchEntity,
     SwitchEntityDescription,
 )
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .entity import TesyEntity
 from .const import ATTR_CHILD_LOCK, DOMAIN
 from .coordinator import TesyCoordinator
+from .entity import TesyEntity
 
 
 async def async_setup_entry(

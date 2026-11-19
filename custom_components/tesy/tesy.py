@@ -4,21 +4,21 @@ from __future__ import annotations
 
 import logging
 from typing import Any
+from urllib.parse import urlencode, urlparse
 
-from urllib.parse import urlparse, urlencode
 import requests
 
 from .const import (
+    ATTR_API,
+    ATTR_BOOST,
+    ATTR_CHILD_LOCK,
+    ATTR_ENERGY_RESETTABLE,
+    ATTR_MODE,
     ATTR_POWER,
     ATTR_TARGET_TEMP,
-    ATTR_BOOST,
-    ATTR_MODE,
-    ATTR_CHILD_LOCK,
-    ATTR_API,
-    ATTR_ENERGY_RESETTABLE,
+    HEATER_POWER,
     HTTP_TIMEOUT,
     IP_ADDRESS,
-    HEATER_POWER,
 )
 
 _LOGGER = logging.getLogger(__name__)

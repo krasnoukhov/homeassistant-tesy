@@ -1,7 +1,6 @@
 """Tesy water heater component."""
 
 from typing import Any
-from custom_components.tesy.coordinator import TesyCoordinator
 
 import voluptuous as vol
 
@@ -25,24 +24,25 @@ from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from custom_components.tesy.coordinator import TesyCoordinator
+
 from .const import (
-    TESY_DEVICE_TYPES,
-    ATTR_CURRENT_TEMP,
     ATTR_CURRENT_TARGET_TEMP,
+    ATTR_CURRENT_TEMP,
     ATTR_DEVICE_ID,
     ATTR_MODE,
     ATTR_POWER,
     ATTR_TARGET_TEMP,
+    ATTR_VACATION,
     DOMAIN,
+    TESY_DEVICE_TYPES,
+    TESY_MODE_EC2,
+    TESY_MODE_EC3,
     TESY_MODE_P1,
     TESY_MODE_P2,
     TESY_MODE_P3,
-    TESY_MODE_EC2,
-    TESY_MODE_EC3,
     TESY_MODE_VACATION,
-    ATTR_VACATION,
 )
-
 from .entity import TesyEntity
 from .helpers import (
     TESY_MODE_TO_OPERATION,
@@ -53,13 +53,13 @@ from .helpers import (
     uses_showers,
 )
 from .schedule import (
+    ALL_DAYS,
     DAYS,
     HOURS_PER_DAY,
     MAX_SLOT_TEMP,
     MIN_SLOT_SHOWERS,
     PROGRAMS,
     active_program,
-    ALL_DAYS,
     active_target,
     days_or_all,
     encode_day,
@@ -196,13 +196,8 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
             ]["max_setpoint"]
 
             # if heater only supports showers, get its maximum depending on model, position
-            if (
+            if TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]].get(
                 "use_showers"
-                in TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]]
-                and TESY_DEVICE_TYPES[self.coordinator.data[ATTR_DEVICE_ID]][
-                    "use_showers"
-                ]
-                == True
             ):
                 self._attr_max_temp = max_showers(
                     self.coordinator.data, self._attr_max_temp
@@ -258,10 +253,12 @@ class TesyWaterHeater(TesyEntity, WaterHeaterEntity):
         if ATTR_POWER not in self.coordinator.data:
             return
 
-        if self.coordinator.data[ATTR_POWER] == "1":
-            if self.coordinator.data[ATTR_MODE] != "0":
-                response = await self.coordinator.async_set_operation_mode("0")
-                await self.partially_update_data_from_api(response, ATTR_MODE)
+        if (
+            self.coordinator.data[ATTR_POWER] == "1"
+            and self.coordinator.data[ATTR_MODE] != "0"
+        ):
+            response = await self.coordinator.async_set_operation_mode("0")
+            await self.partially_update_data_from_api(response, ATTR_MODE)
 
         response = await self.coordinator.async_set_target_temperature(
             kwargs.get(ATTR_TEMPERATURE)

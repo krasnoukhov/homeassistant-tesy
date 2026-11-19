@@ -32,7 +32,7 @@ class ScheduleCodecTest(TestCase):
     def test_decode_factory_program(self):
         self.assertEqual(
             schedule.decode_day(P1),
-            [14, 14, 50, 50, 50, 50, 25, 25, 25, 25, 40, 40]
+            [14, 14, 50, 50, 50, 50, 25, 25, 25, 25, 40, 40]  # noqa: RUF005
             + [75, 75, 75, 75, 50, 50, 50, 50, 50, 50, 14, 14],
         )
 

@@ -1,6 +1,6 @@
 """Tests for device clock / time zone helpers (no Home Assistant needed)."""
 
-from datetime import datetime, timedelta, timezone as dt_timezone
+from datetime import UTC, datetime, timedelta, timezone as dt_timezone
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from unittest import TestCase
@@ -73,7 +73,7 @@ class PosixEvaluationTest(TestCase):
     """The POSIX string is checked against the tz database before a sync."""
 
     def test_offsets_around_transitions(self):
-        utc = dt_timezone.utc
+        utc = UTC
         # Kyiv: EEST until 2026-10-25 01:00 UTC (04:00 local), then EET.
         self.assertEqual(
             tz.posix_utcoffset(KYIV, datetime(2026, 10, 25, 0, 59, tzinfo=utc)), 10800
@@ -103,7 +103,7 @@ class PosixEvaluationTest(TestCase):
         )
 
     def test_string_must_match_the_zone(self):
-        start = datetime(2026, 10, 14, 10, 0, tzinfo=dt_timezone.utc)
+        start = datetime(2026, 10, 14, 10, 0, tzinfo=UTC)
         self.assertTrue(tz.posix_matches_zone(KYIV, "Europe/Kyiv", start))
         # A fixed offset for a zone with DST changes is rejected...
         self.assertFalse(tz.posix_matches_zone("EET-2", "Europe/Kyiv", start))
@@ -114,7 +114,7 @@ class PosixEvaluationTest(TestCase):
         self.assertFalse(tz.posix_matches_zone(KYIV, "No/Such_Zone", start))
 
     def test_unusual_transition_times_are_not_synced(self):
-        start = datetime(2026, 10, 14, 10, 0, tzinfo=dt_timezone.utc)
+        start = datetime(2026, 10, 14, 10, 0, tzinfo=UTC)
         # Negative (Nuuk "/-1") and over-24 h (Jerusalem "/26") switch times.
         self.assertIsNone(tz.posix_tz_for("America/Nuuk", start))
         self.assertIsNone(tz.posix_tz_for("Asia/Jerusalem", start))
@@ -126,7 +126,7 @@ class PosixEvaluationTest(TestCase):
         self.assertTrue(tz.posix_rule_times_supported(KYIV))
 
     def test_whole_tz_database_resolves(self):
-        start = datetime(2026, 10, 14, 10, 0, tzinfo=dt_timezone.utc)
+        start = datetime(2026, 10, 14, 10, 0, tzinfo=UTC)
         for name in (
             "Europe/Kyiv",
             "America/New_York",

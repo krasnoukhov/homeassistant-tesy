@@ -14,18 +14,18 @@ from homeassistant.data_entry_flow import AbortFlow
 import homeassistant.helpers.config_validation as cv
 
 from .const import (
+    ATTR_DEVICE_ID,
     ATTR_MAC,
     DOMAIN,
-    IP_ADDRESS,
     HEATER_POWER,
+    IP_ADDRESS,
     MAX_SCAN_INTERVAL,
     SCAN_INTERVAL,
     SYNC_TIMEZONE,
-    min_scan_interval,
-    UPDATE_INTERVAL,
-    ATTR_DEVICE_ID,
     TESY_DEVICE_TYPES,
+    UPDATE_INTERVAL,
     USE_OLD_API,
+    min_scan_interval,
 )
 from .coordinator import TesyCoordinator
 

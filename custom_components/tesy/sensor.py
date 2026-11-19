@@ -2,44 +2,44 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-
+from contextlib import suppress
+from datetime import UTC, datetime
 
 from homeassistant.components.sensor import (
     RestoreSensor,
-    SensorEntity,
     SensorDeviceClass,
-    SensorStateClass,
+    SensorEntity,
     SensorEntityDescription,
+    SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
+    SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
     EntityCategory,
     UnitOfEnergy,
     UnitOfTemperature,
     UnitOfTime,
-    SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .entity import TesyEntity
 from .const import (
-    ATTR_DEVICE_ID,
-    ATTR_IS_HEATING,
-    ATTR_MAC,
-    ATTR_PARAMETERS,
     ATTR_CURRENT_TARGET_TEMP,
+    ATTR_CURRENT_TEMP,
+    ATTR_DEVICE_ID,
     ATTR_ENERGY_RESETTABLE,
     ATTR_ERROR,
+    ATTR_IS_HEATING,
+    ATTR_LONG_COUNTER,
+    ATTR_MAC,
+    ATTR_PARAMETERS,
     ATTR_RSSI,
     ATTR_UPTIME,
     DOMAIN,
-    ATTR_LONG_COUNTER,
-    ATTR_CURRENT_TEMP,
 )
 from .coordinator import TesyCoordinator
+from .entity import TesyEntity
 from .helpers import ready_in, to_float, uses_showers
 from .schedule import active_target
 
@@ -289,7 +289,7 @@ class TesyEnergySensor(TesySensor, RestoreSensor):
     few hours by the firmware. Using it directly causes energy to be attributed to
     the wrong hourly bucket in HA's energy dashboard. Instead, this sensor tracks
     energy by observing the ht (is-heating) flag on every 30-second poll and
-    accumulating power × elapsed_time, giving accurate per-hour attribution.
+    accumulating power * elapsed_time, giving accurate per-hour attribution.
 
     For double-tank devices the per-tank ht mapping is unknown, so the original
     pwc_t counter is kept for those.
@@ -314,16 +314,14 @@ class TesyEnergySensor(TesySensor, RestoreSensor):
         """Restore previous energy total on startup."""
         await super().async_added_to_hass()
         if (last_state := await self.async_get_last_sensor_data()) is not None:
-            try:
+            with suppress(TypeError, ValueError):
                 self._energy_kwh = float(last_state.native_value or 0)
-            except (TypeError, ValueError):
-                pass
-        self._last_update = datetime.now(timezone.utc)
+        self._last_update = datetime.now(UTC)
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Accumulate energy based on heating state, then write HA state."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         data = self.coordinator.data
 
         is_double_tank = ";" in data.get(ATTR_LONG_COUNTER, "")
