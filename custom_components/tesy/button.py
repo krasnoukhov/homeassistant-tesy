@@ -9,9 +9,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .entity import TesyEntity
 from .const import ATTR_API, ATTR_ENERGY_RESETTABLE, DOMAIN
 from .coordinator import TesyCoordinator
+from .entity import TesyEntity
 
 
 async def async_setup_entry(

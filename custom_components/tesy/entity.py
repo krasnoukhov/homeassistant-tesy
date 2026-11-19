@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
@@ -14,23 +16,21 @@ from homeassistant.helpers.entity import EntityDescription
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
-    TESY_DEVICE_TYPES,
-    ATTR_DEVICE_ID,
-    ATTR_MAC,
+    ATTR_API,
     ATTR_BOOST,
     ATTR_CHILD_LOCK,
     ATTR_CURRENT_TARGET_TEMP,
+    ATTR_DEVICE_ID,
     ATTR_HARDWARE,
+    ATTR_MAC,
     ATTR_MODE,
     ATTR_POWER,
-    ATTR_TARGET_TEMP,
     ATTR_SOFTWARE,
+    ATTR_TARGET_TEMP,
     DOMAIN,
-    ATTR_API,
+    TESY_DEVICE_TYPES,
 )
 from .coordinator import TesyCoordinator
-
-import logging
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -96,12 +96,7 @@ class TesyEntity(CoordinatorEntity[TesyCoordinator]):
     @property
     def is_boost_mode_on(self):
         """Return true if boost mode is on."""
-        if (
-            ATTR_BOOST in self.coordinator.data
-            and self.coordinator.data[ATTR_BOOST] == "1"
-        ):
-            return True
-        return False
+        return self.coordinator.data.get(ATTR_BOOST) == "1"
 
     async def async_turn_boost_mode_on(self, **kwargs):
         """Turn on boost mode."""

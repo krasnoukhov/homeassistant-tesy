@@ -17,7 +17,7 @@ This module has no Home Assistant dependencies so it can be unit tested alone.
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from importlib import resources
 from pathlib import Path
 import re
@@ -89,7 +89,7 @@ def _transition(rule: str, year: int, utcoffset: int) -> datetime:
     day, _, at = rule.partition("/")
     local = datetime.combine(_rule_date(day, year), datetime.min.time())
     local += timedelta(seconds=_seconds(at) if at else 7200)
-    return (local - timedelta(seconds=utcoffset)).replace(tzinfo=timezone.utc)
+    return (local - timedelta(seconds=utcoffset)).replace(tzinfo=UTC)
 
 
 def posix_utcoffset(posix: str, when: datetime) -> int | None:
@@ -103,7 +103,7 @@ def posix_utcoffset(posix: str, when: datetime) -> int | None:
     dst = -_seconds(match["dst_off"]) if match["dst_off"] else std + 3600
     start_rule = match["start"] or "M3.2.0"  # POSIX default (US rules)
     end_rule = match["end"] or "M11.1.0"
-    when = when.astimezone(timezone.utc)
+    when = when.astimezone(UTC)
     for year in (when.year - 1, when.year, when.year + 1):
         start = _transition(start_rule, year, std)
         end = _transition(end_rule, year, dst)
@@ -122,7 +122,7 @@ def posix_matches_zone(
         zone = zoneinfo.ZoneInfo(name)
     except (zoneinfo.ZoneInfoNotFoundError, ValueError):
         return False
-    when = (start or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    when = (start or datetime.now(UTC)).astimezone(UTC)
     when = when.replace(minute=30, second=0, microsecond=0)
     for _ in range(days * 24):
         expected = when.astimezone(zone).utcoffset()

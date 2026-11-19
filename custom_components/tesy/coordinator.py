@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import asyncio
-import time
 from datetime import datetime, timedelta
+import logging
+import time
 from typing import Any
 
 from homeassistant.core import HomeAssistant, callback
@@ -12,6 +13,13 @@ from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
+from .const import (
+    ATTR_API,
+    ATTR_POWER,
+    DOMAIN,
+    UPDATE_INTERVAL,
+    USE_OLD_API,
+)
 from .features import (
     FEATURE_COUNTDOWN,
     FEATURE_READBACK,
@@ -21,17 +29,8 @@ from .features import (
 )
 from .helpers import poll_settled, tolerate_failed_poll
 from .tesy import Tesy
-from .timezone import TZ_FIELD, posix_tz_for
 from .tesy_oldapi import TesyOldApi
-from .const import (
-    ATTR_API,
-    ATTR_CHILD_LOCK,
-    ATTR_POWER,
-    DOMAIN,
-    UPDATE_INTERVAL,
-    USE_OLD_API,
-)
-import logging
+from .timezone import TZ_FIELD, posix_tz_for
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -299,8 +298,7 @@ class TesyCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             )
         if response.get(ATTR_API) != "OK" or response.get(TZ_FIELD) != expected:
             raise ConnectionError(
-                f"Heater rejected time zone {expected}: "
-                f"api={response.get(ATTR_API)!r}"
+                f"Heater rejected time zone {expected}: api={response.get(ATTR_API)!r}"
             )
 
         _LOGGER.info(

@@ -14,8 +14,9 @@ fields it needs, so a firmware without them still gets the basic behaviour.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 import re
-from typing import Any, Callable
+from typing import Any
 
 FEATURE_SCHEDULE = "schedule"  # weekly programs P1-P3, tesy.set_schedule
 FEATURE_TIMEZONE = "timezone"  # time zone sync, clock problem sensor
