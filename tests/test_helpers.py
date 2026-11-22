@@ -177,10 +177,12 @@ class ReadyInTest(TestCase):
         """While heating, cdt is shown as reported."""
         self.assertEqual(HELPERS.ready_in({"cdt": "81", "ht": "1", "pwr": "1"}), 81)
 
-    def test_idle_is_ready_now(self):
-        """The idle leftover in cdt is not shown: the water is ready."""
-        for cdt in ("0", "1", "2"):
-            self.assertEqual(HELPERS.ready_in({"cdt": cdt, "ht": "0", "pwr": "1"}), 0)
+    def test_idle_shows_cdt(self):
+        """While idle the BelliSlimo keeps a changing cdt; it is shown as reported."""
+        for cdt in (0, 2, 8, 21):
+            self.assertEqual(
+                HELPERS.ready_in({"cdt": str(cdt), "ht": "0", "pwr": "1"}), cdt
+            )
 
     def test_without_ht(self):
         """ht isn't required: without it cdt is shown as reported."""
@@ -192,10 +194,6 @@ class ReadyInTest(TestCase):
         data = {"cdt": "36", "ht": "1", "pwr": "0"}
         self.assertEqual(HELPERS.ready_in(data), 36)
         self.assertEqual(HELPERS.ready_in({**data, "cdt": "34"}), 34)
-
-    def test_switched_off_not_heating_is_ready(self):
-        """Off with ht 0 follows the same rule as on."""
-        self.assertEqual(HELPERS.ready_in({"cdt": "2", "ht": "0", "pwr": "0"}), 0)
 
     def test_invalid_is_unknown(self):
         """A missing or non-numeric cdt is unknown."""
