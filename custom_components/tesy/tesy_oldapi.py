@@ -106,8 +106,7 @@ class TesyOldApi:
                 ATTR_TARGET_TEMP: status.get("ref_gradus", "0"),
                 ATTR_CURRENT_TARGET_TEMP: status.get("ref_gradus", "0"),
                 ATTR_BOOST: str(status.get("boost", "0")),
-                ATTR_POWER: onoff.get(status["power_sw"], "0"),
-                ATTR_CHILD_LOCK: onoff.get(status["lockB"], "0"),
+                ATTR_POWER: onoff.get(status.get("power_sw", "on"), "0"),
                 ATTR_IS_HEATING: (
                     "1"
                     if str(status.get("heater_state", "")).upper() == "HEATING"
@@ -115,6 +114,10 @@ class TesyOldApi:
                 ),
             }
         )
+
+        # Not every firmware reports lockB (#71); without it there's no switch
+        if "lockB" in status:
+            o[ATTR_CHILD_LOCK] = onoff.get(status["lockB"], "0")
 
         calc_result = data.get("calcRes", {})
         energy_counter = calc_result.get("sum")

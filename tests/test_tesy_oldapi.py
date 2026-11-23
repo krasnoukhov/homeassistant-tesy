@@ -156,6 +156,56 @@ class TesyOldApiTest(TestCase):
         self.assertEqual(data["tmpC"], "71.0")
         self.assertEqual(self.client._heater_power, 2400)
 
+    def test_status_without_lockb(self):
+        """Firmware without lockB loads, with no child lock (#71)."""
+        self.client._get_request = Mock(
+            side_effect=[
+                response(
+                    {
+                        "heater_state": "READY",
+                        "mode": "3",
+                        "err_flag": "0",
+                        "boost": "0",
+                        "power_sw": "on",
+                        "gradus": "48.5",
+                        "ref_gradus": "22",
+                        "volume": "80",
+                        "watts": "2400",
+                        "inet": "1",
+                        "ant_flag": "0",
+                        "ant_c": "4120",
+                        "date": "2026-11-23 12:10",
+                        "mix40": "0",
+                        "tz": "CET",
+                    }
+                ),
+                response(self.devstat),
+                ConnectionError(),
+            ]
+        )
+
+        data = self.client.get_data()
+
+        self.assertNotIn("lck", data)
+        self.assertEqual(data["pwr"], "1")
+        self.assertEqual(data["tmpC"], "48.5")
+
+    def test_status_without_power_sw_defaults_to_on(self):
+        """A missing power_sw reads as on, like helpers.is_heating does."""
+        del self.status["power_sw"]
+        self.client._get_request = Mock(
+            side_effect=[
+                response(self.status),
+                response(self.devstat),
+                ConnectionError(),
+            ]
+        )
+
+        data = self.client.get_data()
+
+        self.assertEqual(data["pwr"], "1")
+        self.assertEqual(data["lck"], "0")
+
     def test_ignores_invalid_energy_response(self):
         """Keep core device data available when calcRes returns invalid JSON."""
         invalid_response = Mock()
