@@ -54,6 +54,9 @@
       "ready_in": {
         "name": "Prêt dans"
       },
+      "ready_at": {
+        "name": "Prêt à"
+      },
       "target_temperature": {
         "name": "Température cible"
       },

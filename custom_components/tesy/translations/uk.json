@@ -33,6 +33,7 @@
       "temperature": { "name": "Температура" },
       "energy_consumed": { "name": "Спожита енергія" },
       "ready_in": { "name": "Готовність через" },
+      "ready_at": { "name": "Готовність о" },
       "target_temperature": { "name": "Цільова температура" },
       "error_status": { "name": "Статус помилки" },
       "wifi_signal": { "name": "Сигнал WiFi" },

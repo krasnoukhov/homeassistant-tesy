@@ -39,6 +39,9 @@
       "ready_in": {
         "name": "Ready In"
       },
+      "ready_at": {
+        "name": "Ready At"
+      },
       "target_temperature": {
         "name": "Target Temperature"
       },

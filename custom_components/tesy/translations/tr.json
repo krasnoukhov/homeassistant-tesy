@@ -54,6 +54,9 @@
       "ready_in": {
         "name": "Hazır olma"
       },
+      "ready_at": {
+        "name": "Hazır olma zamanı"
+      },
       "target_temperature": {
         "name": "Hedef sıcaklık"
       },

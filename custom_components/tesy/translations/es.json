@@ -54,6 +54,9 @@
       "ready_in": {
         "name": "Listo en"
       },
+      "ready_at": {
+        "name": "Listo a las"
+      },
       "target_temperature": {
         "name": "Temperatura objetivo"
       },

@@ -104,7 +104,7 @@ The three Eco modes all learn the household's hot water use during the first wee
 | `sensor.uptime` | Wi-Fi module uptime (new API) | `duration` | s |
 | `sensor.energy_consumed_resettable` | Energy consumed (since last reset from device) | `energy` | kWh |
 
-Ready In is an extended feature (see *Supported Devices*), enabled for the BelliSlimo, where the countdown was verified: the heater reports `cdt` and counts it down about a minute per minute while heating, and recalculates it when hot water is used. While it isn't heating, `cdt` keeps a leftover of a minute or two, so Ready In shows `0` (the water is ready). While the heater is switched off, the BelliSlimo keeps calculating `cdt` (it reports `ht` 1 then), and Ready In shows it as the time the heater would need to reach its target once switched on. Other models don't get Ready In: the ModEco 2 doesn't report `cdt`, and on the rest it hasn't been verified. Earlier versions added Ready In to every model, where it never had a value; it's removed on the first start. If your model reports a `cdt` that counts down like this, open an issue with two diagnostics files, one while heating and one while idle (see *Diagnostics*).
+Ready In and Ready At are extended features (see *Supported Devices*), enabled for the BelliSlimo, where the countdown was verified: the heater reports `cdt` and counts it down about a minute per minute while heating, and recalculates it when hot water is used. While it isn't heating, `cdt` keeps a changing non-zero value (4-21 minutes seen, meaning unknown), so Ready In shows `0` (the water is ready) and the raw value is in its `device_countdown` attribute. The MyTESY app shows a readiness time of `now + cdt` in every state, and so does Ready At (`sensor.ready_at`, a timestamp rounded to the minute that only moves when the countdown changes by more than a minute). While the heater is switched off, the BelliSlimo keeps calculating `cdt` (it reports `ht` 1 then), the time it would need to reach its target once switched on; Ready In shows it as is and Ready At as a time. Other models don't get Ready In or Ready At: the ModEco 2 doesn't report `cdt`, and on the rest it hasn't been verified. Earlier versions added Ready In to every model, where it never had a value; it's removed on the first start. If your model reports a `cdt` that counts down like this, open an issue with two diagnostics files, one while heating and one while idle (see *Diagnostics*).
 
 The old API doesn't report the Wi-Fi signal or uptime, so heaters set up with it don't get WiFi Signal and Uptime; earlier versions added them there without a value, and they're removed on the first start.
 
@@ -232,7 +232,7 @@ If the clock is off with the right time zone, the module has no internet; set th
 | `prgP{1-3}{MO..SU}` | Weekly programs, 24 bytes hex per day, °C per hour, `FF` = empty | Schedule attributes, `tesy.set_schedule` |
 | `ht` | Heating element active | Heating binary sensor, `is_heating` attr |
 | `bst` | Boost flag | Boost switch |
-| `cdt` | Countdown timer (minutes; BelliSlimo) | Ready In sensor |
+| `cdt` | Countdown timer (minutes; BelliSlimo) | Ready In and Ready At sensors |
 | `err` | Error code | Error Status sensor, Problem binary sensor |
 | `wdBm` | WiFi RSSI | WiFi Signal sensor |
 | `wup` | Uptime (seconds) | Uptime sensor |
@@ -261,7 +261,7 @@ This returns a JSON object with all fields listed in the table above.
 | ID | Model | Range | Extended features |
 |----|-------|-------|-------------------|
 | 2000 | ModEco | 15-75°C | — |
-| 2002 | BelliSlimo | 0-4 showers | weekly programs (in showers), time zone sync, read-back after commands, Ready In |
+| 2002 | BelliSlimo | 0-4 showers | weekly programs (in showers), time zone sync, read-back after commands, Ready In, Ready At |
 | 2003 | BiLight Smart | 15-75°C | — |
 | 2004 | ModEco 2 | 15-75°C | weekly programs, time zone sync, read-back after commands |
 | 2005 | BelliSlimo Lite | 0-4 showers | — |
