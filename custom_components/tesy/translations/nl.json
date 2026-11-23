@@ -54,6 +54,9 @@
       "ready_in": {
         "name": "Gereed over"
       },
+      "ready_at": {
+        "name": "Klaar om"
+      },
       "target_temperature": {
         "name": "Doeltemperatuur"
       },

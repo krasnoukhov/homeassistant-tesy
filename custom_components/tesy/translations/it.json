@@ -54,6 +54,9 @@
       "ready_in": {
         "name": "Pronto tra"
       },
+      "ready_at": {
+        "name": "Pronto alle"
+      },
       "target_temperature": {
         "name": "Temperatura obiettivo"
       },

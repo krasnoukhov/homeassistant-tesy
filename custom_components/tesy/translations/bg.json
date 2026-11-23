@@ -54,6 +54,9 @@
       "ready_in": {
         "name": "Готов след"
       },
+      "ready_at": {
+        "name": "Готов в"
+      },
       "target_temperature": {
         "name": "Целева температура"
       },

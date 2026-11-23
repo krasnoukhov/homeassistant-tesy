@@ -35,6 +35,9 @@
       "ready_in": {
         "default": "mdi:clock"
       },
+      "ready_at": {
+        "default": "mdi:clock-end"
+      },
       "error_status": {
         "default": "mdi:alert-circle-outline"
       },

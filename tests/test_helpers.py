@@ -1,5 +1,6 @@
 """Tests for the Tesy helpers."""
 
+from datetime import UTC, datetime, timedelta
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 import sys
@@ -177,12 +178,10 @@ class ReadyInTest(TestCase):
         """While heating, cdt is shown as reported."""
         self.assertEqual(HELPERS.ready_in({"cdt": "81", "ht": "1", "pwr": "1"}), 81)
 
-    def test_idle_shows_cdt(self):
-        """While idle the BelliSlimo keeps a changing cdt; it is shown as reported."""
-        for cdt in (0, 2, 8, 21):
-            self.assertEqual(
-                HELPERS.ready_in({"cdt": str(cdt), "ht": "0", "pwr": "1"}), cdt
-            )
+    def test_idle_is_ready_now(self):
+        """The idle leftover in cdt is not shown: the water is ready."""
+        for cdt in ("0", "1", "2"):
+            self.assertEqual(HELPERS.ready_in({"cdt": cdt, "ht": "0", "pwr": "1"}), 0)
 
     def test_without_ht(self):
         """ht isn't required: without it cdt is shown as reported."""
@@ -195,10 +194,68 @@ class ReadyInTest(TestCase):
         self.assertEqual(HELPERS.ready_in(data), 36)
         self.assertEqual(HELPERS.ready_in({**data, "cdt": "34"}), 34)
 
+    def test_switched_off_not_heating_is_ready(self):
+        """Off with ht 0 follows the same rule as on."""
+        self.assertEqual(HELPERS.ready_in({"cdt": "2", "ht": "0", "pwr": "0"}), 0)
+
     def test_invalid_is_unknown(self):
         """A missing or non-numeric cdt is unknown."""
         for data in ({}, {"cdt": ""}, {"cdt": None}, {"cdt": "-1"}, {"cdt": "x"}):
             self.assertIsNone(HELPERS.ready_in(data), data)
+
+
+class CountdownTest(TestCase):
+    """Test the raw device countdown."""
+
+    def test_raw_value_in_every_state(self):
+        """cdt is returned as reported, whatever ht says."""
+        for ht in ("0", "1"):
+            self.assertEqual(HELPERS.countdown({"cdt": "16", "ht": ht}), 16)
+
+    def test_invalid_is_unknown(self):
+        """A missing or non-numeric cdt is unknown."""
+        for data in ({}, {"cdt": ""}, {"cdt": None}, {"cdt": "-1"}, {"cdt": "x"}):
+            self.assertIsNone(HELPERS.countdown(data), data)
+
+
+class ReadyAtTest(TestCase):
+    """Test the Ready At time."""
+
+    NOW = datetime(2026, 11, 22, 13, 52, 10, tzinfo=UTC)
+
+    def test_is_now_plus_cdt_rounded_to_the_minute(self):
+        """16 minutes from 13:52:10 is shown as 14:08."""
+        result = HELPERS.ready_at({"cdt": "16"}, self.NOW, None)
+        self.assertEqual(result, datetime(2026, 11, 22, 14, 8, tzinfo=UTC))
+
+    def test_shown_in_every_state(self):
+        """Idle and switched off still give a time, like the app."""
+        for data in (
+            {"cdt": "4", "ht": "0", "pwr": "1"},
+            {"cdt": "4", "ht": "1", "pwr": "0"},
+        ):
+            self.assertEqual(
+                HELPERS.ready_at(data, self.NOW, None),
+                datetime(2026, 11, 22, 13, 56, tzinfo=UTC),
+            )
+
+    def test_unknown_without_cdt(self):
+        """No cdt, no time."""
+        self.assertIsNone(HELPERS.ready_at({"ht": "0"}, self.NOW, None))
+        self.assertIsNone(HELPERS.ready_at({"cdt": "x"}, self.NOW, self.NOW))
+
+    def test_keeps_current_within_a_minute(self):
+        """A poll that moves the time by one minute or less changes nothing."""
+        current = datetime(2026, 11, 22, 14, 8, tzinfo=UTC)
+        for seconds in (0, 30, 60):
+            now = self.NOW + timedelta(seconds=seconds)
+            self.assertEqual(HELPERS.ready_at({"cdt": "16"}, now, current), current)
+
+    def test_moves_when_cdt_really_changes(self):
+        """More than a minute of difference moves the time."""
+        current = datetime(2026, 11, 22, 14, 8, tzinfo=UTC)
+        result = HELPERS.ready_at({"cdt": "19"}, self.NOW, current)
+        self.assertEqual(result, datetime(2026, 11, 22, 14, 11, tzinfo=UTC))
 
 
 # Values sent before the mode map was introduced

@@ -23,6 +23,7 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
 from .const import (
     ATTR_CURRENT_TARGET_TEMP,
@@ -40,7 +41,7 @@ from .const import (
 )
 from .coordinator import TesyCoordinator
 from .entity import TesyEntity
-from .helpers import ready_in, to_float, uses_showers
+from .helpers import countdown, ready_at, ready_in, to_float, uses_showers
 from .schedule import active_target
 
 
@@ -224,7 +225,19 @@ async def async_setup_entry(
                     ),
                     None,
                     None,
-                )
+                ),
+                TesyReadyAtSensor(
+                    hass,
+                    coordinator,
+                    entry,
+                    SensorEntityDescription(
+                        key="ready_at",
+                        translation_key="ready_at",
+                        device_class=SensorDeviceClass.TIMESTAMP,
+                    ),
+                    None,
+                    None,
+                ),
             ]
         )
     else:
@@ -381,6 +394,33 @@ class TesyCdtSensor(TesySensor):
     def native_value(self):
         """Return the countdown in minutes until the heater will be ready."""
         return ready_in(self.coordinator.data)
+
+    @property
+    def extra_state_attributes(self):
+        """Return the raw countdown the device reports."""
+        return {"device_countdown": countdown(self.coordinator.data)}
+
+
+class TesyReadyAtSensor(TesySensor):
+    """When the heater will be ready, as the MyTESY app shows it."""
+
+    def __init__(self, *args, **kwargs) -> None:
+        """Initialize the sensor."""
+        super().__init__(*args, **kwargs)
+        self._ready_at = ready_at(self.coordinator.data, dt_util.utcnow(), None)
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Move the time only when the countdown really changed."""
+        self._ready_at = ready_at(
+            self.coordinator.data, dt_util.utcnow(), self._ready_at
+        )
+        super()._handle_coordinator_update()
+
+    @property
+    def native_value(self):
+        """Return the time the heater will be ready."""
+        return self._ready_at
 
 
 class TesyTargetTempSensor(TesySensor):

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from typing import Any
 
 from .const import (
@@ -118,15 +119,45 @@ def has_error(data: dict[str, Any]) -> bool | None:
 def ready_in(data: dict[str, Any]) -> int | None:
     """Return the minutes until the heater reaches its target, or None.
 
-    ``cdt`` is shown as reported. It counts down while heating. While idle the
-    BelliSlimo keeps a changing non-zero value in it (7-21 minutes seen), and
-    while switched off it keeps calculating the time it would need to reach
-    the target once switched on. Use Heating to tell whether it is heating.
+    ``cdt`` counts down while heating. While idle the BelliSlimo leaves a
+    minute or two in it, so a heater that reports it isn't heating (``ht``
+    0) is ready now. Without ``ht`` the countdown is shown as reported.
+
+    While the heater is switched off the BelliSlimo keeps calculating ``cdt``
+    (and reports ``ht`` 1): the time it would need to reach the target once
+    switched on, which moves as the water cools or is used. It's shown as is.
     """
-    value = str(data.get(ATTR_CDT, "")).strip()
-    if not value.isdecimal():
+    value = countdown(data)
+    if value is None:
         return None
-    return int(value)
+    if str(data.get(ATTR_IS_HEATING, "")).strip() == "0":
+        return 0
+    return value
+
+
+def countdown(data: dict[str, Any]) -> int | None:
+    """Return the raw ``cdt`` minutes as the device reports them, or None."""
+    value = str(data.get(ATTR_CDT, "")).strip()
+    return int(value) if value.isdecimal() else None
+
+
+def ready_at(
+    data: dict[str, Any], now: datetime, current: datetime | None
+) -> datetime | None:
+    """Return when the heater will be ready, like the MyTESY app, or None.
+
+    ``now`` plus the raw ``cdt``, in every state, rounded to the minute. The
+    current value is kept unless the new one differs by more than a minute, so
+    it doesn't jitter on every poll.
+    """
+    minutes = countdown(data)
+    if minutes is None:
+        return None
+    target = now + timedelta(minutes=minutes)
+    target = (target + timedelta(seconds=30)).replace(second=0, microsecond=0)
+    if current is not None and abs(target - current) <= timedelta(minutes=1):
+        return current
+    return target
 
 
 def poll_settled(poll_started: float, power_on_at: float | None) -> bool:
